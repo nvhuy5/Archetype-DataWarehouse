@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: int_hr_contract
+    description: "Contract with job title, level category and contract type."
+    columns:
+      - name: contract_id
+        tests: [unique, not_null]
+      - name: contract_term
+        tests:
+          - accepted_values: {values: ['Long Term', 'Probation']}

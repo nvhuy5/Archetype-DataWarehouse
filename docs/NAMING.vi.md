@@ -56,6 +56,8 @@ Tên schema do dbt macro `generate_schema_name` quyết định: lấy đúng t�
 | Trung gian | `int_<mô tả>` | `int_hr_contract` | Đặt trong `models/dwh/intermediate/`, là `view` |
 | Seed | tên dữ liệu, số nhiều hoặc tập hợp | `public_holidays` | Nằm trong `dbt/seeds/`, schema `dwh` |
 
+Thư mục: `dbt/models/dwh/dim/`, `dbt/models/dwh/fact/`, `dbt/models/dwh/intermediate/`. Mỗi thư mục có một file `_<thư mục>__models.yml` chứa mô tả và test. Cả ba cùng nằm trong schema `dwh`. Khi một thư mục quá đông thì chia tiếp theo domain bên trong (ví dụ `fact/timesheet/`).
+
 Tên cột trong dwh:
 
 | Loại cột | Quy tắc | Ví dụ |

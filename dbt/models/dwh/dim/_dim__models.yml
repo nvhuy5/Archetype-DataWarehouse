@@ -61,15 +61,6 @@ models:
       - name: office_id
         tests: [unique, not_null]
 
-  - name: int_hr_contract
-    description: "Contract with job title, level category and contract type."
-    columns:
-      - name: contract_id
-        tests: [unique, not_null]
-      - name: contract_term
-        tests:
-          - accepted_values: {values: ['Long Term', 'Probation']}
-
   - name: dim_employee
     description: "Employees in status 7 and 8 with department, job title, level, offices, direct manager, current contract and first interview date. Birthday is not exposed, only the age."
     columns:
@@ -81,46 +72,3 @@ models:
       - name: department_id
         tests:
           - relationships: {to: ref('dim_department'), field: department_id, config: {severity: warn}}
-
-  - name: fact_headcount_monthly
-    description: "Head count, leavers and newcomers per employee and month, while the employee has a contract."
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns: [month_key, employee_id]
-    columns:
-      - name: month_key
-        tests: [not_null]
-      - name: employee_id
-        tests: [not_null]
-
-  - name: fact_timesheet
-    description: "One row per timesheet entry since var timesheet_from_date."
-    columns:
-      - name: entry_id
-        tests: [unique, not_null]
-      - name: entry_date
-        tests: [not_null]
-      - name: hours
-        tests:
-          - dbt_utils.expression_is_true: {expression: ">= 0", config: {severity: warn}}
-      - name: validated_status
-        tests:
-          - accepted_values: {values: [0, 1, 2], config: {severity: warn}}
-      - name: phase_id
-        tests:
-          - relationships: {to: ref('dim_phase'), field: phase_id, config: {severity: warn}}
-      - name: component_id
-        tests:
-          - relationships: {to: ref('dim_component'), field: component_id, config: {severity: warn}}
-      - name: contract_id
-        tests:
-          - relationships: {to: ref('dim_contract'), field: contract_id, config: {severity: warn}}
-      - name: project_id
-        tests:
-          - relationships: {to: ref('dim_project'), field: project_id, config: {severity: warn}}
-      - name: department_id
-        tests:
-          - relationships: {to: ref('dim_department'), field: department_id, config: {severity: warn}}
-      - name: employee_id
-        tests:
-          - relationships: {to: ref('dim_employee'), field: employee_id, config: {severity: warn}}

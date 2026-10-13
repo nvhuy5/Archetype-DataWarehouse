@@ -21,9 +21,14 @@ for node_id, node in manifest["nodes"].items():
     elif "/dwh/intermediate/" in path:
         if not name.startswith("int_"):
             errors.append(f"{name}: intermediate model must start with int_")
+    elif "/dwh/dim/" in path:
+        if not name.startswith("dim_"):
+            errors.append(f"{name}: model in dwh/dim must start with dim_")
+    elif "/dwh/fact/" in path:
+        if not name.startswith("fact_"):
+            errors.append(f"{name}: model in dwh/fact must start with fact_")
     elif "/dwh/" in path:
-        if not re.match(r"(dim|fact)_", name):
-            errors.append(f"{name}: dwh model must start with dim_ or fact_")
+        errors.append(f"{name}: dwh model must be in dwh/dim, dwh/fact or dwh/intermediate ({path})")
     elif "/mart/" in path:
         if not name.startswith("mart_"):
             errors.append(f"{name}: mart model must start with mart_")
