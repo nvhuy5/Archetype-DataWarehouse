@@ -29,10 +29,8 @@ Danh sách cột và cách che (**mặc định tạm, chờ khách xác nhận 
 | Cần cho báo cáo | `employee_id`, `employee_code`, `full_name`, email công ty | Giữ nguyên (báo cáo Timesheet cần tên và mã nhân viên) |
 
 ## 3. CI
-- GitHub Actions, file `.github/workflows/ci.yml`, chạy trên pull request và khi vào `main`.
-- Các bước: kiểm tra repo không chứa thứ riêng tư (`scripts/check_repo.py`), build image, `dbt parse` và kiểm tra quy ước model (`scripts/check_conventions.py`), chạy cả chuỗi trên dữ liệu mẫu (raw, `dbt build` kèm test, Elementary), lưu báo cáo Elementary.
-- Quy ước model được kiểm tra: tên theo layer, có mô tả, có test khóa (hoặc ghi rõ "No primary key"), không dùng `select *`.
-- Chưa có: lint SQL (cần cấu hình riêng cho cú pháp dbt), `state:modified+`, đẩy image lên registry. Làm khi lên Azure.
+- **Chưa dùng CI.** Việc kiểm tra làm bằng tay dưới local theo [TEST-LOCAL.vi.md](TEST-LOCAL.vi.md), kèm hai script `scripts/check_conventions.py` (quy ước model) và `scripts/check_repo.py` (không có thứ riêng tư trong git).
+- Khi có nhiều người cùng làm hoặc lên Azure thì bật CI (GitHub Actions) chạy lại đúng các lệnh trong TEST-LOCAL, thêm lint SQL, `state:modified+` và đẩy image lên registry.
 
 ## 4. Khác
 - Project Docker compose tên `archetype-dbt`, để không trùng với stack khác trên cùng máy.

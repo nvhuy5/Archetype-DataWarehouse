@@ -1,6 +1,6 @@
 # Playbook: migrate một package SSIS sang ADF + dbt
 
-Dùng cho mọi package SSIS. Các quyết định chung (Power BI, dữ liệu cá nhân, CI) ở [DECISIONS.vi.md](DECISIONS.vi.md). Mỗi package đi qua đúng 7 bước dưới đây. Tên và cấu trúc xem [NAMING.vi.md](NAMING.vi.md); chạy thử xem [README.vi.md](../README.vi.md).
+Dùng cho mọi package SSIS. Các quyết định chung (Power BI, dữ liệu cá nhân) ở [DECISIONS.vi.md](DECISIONS.vi.md). Mỗi package đi qua đúng 7 bước dưới đây. Tên và cấu trúc xem [NAMING.vi.md](NAMING.vi.md); chạy và kiểm tra xem [TEST-LOCAL.vi.md](TEST-LOCAL.vi.md); tổng quan xem [README.vi.md](../README.vi.md).
 
 ```
 Phân tích → Phân loại → Raw + Staging → DWH → Mart → Đối soát → Bàn giao
@@ -86,7 +86,7 @@ Chạy kiểm tra: `docker compose run --build --rm elementary`. Kết quả ph�
 - [ ] Mọi thay đổi đã commit local, sạch `git status`. Người phụ trách tự push.
 
 ## Định nghĩa hoàn thành (Definition of Done)
-CI (`.github/workflows/ci.yml`) kiểm tra tự động phần lớn mục dưới đây khi tạo pull request.
+Cách chạy và kiểm tra từng mục: [TEST-LOCAL.vi.md](TEST-LOCAL.vi.md) (có script `scripts/check_conventions.py` và `scripts/check_repo.py`).
 
 - `docker compose run --build --rm elementary` thành công từ trạng thái sạch (`docker compose down -v`), `ERROR=0`.
 - Mọi model có mô tả; khóa có test.
