@@ -3,3 +3,6 @@ docs/
 
 # Output khi chạy local
 report/
+
+# Python
+__pycache__/
