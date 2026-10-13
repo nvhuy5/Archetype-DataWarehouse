@@ -57,7 +57,7 @@ Bảng nguồn nào cần cho một phép join mà package không nạp riêng (
 - [ ] Test khóa chính trong `_<domain>__models.yml` (khóa ghép dùng `dbt_utils.unique_combination_of_columns`); `elementary.schema_changes`.
 - [ ] Bảng không có khóa chính: ghi rõ trong mô tả.
 
-Chạy kiểm tra: `docker compose run --build --rm elementary`. Kết quả phải là `ERROR=0`.
+Chạy kiểm tra: `./scripts/run_local.sh`. Kết quả phải là `ERROR=0`.
 
 ## Bước 4. DWH
 - [ ] Tìm định nghĩa view hoặc stored procedure của kho cũ cho phần cần dựng.
@@ -88,7 +88,7 @@ Chạy kiểm tra: `docker compose run --build --rm elementary`. Kết quả ph�
 ## Định nghĩa hoàn thành (Definition of Done)
 Cách chạy và kiểm tra từng mục: [TEST-LOCAL.vi.md](TEST-LOCAL.vi.md) (có script `scripts/check_conventions.py` và `scripts/check_repo.py`).
 
-- `docker compose run --build --rm elementary` thành công từ trạng thái sạch (`docker compose down -v`), `ERROR=0`.
+- `./scripts/run_local.sh --reset` thành công từ trạng thái sạch, `ERROR=0`.
 - Mọi model có mô tả; khóa có test.
 - Không còn `SELECT *`, mốc ngày hay `LIMIT` hardcode trong model.
 - Không có cột cá nhân hoặc secret trong staging, dwh, mart và trong commit.

@@ -1,13 +1,17 @@
 """Fills raw_intranet. Stands in for Azure Data Factory when testing locally.
 
-INGEST_MODE=sample  few synthetic rows per table, built from the raw table definitions (default, no source needed)
+INGEST_MODE=sample  few synthetic rows per table, built from the raw table definitions (default, no source needed).
+                    Rows that already exist are kept: only the missing ones are created (SAMPLE_RESET=1 recreates them all).
 INGEST_MODE=mysql   full copy of every raw table from the Intranet MySQL database
 
-Each table is replaced in one transaction: if the copy fails, the old rows stay. An empty extract is rejected
-(set ALLOW_EMPTY=table1,table2 to accept it for given tables).
+In mysql mode each table is replaced in one transaction: if the copy fails, the old rows stay. An empty extract is
+rejected (set ALLOW_EMPTY=table1,table2 to accept it for given tables).
+If INIT_DIR is set (local test), the raw tables and grants of warehouse/init are applied first; they are idempotent,
+so a new raw table needs no reset of the database.
 Env: PGHOST PGUSER PGPASSWORD [PGDATABASE PGPORT]; for mysql: MYSQL_HOST MYSQL_USER MYSQL_PASSWORD MYSQL_DATABASE [MYSQL_PORT]
 """
 import datetime
+import itertools
 import os
 import sys
 
@@ -16,6 +20,8 @@ from psycopg2.extras import execute_values
 
 MODE = os.environ.get("INGEST_MODE", "sample")
 SAMPLE_ROWS = int(os.environ.get("SAMPLE_ROWS", "5"))
+SAMPLE_RESET = os.environ.get("SAMPLE_RESET") == "1"
+INIT_DIR = os.environ.get("INIT_DIR")
 ALLOW_EMPTY = set(filter(None, os.environ.get("ALLOW_EMPTY", "").split(",")))
 BATCH = 5000
 
@@ -120,14 +126,33 @@ def main():
         sys.exit("INGEST_MODE must be sample or mysql")
 
     dst = pg_connect()
+    if INIT_DIR:
+        with dst.cursor() as cur:
+            for name in ("02_raw_intranet.sql", "03_grants.sql"):
+                with open(os.path.join(INIT_DIR, name)) as f:
+                    cur.execute(f.read())
+        dst.commit()
     failed = []
     with dst.cursor() as cur:
         tables = raw_tables(cur)
     for table, cols in tables.items():
         try:
-            rows = mysql_rows(src, table, cols) if src else sample_rows(table, cols)
+            skip = 0
+            if src is None:  # sample mode: keep what exists, create what is missing
+                with dst.cursor() as cur:
+                    if SAMPLE_RESET:
+                        cur.execute('delete from raw_intranet."%s"' % table)
+                    else:
+                        cur.execute('select count(*) from raw_intranet."%s"' % table)
+                        skip = cur.fetchone()[0]
+            if src is None and skip >= SAMPLE_ROWS:
+                dst.commit()
+                print(f"{table}: kept (already has {skip} rows)", flush=True)
+                continue
+            rows = mysql_rows(src, table, cols) if src else itertools.islice(sample_rows(table, cols), skip, None)
             with dst.cursor() as cur:
-                cur.execute('delete from raw_intranet."%s"' % table)
+                if src is not None:
+                    cur.execute('delete from raw_intranet."%s"' % table)
                 sql = 'insert into raw_intranet."%s" (%s) values %%s' % (table, ", ".join('"%s"' % c for c, _, _ in cols))
                 n, batch = 0, []
                 for row in rows:
@@ -141,7 +166,7 @@ def main():
                 if n == 0 and table not in ALLOW_EMPTY:
                     raise RuntimeError("empty extract rejected")
             dst.commit()
-            print(f"{table}: {n} rows", flush=True)
+            print(f"{table}: {n} rows created" if src is None else f"{table}: {n} rows", flush=True)
         except Exception as exc:  # keep the old rows of this table, go on with the others
             dst.rollback()
             failed.append(table)

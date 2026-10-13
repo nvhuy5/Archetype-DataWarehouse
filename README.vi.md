@@ -12,8 +12,8 @@ Intranet --[ADF]--> raw_intranet --[image dbt: dbt build]--> staging (→ dwh �
 ## Chạy thử (chỉ cần Docker)
 
 ```bash
-docker compose run --build --rm elementary      # báo cáo: ./report/elementary_report.html
-docker compose down -v                          # dọn dẹp
+./scripts/run_local.sh            # in tóm tắt ngắn, log chi tiết ở report/logs/
+./scripts/run_local.sh --reset    # xóa sạch database rồi chạy lại
 ```
 
 Lệnh trên dựng warehouse rỗng (bảng raw tạo từ `warehouse/init`), nạp vào `raw_intranet` vài dòng dữ liệu giả cho mỗi bảng
@@ -23,7 +23,7 @@ Chạy với dữ liệu Intranet thật (chỉ đọc, cần mạng tới MySQL
 
 ```bash
 INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL_DATABASE=archetype_intranet \
-  docker compose run --build --rm elementary
+  ./scripts/run_local.sh --mysql
 ```
 
 ## Các layer
@@ -64,7 +64,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 2. Thêm `stg_intranet__<bảng>.sql` và test tương ứng trong `_<domain>__models.yml`.
 3. Cần layer mới (`dwh`, `mart`)? Tạo thư mục dưới `dbt/models/` và bỏ comment khối tương ứng trong `dbt/dbt_project.yml`.
 4. Tạo schema một lần trong warehouse và cấp quyền cho `dbt_rw` (xem `warehouse/init/03_grants.sql`).
-5. Chạy `docker compose run --build --rm elementary` để kiểm tra.
+5. Chạy `./scripts/run_local.sh` để kiểm tra.
 
 ## Biến môi trường khi chạy thật (production)
 
@@ -74,9 +74,9 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 | `PGDATABASE` / `PGPORT` / `PGSSLMODE` | `analytics_db` / `5432` / `require` | |
 | `DBT_ARGS` (image dbt) | `--selector default` | tham số của `dbt build` |
 
-**Mạng:** image dbt không cần internet khi chạy (package đã được đóng gói lúc build). Image Elementary thì cần: `edr` tải
-package dbt từ `hub.getdbt.com` mỗi lần chạy, nên cần mở outbound HTTPS tới đó (hoặc dùng proxy). Build image cũng cần
-internet (PyPI, hub.getdbt.com) và mất vài phút nếu chưa có cache.
+**Mạng:** cả hai image đều không cần internet khi chạy: package dbt (kể cả package riêng của `edr`) đã được đóng gói lúc build.
+Build image cần internet (PyPI, hub.getdbt.com); lần build đầu mất vài phút, các lần sau chỉ khoảng 1 giây khi chỉ sửa model
+(các layer xếp từ ít đổi nhất đến hay đổi nhất).
 
 Chạy **image dbt trước, rồi image Elementary**. Cả hai thoát với mã khác 0 khi lỗi. Elementary ghi báo cáo ra
 `/report/elementary_report.html` (mount `/report` hoặc upload file này). Image chạy bằng user không phải root và không chứa secret.

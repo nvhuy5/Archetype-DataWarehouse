@@ -12,8 +12,8 @@ Intranet --[ADF]--> raw_intranet --[dbt image: dbt build]--> staging (â†’ dwh â†
 ## Try it (Docker only)
 
 ```bash
-docker compose run --build --rm elementary      # report: ./report/elementary_report.html
-docker compose down -v                          # clean up
+./scripts/run_local.sh            # short summary on screen, full logs in report/logs/
+./scripts/run_local.sh --reset    # wipe the database first
 ```
 
 Starts an empty warehouse (raw tables created from `warehouse/init`), fills `raw_intranet` with a few synthetic rows per table
@@ -23,7 +23,7 @@ Real Intranet data (read only, needs network access to MySQL):
 
 ```bash
 INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL_DATABASE=archetype_intranet \
-  docker compose run --build --rm elementary
+  ./scripts/run_local.sh --mysql
 ```
 
 ## Layers
@@ -64,7 +64,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 2. Add `stg_intranet__<table>.sql` and its tests in `_<domain>__models.yml`.
 3. New layer (`dwh`, `mart`)? Make the folder under `dbt/models/` and uncomment its block in `dbt/dbt_project.yml`.
 4. Create the schema once in the warehouse and grant `dbt_rw` on it (see `warehouse/init/03_grants.sql`).
-5. `docker compose run --build --rm elementary` to check.
+5. `./scripts/run_local.sh` to check.
 
 ## Run contract (production)
 
@@ -74,9 +74,9 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 | `PGDATABASE` / `PGPORT` / `PGSSLMODE` | `analytics_db` / `5432` / `require` | |
 | `DBT_ARGS` (dbt image) | `--selector default` | arguments of `dbt build` |
 
-**Network:** the dbt image needs no internet at run time (packages are baked in at build). The Elementary image does: `edr` downloads
-its dbt packages from `hub.getdbt.com` on every run, so allow outbound HTTPS to it (or use a proxy). Building the images also needs
-internet (PyPI, hub.getdbt.com) and takes several minutes without cache.
+**Network:** neither image needs internet at run time: the dbt packages (including the ones of `edr`) are baked in at build.
+Building the images needs internet (PyPI, hub.getdbt.com); the first build takes several minutes, the next ones about a second
+when only models change (layers go from the least to the most changing one).
 
 Run the **dbt image first, then the Elementary image**. Both exit non-zero on failure. Elementary writes
 `/report/elementary_report.html` (mount `/report` or upload it). Images run as non-root and hold no secrets.
