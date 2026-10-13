@@ -93,11 +93,16 @@ def sample_rows(table, cols):
 def mysql_rows(conn, table, cols):
     cur = conn.cursor()  # unbuffered: rows are streamed, the 1.5M-row timesheet table does not fit in a list
     cur.execute("select %s from `%s`" % (", ".join("`%s`" % c for c, _, _ in cols), table))
+    # MySQL zero dates ('0000-00-00') reach us as strings; PostgreSQL has no such date, so they become NULL
+    date_cols = [i for i, (_, dtype, _) in enumerate(cols) if dtype == "date" or dtype.startswith("timestamp")]
     while True:
         chunk = cur.fetchmany(BATCH)
         if not chunk:
             return
-        yield from chunk
+        for row in chunk:
+            if date_cols and any(isinstance(row[i], str) for i in date_cols):
+                row = tuple(None if i in date_cols and isinstance(v, str) else v for i, v in enumerate(row))
+            yield row
 
 
 def main():
