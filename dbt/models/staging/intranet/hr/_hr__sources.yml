@@ -1,0 +1,47 @@
+version: 2
+
+sources:
+  - name: raw_intranet
+    schema: raw_intranet
+    description: "Loaded by Azure Data Factory, no business logic. Rows are never edited in place."
+    tables:
+      - name: hr_menu_country
+        description: "Countries."
+      - name: hr_menu_department
+        description: "Departments with business line."
+      - name: hr_menu_employee_level
+        description: "Employee levels (categories)."
+      - name: hr_menu_job_title
+        description: "Job titles."
+      - name: hr_menu_leave_type
+        description: "Leave types."
+      - name: hr_menu_offices
+        description: "Offices."
+      - name: hr_menu_process_status
+        description: "Employee process statuses (used to name hr_table_main.estatus)."
+      - name: hr_table_contract
+        description: "Employee contracts. Pay-related columns are not exposed in staging."
+      - name: hr_table_contract_type
+        description: "Contract types."
+      - name: hr_table_direct_manager
+        description: "Direct manager of each employee (composite key id_e, id_m)."
+      - name: hr_table_leave
+        description: "Leave balance per employee."
+      - name: hr_table_leave_approval
+        description: "Leave requests and their approval status."
+      - name: hr_table_leave_approval_detail
+        description: "One row per leave day of a leave request. No primary key in the source."
+      - name: hr_table_main
+        description: "Employees. Personal identity, bank, tax, insurance and contact columns are not exposed in staging."
+      - name: hr_table_office_tracking
+        description: "Office transfer history. No primary key in the source."
+      - name: hr_table_phone_interview
+        description: "Phone interviews. Candidate birthday, nationality and salary are not exposed in staging."
+      - name: hr_table_pre_interview
+        description: "Pre interviews. Salary, insurance and bonus columns are not exposed in staging."
+      - name: hr_table_tech_interview
+        description: "Technical interviews."
+      - name: hr_table_training_kpi
+        description: "Training KPI."
+      - name: jobs_list
+        description: "Open vacancies."

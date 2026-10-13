@@ -1,0 +1,28 @@
+-- Staging: one row per source row, trimmed text, empty strings become NULL, snake_case names. No joins, no business rules.
+select
+    objectives_id,
+    ide,
+    appraisal_type,
+    year,
+    nullif(btrim(objective), '')                     as objective,
+    nullif(btrim(goal), '')                          as goal,
+    nullif(btrim(success_factor), '')                as success_factor,
+    nullif(btrim(smart), '')                         as smart,
+    nullif(btrim(action_required), '')               as action_required,
+    weight,
+    nullif(btrim(due_date), '')                      as due_date,
+    nullif(btrim(result_achieved), '')               as result_achieved,
+    self_evaluation,
+    manager_evaluation,
+    agreed_evaluation,
+    result_evaluation,
+    nullif(btrim(mid_year_done), '')                 as mid_year_done,
+    nullif(btrim(mid_year_not_done), '')             as mid_year_not_done,
+    nullif(btrim(mid_year_need_support), '')         as mid_year_need_support,
+    nullif(btrim(mid_year_problem), '')              as mid_year_problem,
+    nullif(btrim(manager_comment), '')               as manager_comment,
+    nullif(btrim(manager_comment_after_meeting), '') as manager_comment_after_meeting,
+    mid_year_submit_status,
+    validated,
+    nullif(btrim(mid_year_status_updated_by), '')    as mid_year_status_updated_by
+from {{ source('raw_intranet', 'hr_pa_objectives') }}

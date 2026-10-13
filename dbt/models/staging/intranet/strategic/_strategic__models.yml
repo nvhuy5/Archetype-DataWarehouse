@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  - name: stg_intranet__hr_pa_objectives
+    description: "Performance appraisal objectives."
+    columns:
+      - name: objectives_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__pa_strategic_plan_level_1
+    description: "Strategic plan, level 1."
+    columns:
+      - name: pa_strategic_plan_level_1_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__pa_strategic_plan_level_2
+    description: "Strategic plan, level 2."
+    columns:
+      - name: pa_strategic_plan_level_2_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__pa_strategic_plan_level_3
+    description: "Strategic plan, level 3."
+    columns:
+      - name: pa_strategic_plan_level_3_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__pa_strategic_plan_level_4
+    description: "Strategic plan, level 4."
+    columns:
+      - name: pa_strategic_plan_level_4_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__strategic_goal
+    description: "Strategic goals."
+    columns:
+      - name: strategic_goal_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__strategic_leader
+    description: "Strategic leaders."
+    columns:
+      - name: strategic_leader_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__strategic_member_of_task
+    description: "Members of strategic tasks."
+    columns:
+      - name: strategic_member_of_task_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__strategic_objective
+    description: "Strategic objectives."
+    columns:
+      - name: strategic_objective_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__strategic_task
+    description: "Strategic tasks."
+    columns:
+      - name: strategic_task_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes

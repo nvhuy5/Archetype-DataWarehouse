@@ -1,0 +1,143 @@
+version: 2
+
+models:
+  - name: stg_intranet__crm_component
+    description: "CRM contract components (parts of a contract)."
+    columns:
+      - name: crm_component_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_link_project_client
+    description: "Link between CRM projects and clients. No primary key in the source."
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_link_project_scope
+    description: "Link between CRM projects and project scopes. No primary key in the source."
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_list_competitors
+    description: "List of competitors."
+    columns:
+      - name: crm_list_competitors_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_list_project_scope
+    description: "List of project scopes."
+    columns:
+      - name: idps
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_list_reason
+    description: "List of reasons, joined to proposal dead reasons."
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_main
+    description: "CRM clients."
+    columns:
+      - name: idc
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_market
+    description: "CRM markets."
+    columns:
+      - name: crm_market_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_proposal_dead_reason
+    description: "Reasons why a proposal was lost."
+    columns:
+      - name: crm_proposal_dead_reason_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_segment
+    description: "CRM segments."
+    columns:
+      - name: crm_segment_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_sub_segment
+    description: "CRM sub segments."
+    columns:
+      - name: crm_sub_segment_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_table_contracts
+    description: "CRM contracts."
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_table_contracts_competitor
+    description: "Competitors per CRM contract."
+    columns:
+      - name: competitor_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_table_projects
+    description: "CRM projects."
+    columns:
+      - name: idproj
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__crm_target
+    description: "CRM targets."
+    columns:
+      - name: crm_target_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes

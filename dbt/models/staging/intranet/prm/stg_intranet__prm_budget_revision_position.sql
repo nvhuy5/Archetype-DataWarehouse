@@ -1,0 +1,27 @@
+-- Staging: one row per source row, trimmed text, empty strings become NULL, snake_case names. No joins, no business rules.
+select
+    prm_budget_revision_position_id,
+    employee_level_id,
+    nullif(btrim(type), '')                 as type,
+    cch,
+    original_cch,
+    nullif(btrim(employee_level_title), '') as employee_level_title,
+    rev_id,
+    phase_id,
+    dept_id,
+    initial_budget_amount,
+    initial_budget_hour,
+    ctd_amount,
+    ctd_hour,
+    ctc_amount,
+    ctc_hour,
+    contract_revenue,
+    percentage_of_revenue_contract,
+    nav_cost,
+    nav_hour,
+    ts_cost,
+    ts_hour,
+    nullif(btrim(added_by), '')             as added_by,
+    added_at,
+    is_inter_office
+from {{ source('raw_intranet', 'prm_budget_revision_position') }}

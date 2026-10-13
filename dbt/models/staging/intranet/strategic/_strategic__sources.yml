@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: raw_intranet
+    schema: raw_intranet
+    description: "Loaded by Azure Data Factory, no business logic. Rows are never edited in place."
+    tables:
+      - name: hr_pa_objectives
+        description: "Performance appraisal objectives."
+      - name: pa_strategic_plan_level_1
+        description: "Strategic plan, level 1."
+      - name: pa_strategic_plan_level_2
+        description: "Strategic plan, level 2."
+      - name: pa_strategic_plan_level_3
+        description: "Strategic plan, level 3."
+      - name: pa_strategic_plan_level_4
+        description: "Strategic plan, level 4."
+      - name: strategic_goal
+        description: "Strategic goals."
+      - name: strategic_leader
+        description: "Strategic leaders."
+      - name: strategic_member_of_task
+        description: "Members of strategic tasks."
+      - name: strategic_objective
+        description: "Strategic objectives."
+      - name: strategic_task
+        description: "Strategic tasks."

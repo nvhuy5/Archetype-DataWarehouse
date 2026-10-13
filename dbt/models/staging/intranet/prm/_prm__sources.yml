@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: raw_intranet
+    schema: raw_intranet
+    description: "Loaded by Azure Data Factory, no business logic. Rows are never edited in place."
+    tables:
+      - name: finance_multiplier
+        description: "Finance multipliers."
+      - name: prm_budget_revision_position
+        description: "Budget revision positions."
+      - name: prm_budget_revision_setup
+        description: "Budget revision setup."
+      - name: prm_budget_revisions
+        description: "Budget revisions."
+      - name: prm_e_project_country
+        description: "E-Project offices per country."
+      - name: prm_organization_contact
+        description: "Organization contacts of projects."
+      - name: prm_project
+        description: "Projects."
+      - name: prm_project_addendum
+        description: "Project addenda."
+      - name: prm_purchase_order_position
+        description: "Purchase order positions."
+      - name: prm_subcontract
+        description: "Subcontracts."

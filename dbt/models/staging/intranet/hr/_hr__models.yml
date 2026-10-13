@@ -1,0 +1,190 @@
+version: 2
+
+models:
+  - name: stg_intranet__hr_menu_country
+    description: "Countries."
+    columns:
+      - name: idp
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_menu_department
+    description: "Departments with business line."
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_menu_employee_level
+    description: "Employee levels (categories)."
+    columns:
+      - name: employee_level_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_menu_job_title
+    description: "Job titles."
+    columns:
+      - name: idjt
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_menu_leave_type
+    description: "Leave types."
+    columns:
+      - name: idht
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_menu_offices
+    description: "Offices."
+    columns:
+      - name: idf
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_menu_process_status
+    description: "Employee process statuses (used to name hr_table_main.estatus)."
+    columns:
+      - name: idstatus
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_contract
+    description: "Employee contracts. Pay-related columns are not exposed in staging."
+    columns:
+      - name: idcont
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_contract_type
+    description: "Contract types."
+    columns:
+      - name: id_contract_type
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_direct_manager
+    description: "Direct manager of each employee (composite key id_e, id_m)."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [id_e, id_m]
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_leave
+    description: "Leave balance per employee."
+    columns:
+      - name: idh
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_leave_approval
+    description: "Leave requests and their approval status."
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_leave_approval_detail
+    description: "One row per leave day of a leave request. No primary key in the source."
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_main
+    description: "Employees. Personal identity, bank, tax, insurance and contact columns are not exposed in staging."
+    columns:
+      - name: ide
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_office_tracking
+    description: "Office transfer history. No primary key in the source."
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_phone_interview
+    description: "Phone interviews. Candidate birthday, nationality and salary are not exposed in staging."
+    columns:
+      - name: hr_table_phone_interview_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_pre_interview
+    description: "Pre interviews. Salary, insurance and bonus columns are not exposed in staging."
+    columns:
+      - name: idpre
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_tech_interview
+    description: "Technical interviews."
+    columns:
+      - name: idtech
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__hr_table_training_kpi
+    description: "Training KPI."
+    columns:
+      - name: idhr_table_training_kpi
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__jobs_list
+    description: "Open vacancies."
+    columns:
+      - name: idj
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes

@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: raw_intranet
+    schema: raw_intranet
+    description: "Loaded by Azure Data Factory, no business logic. Rows are never edited in place."
+    tables:
+      - name: crm_component
+        description: "CRM contract components (parts of a contract)."
+      - name: crm_link_project_client
+        description: "Link between CRM projects and clients. No primary key in the source."
+      - name: crm_link_project_scope
+        description: "Link between CRM projects and project scopes. No primary key in the source."
+      - name: crm_list_competitors
+        description: "List of competitors."
+      - name: crm_list_project_scope
+        description: "List of project scopes."
+      - name: crm_list_reason
+        description: "List of reasons, joined to proposal dead reasons."
+      - name: crm_main
+        description: "CRM clients."
+      - name: crm_market
+        description: "CRM markets."
+      - name: crm_proposal_dead_reason
+        description: "Reasons why a proposal was lost."
+      - name: crm_segment
+        description: "CRM segments."
+      - name: crm_sub_segment
+        description: "CRM sub segments."
+      - name: crm_table_contracts
+        description: "CRM contracts."
+      - name: crm_table_contracts_competitor
+        description: "Competitors per CRM contract."
+      - name: crm_table_projects
+        description: "CRM projects."
+      - name: crm_target
+        description: "CRM targets."

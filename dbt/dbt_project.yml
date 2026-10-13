@@ -15,6 +15,17 @@ models:
     staging:
       +materialized: view
       +schema: staging
+      intranet:
+        hr:
+          +tags: [hr]
+        timesheet:
+          +tags: [timesheet]
+        crm:
+          +tags: [crm]
+        prm:
+          +tags: [prm]
+        strategic:
+          +tags: [strategic]
     # dwh:
     #   +materialized: table
     #   +schema: dwh

@@ -1,0 +1,103 @@
+version: 2
+
+models:
+  - name: stg_intranet__finance_multiplier
+    description: "Finance multipliers."
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__prm_budget_revision_position
+    description: "Budget revision positions."
+    columns:
+      - name: prm_budget_revision_position_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__prm_budget_revision_setup
+    description: "Budget revision setup."
+    columns:
+      - name: prm_budget_revision_setup_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__prm_budget_revisions
+    description: "Budget revisions."
+    columns:
+      - name: prm_budget_revisions_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__prm_e_project_country
+    description: "E-Project offices per country."
+    columns:
+      - name: prm_e_project_country_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__prm_organization_contact
+    description: "Organization contacts of projects."
+    columns:
+      - name: prm_organization_contact_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__prm_project
+    description: "Projects."
+    columns:
+      - name: prm_project_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__prm_project_addendum
+    description: "Project addenda."
+    columns:
+      - name: prm_project_addendum_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__prm_purchase_order_position
+    description: "Purchase order positions."
+    columns:
+      - name: prm_purchase_order_position_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
+  - name: stg_intranet__prm_subcontract
+    description: "Subcontracts."
+    columns:
+      - name: prm_subcontract_id
+        tests:
+          - unique
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
