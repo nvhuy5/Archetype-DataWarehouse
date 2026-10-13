@@ -31,25 +31,25 @@ Nếu không có dbt, các phép tính biến đổi dữ liệu thường nằm
 
 | Khái niệm | Giải thích đơn giản | Trong dự án này |
 |---|---|---|
-| **Source** (nguồn) | Khai báo các bảng dữ liệu thô dbt sẽ đọc | `dbt/models/staging/_sources.yml` khai báo bảng `hr_menu_department` |
-| **Model** | Một file SQL mô tả "bảng/view kết quả mong muốn". dbt tự chạy và tạo ra bảng đó | `stg_intranet__hr_menu_department.sql` |
-| **Test** | Quy tắc kiểm tra dữ liệu, ví dụ "mã không được trống", "id không được trùng" | `unique`, `not_null` trong `_staging.yml` |
+| **Source** (nguồn) | Khai báo các bảng dữ liệu thô dbt sẽ đọc | các file `_<domain>__sources.yml` khai báo 61 bảng của Intranet |
+| **Model** | Một file SQL mô tả "bảng/view kết quả mong muốn". dbt tự chạy và tạo ra bảng đó | `stg_intranet__hr_table_main.sql` |
+| **Test** | Quy tắc kiểm tra dữ liệu, ví dụ "mã không được trống", "id không được trùng" | `unique`, `not_null` trong các file `_<domain>__models.yml` |
 | **Layer** (tầng) | Các lớp xử lý nối tiếp nhau | `staging` → `dwh` → `mart` |
 | **Selector** | Chọn tập model nào sẽ chạy | `dbt/selectors.yml` |
 
 ### Các tầng dữ liệu
 - **raw**: bản sao nguyên gốc từ hệ thống nguồn (do ADF nạp, dbt chỉ đọc).
-- **staging**: làm sạch cơ bản. Mỗi dòng một khóa, cắt khoảng trắng thừa, chuỗi rỗng thành `NULL`. **Chưa có quy tắc nghiệp vụ.**
+- **staging**: làm sạch cơ bản. Mỗi bảng raw một view, cắt khoảng trắng thừa, chuỗi rỗng thành `NULL`, đặt tên cột dạng `snake_case`. **Không join, chưa có quy tắc nghiệp vụ.**
 - **dwh**: kho dữ liệu đã được mô hình hóa theo nghiệp vụ (sẽ bổ sung).
 - **mart**: bảng sẵn sàng phục vụ từng báo cáo/phòng ban (sẽ bổ sung).
 
 ### Ví dụ cụ thể trong dự án
-Bảng nguồn `hr_menu_department` (danh sách phòng ban) có thể chứa khoảng trắng thừa hoặc chuỗi rỗng. Model `stg_intranet__hr_menu_department` sẽ:
-1. Giữ mỗi `id` đúng một dòng.
-2. Cắt khoảng trắng ở `name`, `code`, `business_line`.
-3. Đổi chuỗi rỗng thành `NULL`.
+Bảng nguồn `hr_table_main` (danh sách nhân viên) có thể chứa khoảng trắng thừa hoặc chuỗi rỗng, và chứa cả thông tin nhạy cảm. Model `stg_intranet__hr_table_main` sẽ:
+1. Cắt khoảng trắng ở các cột văn bản.
+2. Đổi chuỗi rỗng thành `NULL`.
+3. **Không đưa** các cột nhạy cảm (số CCCD, tài khoản ngân hàng, mã số thuế, bảo hiểm, điện thoại) lên staging.
 
-Sau đó các test tự động kiểm tra `id` không trùng/không trống và `code` không trống.
+Sau đó các test tự động kiểm tra khóa `ide` không trùng và không trống.
 
 ### Lệnh `dbt build` làm gì?
 Một lệnh duy nhất, theo thứ tự: **tạo các model → chạy test**. Nếu test nào không đạt, hệ thống báo lỗi (thoát với mã khác 0) để không ai dùng nhầm dữ liệu sai.
@@ -66,7 +66,7 @@ Một lệnh duy nhất, theo thứ tự: **tạo các model → chạy test**. 
 
 ### Elementary theo dõi những gì
 - **Kết quả test của dbt:** test nào đạt, test nào hỏng, hỏng từ khi nào.
-- **Thay đổi cấu trúc bảng (schema changes):** có cột nào bị thêm, xóa hoặc đổi kiểu dữ liệu không. Dự án này đã bật kiểm tra đó cho bảng phòng ban.
+- **Thay đổi cấu trúc bảng (schema changes):** có cột nào bị thêm, xóa hoặc đổi kiểu dữ liệu không. Dự án này đã bật kiểm tra đó cho toàn bộ 61 model staging.
 - **Lịch sử chạy:** mỗi lần chạy mất bao lâu, model nào thành công hay thất bại.
 - **Các bất thường (anomaly):** số dòng đột nhiên giảm mạnh, dữ liệu không được cập nhật... (có thể bật thêm khi cần).
 
@@ -89,7 +89,7 @@ Sau mỗi lần chạy, Elementary tạo file **`elementary_report.html`**. Mở
 docker compose run --build --rm elementary      # báo cáo: ./report/elementary_report.html
 docker compose down -v                          # dọn dẹp
 ```
-Lệnh này tự dựng nguồn mẫu, nạp dữ liệu, chạy dbt rồi chạy Elementary, bạn chỉ cần mở file báo cáo.
+Lệnh này tự dựng kho dữ liệu rỗng, nạp dữ liệu mẫu, chạy dbt rồi chạy Elementary, bạn chỉ cần mở file báo cáo. Muốn chạy với dữ liệu Intranet thật, xem [README.vi.md](README.vi.md).
 
 ### Khi chạy thật
 - Chạy **image dbt trước, image Elementary sau**.
@@ -102,7 +102,7 @@ Chi tiết kỹ thuật xem [README.vi.md](README.vi.md).
 ## 5. Khi cần thêm dữ liệu/báo cáo mới
 
 Đội kỹ thuật sẽ làm theo quy trình:
-1. Khai báo bảng nguồn mới (và ADF nạp bảng đó vào `raw`).
+1. Tạo bảng raw mới và khai báo nguồn (ADF nạp bảng đó vào `raw`).
 2. Viết model làm sạch (`staging`) kèm các test.
 3. Thêm model nghiệp vụ ở tầng `dwh` và `mart` khi cần.
 4. Chạy thử, xem báo cáo Elementary để chắc chắn dữ liệu đạt.

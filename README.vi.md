@@ -2,7 +2,8 @@
 
 🇬🇧 [English](README.md) · 📘 [Hướng dẫn cho khách hàng: dbt & Elementary là gì?](GUIDELINE.vi.md)
 
-Bộ khung chuẩn, kèm một bảng nguồn mẫu và một model mẫu để chứng minh luồng chạy được. Từ đây trở đi chỉ cần thêm model.
+Chuyển package SSIS `ACT_Intranet_warehouse_3` sang ELT: các bảng Intranet (MySQL) được copy nguyên bản vào `raw_intranet`,
+dbt đưa chúng lên `staging`. Logic nghiệp vụ (join, tổng hợp) thuộc các layer sau là `dwh` và `mart`.
 
 ```
 Intranet --[ADF]--> raw_intranet --[image dbt: dbt build]--> staging (→ dwh → mart) --[image Elementary]--> báo cáo HTML
@@ -15,25 +16,49 @@ docker compose run --build --rm elementary      # báo cáo: ./report/elementary
 docker compose down -v                          # dọn dẹp
 ```
 
-Lệnh trên dựng một DB nguồn (3 dòng) và một warehouse rỗng, copy nguồn → raw (việc của ADF), chạy `dbt build`
-(model + test), rồi chạy Elementary.
+Lệnh trên dựng warehouse rỗng (bảng raw tạo từ `warehouse/init`), nạp vào `raw_intranet` vài dòng dữ liệu giả cho mỗi bảng
+(thay cho ADF), chạy `dbt build` (61 model staging + test), rồi chạy Elementary.
+
+Chạy với dữ liệu Intranet thật (chỉ đọc, cần mạng tới MySQL):
+
+```bash
+INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL_DATABASE=archetype_intranet \
+  docker compose run --build --rm elementary
+```
+
+## Các layer
+
+| Layer | Nội dung | Quy tắc |
+|---|---|---|
+| `raw_intranet` | 61 bảng, cùng tên và cột với nguồn MySQL | ADF nạp, không có logic, không sửa tại chỗ |
+| `staging` | mỗi bảng raw một view `stg_intranet__<bảng>` (bỏ hậu tố `_2015`) | cắt khoảng trắng, chuỗi rỗng thành NULL, snake_case; không join, không quy tắc nghiệp vụ |
+| `dwh` (đợt sau) | `dim_*`, `fact_*`: join, tổng hợp, quy tắc nghiệp vụ | ví dụ nhân viên kèm phòng ban/văn phòng, `fact_timesheet` |
+| `mart` (đợt sau) | bảng riêng cho từng báo cáo | ví dụ `mart_ts_*` |
+
+Từ package SSIS, chỉ phần copy bảng nằm ở raw và staging. Các phép join làm giàu của `hr_table_contract`, phép tổng hợp
+`Summarized_Timesheet` và view `get_employee_etl` sẽ được dựng lại ở `dwh` từ các bảng gốc trong raw. Vì vậy raw chứa
+`hr_table_main` (không phải view) cùng `hr_menu_process_status`, `crm_list_reason`, `timesheet_phase_2015` mà các phép join đó cần.
+
+Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại, lương) vẫn nằm trong raw nhưng **không đưa lên staging**; xem mô tả từng model.
 
 ## Cấu trúc thư mục
 
 | Đường dẫn | Ý nghĩa |
 |---|---|
 | `dbt/` | project dbt |
-| `dbt/models/staging/` | `_sources.yml` (bảng raw), `stg_*.sql`, `_staging.yml` (test) |
-| `dbt.Dockerfile`, `elementary.Dockerfile` | hai image |
-| `sample/` | chỉ để demo: `source.sql` (bảng nguồn), `raw_init.sql` (phần platform tạo một lần), `ingest_demo.sh` (thay cho ADF) |
+| `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (test) |
+| `warehouse/init/` | phần platform tạo một lần: schema và login, bảng raw, phân quyền |
+| `ingest/`, `ingest.Dockerfile` | thay thế ADF khi test local (chế độ `sample` hoặc `mysql`) |
+| `dbt.Dockerfile`, `elementary.Dockerfile` | hai image chạy thật |
 | `docker-compose.yml` | môi trường test local |
 
 ## Thêm một model
 
-1. Có bảng raw mới? Khai báo trong `dbt/models/staging/_sources.yml` (và ADF phải nạp vào `raw_intranet` với cùng tên).
-2. Thêm `stg_<nguồn>__<bảng>.sql` và test tương ứng trong `_staging.yml`.
+1. Có bảng raw mới? Thêm `CREATE TABLE` vào `warehouse/init/02_raw_intranet.sql` (và ADF phải nạp vào `raw_intranet` với cùng tên).
+   Khai báo trong `_<domain>__sources.yml` của domain đó.
+2. Thêm `stg_intranet__<bảng>.sql` và test tương ứng trong `_<domain>__models.yml`.
 3. Cần layer mới (`dwh`, `mart`)? Tạo thư mục dưới `dbt/models/` và bỏ comment khối tương ứng trong `dbt/dbt_project.yml`.
-4. Tạo schema một lần trong warehouse và cấp quyền cho `dbt_rw` (xem `sample/raw_init.sql`).
+4. Tạo schema một lần trong warehouse và cấp quyền cho `dbt_rw` (xem `warehouse/init/03_grants.sql`).
 5. Chạy `docker compose run --build --rm elementary` để kiểm tra.
 
 ## Biến môi trường khi chạy thật (production)
