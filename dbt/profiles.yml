@@ -1,0 +1,28 @@
+archetype:
+  target: prod
+  outputs:
+    prod:
+      type: postgres
+      host: "{{ env_var('PGHOST') }}"
+      port: "{{ env_var('PGPORT', '5432') | as_number }}"
+      user: "{{ env_var('PGUSER') }}"
+      password: "{{ env_var('PGPASSWORD') }}"
+      dbname: "{{ env_var('PGDATABASE', 'analytics_db') }}"
+      schema: public
+      sslmode: "{{ env_var('PGSSLMODE', 'require') }}"
+      threads: 4
+
+# Elementary (data observability): `edr report` reads the elementary schema written by `dbt build`
+elementary:
+  target: prod
+  outputs:
+    prod:
+      type: postgres
+      host: "{{ env_var('PGHOST') }}"
+      port: "{{ env_var('PGPORT', '5432') | as_number }}"
+      user: "{{ env_var('PGUSER') }}"
+      password: "{{ env_var('PGPASSWORD') }}"
+      dbname: "{{ env_var('PGDATABASE', 'analytics_db') }}"
+      schema: elementary
+      sslmode: "{{ env_var('PGSSLMODE', 'require') }}"
+      threads: 4

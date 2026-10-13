@@ -1,0 +1,23 @@
+name: archetype
+version: "1.0.0"
+config-version: 2
+profile: archetype
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+seed-paths: ["seeds"]
+
+# Layers: raw (loaded by ADF, not by dbt) -> staging -> dwh -> mart. Add a folder under models/ for each new layer.
+models:
+  elementary:
+    +schema: elementary
+  archetype:
+    staging:
+      +materialized: view
+      +schema: staging
+    # dwh:
+    #   +materialized: table
+    #   +schema: dwh
+    # mart:
+    #   +materialized: table
+    #   +schema: mart

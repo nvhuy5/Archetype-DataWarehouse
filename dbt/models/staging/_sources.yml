@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: raw_intranet
+    schema: raw_intranet
+    description: "Loaded by Azure Data Factory, no business logic. Rows are never edited in place."
+    tables:
+      - name: hr_menu_department
+        description: "Departments with business line."

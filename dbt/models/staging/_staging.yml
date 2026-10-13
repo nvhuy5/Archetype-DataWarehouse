@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: stg_intranet__hr_menu_department
+    description: "Departments with business line."
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null
+      - name: code
+        tests:
+          - not_null
+    tests:
+      # Elementary: fails when a column is added, removed or changes type
+      - elementary.schema_changes
