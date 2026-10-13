@@ -3,7 +3,7 @@
 #   INGEST_MODE=mysql MYSQL_HOST=... MYSQL_USER=... MYSQL_PASSWORD=... MYSQL_DATABASE=archetype_intranet \
 #     docker compose run --build --rm elementary      real Intranet data (read only)
 #   docker compose down -v                            clean up
-name: archetype
+name: archetype-dbt
 
 services:
   pg-analytics:                  # the warehouse; warehouse/init = what the platform team creates once (schemas, login, raw tables)
