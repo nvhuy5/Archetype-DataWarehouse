@@ -20,6 +20,7 @@ Script chạy lần lượt 4 bước và chỉ in tóm tắt; log chi tiết gh
 ---
 Done in 96s. Details: report/logs/
 ```
+- **Đang chạy:** mỗi bước hiện spinner và số giây đã trôi qua. Bước dbt có thanh tiến độ (số model và test đã chạy, ví dụ `models + tests ████░░░░ 164/320`). Các bước còn lại hiện thời gian của lần chạy trước để ước tính (ví dụ `usually ~37s`). Nhấn `Ctrl+C` để dừng. Khi chạy không có terminal (ví dụ ghi ra file) thì chỉ in dòng kết quả cuối mỗi bước.
 - **Đạt khi:** cả 4 bước `OK`, script thoát mã 0, `ERROR=0`. `WARN` đến từ dữ liệu mẫu là bình thường (ví dụ một nhân viên mẫu cố ý để trống `employee_code`).
 - **Có lỗi:** bước đó hiện `FAILED`, in dòng lỗi (tên model, nội dung lỗi). Xem thêm trong `report/logs/3-dbt.log`. Báo cáo Elementary vẫn được tạo để bạn mở ra xem test nào hỏng.
 - Mỗi lần chạy, `dbt build` luôn chạy cả `dbt run --select elementary` trước (tạo bảng Elementary), rồi mới đến model và test.
