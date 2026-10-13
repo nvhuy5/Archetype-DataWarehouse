@@ -1,6 +1,6 @@
 # Playbook: migrate một package SSIS sang ADF + dbt
 
-Dùng cho mọi package SSIS. Các quyết định chung (Power BI, dữ liệu cá nhân, CI) ở [DECISIONS.vi.md](DECISIONS.vi.md). Mỗi package đi qua đúng 7 bước dưới đây. Tên và cấu trúc xem [NAMING.vi.md](NAMING.vi.md); chạy thử xem [README.vi.md](README.vi.md).
+Dùng cho mọi package SSIS. Các quyết định chung (Power BI, dữ liệu cá nhân, CI) ở [DECISIONS.vi.md](DECISIONS.vi.md). Mỗi package đi qua đúng 7 bước dưới đây. Tên và cấu trúc xem [NAMING.vi.md](NAMING.vi.md); chạy thử xem [README.vi.md](../README.vi.md).
 
 ```
 Phân tích → Phân loại → Raw + Staging → DWH → Mart → Đối soát → Bàn giao
@@ -15,7 +15,7 @@ Nguyên tắc chung:
 ## Bước 1. Phân tích package
 Đầu vào: file `.dtsx`, `SSIS flow.xlsx`, tài liệu thiết kế, định nghĩa view/stored procedure của kho cũ.
 
-Ghi lại vào một file phân tích (mẫu `docs/<package>-analysis.md`):
+Ghi lại vào một file phân tích (mẫu `reference/<package>-analysis.md`, không commit):
 - [ ] Nguồn và đích, kết nối, thứ tự chạy, lịch chạy (job SQL Agent).
 - [ ] Danh sách task: bảng nguồn, câu SQL nguồn, bảng đích, số cột nguồn và đích, task bị disable.
 - [ ] Logic riêng: join, `GROUP BY`, `CASE`, `LIMIT`, mốc ngày hardcode, biến, Lookup, Script Component.

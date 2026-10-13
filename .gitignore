@@ -1,5 +1,5 @@
-# Tài liệu nội bộ (xlsx, docx, drawio, zip...) - không đưa lên repo
-docs/
+# Tài liệu tham khảo nội bộ (xlsx, docx, drawio, zip...) - không đưa lên repo
+reference/
 
 # Output khi chạy local
 report/

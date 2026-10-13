@@ -89,7 +89,7 @@ Sau mỗi lần chạy, Elementary tạo file **`elementary_report.html`**. Mở
 docker compose run --build --rm elementary      # báo cáo: ./report/elementary_report.html
 docker compose down -v                          # dọn dẹp
 ```
-Lệnh này tự dựng kho dữ liệu rỗng, nạp dữ liệu mẫu, chạy dbt rồi chạy Elementary, bạn chỉ cần mở file báo cáo. Muốn chạy với dữ liệu Intranet thật, xem [README.vi.md](README.vi.md).
+Lệnh này tự dựng kho dữ liệu rỗng, nạp dữ liệu mẫu, chạy dbt rồi chạy Elementary, bạn chỉ cần mở file báo cáo. Muốn chạy với dữ liệu Intranet thật, xem [README.vi.md](../README.vi.md).
 
 ### Khi chạy thật
 - Chạy **image dbt trước, image Elementary sau**.
@@ -97,7 +97,7 @@ Lệnh này tự dựng kho dữ liệu rỗng, nạp dữ liệu mẫu, chạy 
 - Thông tin kết nối (máy chủ, tài khoản, mật khẩu) được cấp qua biến môi trường từ kho bí mật, **không nằm trong mã nguồn**.
 - Image Elementary cần truy cập internet (HTTPS tới `hub.getdbt.com`) mỗi lần chạy.
 
-Chi tiết kỹ thuật xem [README.vi.md](README.vi.md).
+Chi tiết kỹ thuật xem [README.vi.md](../README.vi.md).
 
 ## 5. Khi cần thêm dữ liệu/báo cáo mới
 

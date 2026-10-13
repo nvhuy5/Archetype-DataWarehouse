@@ -86,4 +86,4 @@ Tất cả `snake_case`, viết thường, không dấu cách, không viết hoa
 - Nhánh: `feature/<tên-ngắn>`.
 - Commit: tiếng Anh, mệnh lệnh, ngắn gọn (`Add dwh layer for Timesheet`). Mỗi commit một ý logic.
 - Commit sau mỗi lần code xong một phần. **Không tự push**, người phụ trách tự push.
-- Không commit `docs/`, secret, `target/`, `logs/`, `dbt_packages/`, `report/`.
+- Không commit `reference/`, secret, `target/`, `logs/`, `dbt_packages/`, `report/`.

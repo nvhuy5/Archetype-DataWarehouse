@@ -3,7 +3,7 @@ import re
 import subprocess
 import sys
 
-FORBIDDEN_PATHS = [r"^docs/", r"^report/", r"\.pem$", r"(^|/)\.env($|\.)", r"(^|/)target/", r"(^|/)logs/", r"(^|/)dbt_packages/"]
+FORBIDDEN_PATHS = [r"^reference/", r"^report/", r"\.pem$", r"(^|/)\.env($|\.)", r"(^|/)target/", r"(^|/)logs/", r"(^|/)dbt_packages/"]
 SECRET_PATTERNS = {
     "private key": r"-----BEGIN [A-Z ]*PRIVATE KEY-----",
     "AWS access key": r"AKIA[0-9A-Z]{16}",
