@@ -50,6 +50,7 @@ CYCLE = lambda *vals: (lambda i: vals[(i - 1) % len(vals)])
 
 # Values that make the synthetic rows join each other (every id is the row number i) and exercise the business rules of dwh.
 OVERRIDES = {
+    ("hr_table_main", "code"): lambda i: f"EMP{i:03d}",  # never blank: dim_employee.employee_code is tested not_null
     ("hr_table_main", "estatus"): lambda i: 8 if i == 5 else 7,
     ("hr_table_main", "id_md5"): lambda i: f"md5_{i}",
     ("hr_table_main", "type"): CYCLE("Local", "Foreign"),
