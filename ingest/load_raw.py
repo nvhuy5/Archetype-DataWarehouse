@@ -39,7 +39,38 @@ def raw_tables(cur):
     return tables
 
 
-def sample_value(dtype, length, col, i):
+TODAY = datetime.date.today()
+CYCLE = lambda *vals: (lambda i: vals[(i - 1) % len(vals)])
+
+# Values that make the synthetic rows join each other (every id is the row number i) and exercise the business rules of dwh.
+OVERRIDES = {
+    ("hr_table_main", "estatus"): lambda i: 8 if i == 5 else 7,
+    ("hr_table_main", "id_md5"): lambda i: f"md5_{i}",
+    ("hr_table_main", "type"): CYCLE("Local", "Foreign"),
+    ("hr_table_main", "p_reference"): CYCLE("a@archetype-group.com", "Agency: x", "Direct", "internet", "other"),
+    ("hr_table_main", "birthday"): lambda i: datetime.date(1990, 1, 1) + datetime.timedelta(days=i),
+    ("hr_table_main", "startworking"): lambda i: datetime.date(2024, 1, 1) + datetime.timedelta(days=i),
+    ("hr_table_phone_interview", "idm"): lambda i: f"md5_{i}",
+    ("hr_menu_process_status", "idstatus"): lambda i: i + 4,
+    ("hr_menu_department", "business_line"): CYCLE("AMP", "BDE", "IPE", "", "OTH"),
+    ("hr_table_direct_manager", "id_m"): lambda i: i % 5 + 1,
+    ("hr_table_direct_manager", "is_main"): lambda i: "1",
+    ("hr_table_contract", "cfrom"): lambda i: datetime.date(2025, 1, 1),
+    ("hr_table_contract", "cto"): lambda i: datetime.date(2027, 12, 31),
+    ("hr_table_contract", "tdate"): lambda i: datetime.date(2026, 6, 30) if i == 5 else None,
+    ("hr_table_contract", "probation_end_date"): lambda i: None if i <= 3 else datetime.date(2025, 6, 30),
+    ("timesheet_phase_2015", "type"): CYCLE("project", "vacation", "support", "support_detail", "project"),
+    ("timesheet_phase_2015", "name"): CYCLE("Design", "Annual leave", "Meeting", "Detail", "Construction"),
+    ("timesheet_entry_2015", "date"): lambda i: TODAY - datetime.timedelta(days=i),
+    ("timesheet_entry_2015", "time"): lambda i: 8,
+    ("timesheet_entry_2015", "validated"): lambda i: i % 3,
+    ("timesheet_entry_2015", "employee_level"): lambda i: str(i),
+}
+
+
+def sample_value(dtype, length, col, i, table=None):
+    if (table, col) in OVERRIDES:
+        return OVERRIDES[(table, col)](i)
     if dtype in ("integer", "bigint", "smallint"):
         return i
     if dtype in ("numeric", "real", "double precision"):
@@ -54,9 +85,9 @@ def sample_value(dtype, length, col, i):
     return text[:length] if length else text
 
 
-def sample_rows(cols):
+def sample_rows(table, cols):
     for i in range(1, SAMPLE_ROWS + 1):
-        yield tuple(sample_value(dtype, length, col, i) for col, dtype, length in cols)
+        yield tuple(sample_value(dtype, length, col, i, table) for col, dtype, length in cols)
 
 
 def mysql_rows(conn, table, cols):
@@ -89,7 +120,7 @@ def main():
         tables = raw_tables(cur)
     for table, cols in tables.items():
         try:
-            rows = mysql_rows(src, table, cols) if src else sample_rows(cols)
+            rows = mysql_rows(src, table, cols) if src else sample_rows(table, cols)
             with dst.cursor() as cur:
                 cur.execute('delete from raw_intranet."%s"' % table)
                 sql = 'insert into raw_intranet."%s" (%s) values %%s' % (table, ", ".join('"%s"' % c for c, _, _ in cols))
