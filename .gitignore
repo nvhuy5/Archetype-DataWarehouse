@@ -1,0 +1,5 @@
+# Tài liệu nội bộ (xlsx, docx, drawio, zip...) - không đưa lên repo
+docs/
+
+# Output khi chạy local
+report/
