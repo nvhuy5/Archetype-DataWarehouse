@@ -1,38 +1,46 @@
-# Local test of the whole chain:  source (few rows) -> ingest (what ADF does) -> raw -> dbt -> Elementary report
-#   docker compose run --build --rm elementary        report: ./report/elementary_report.html
+# Local test of the whole chain:  source -> ingest (what ADF does) -> raw -> dbt -> Elementary report
+#   docker compose run --build --rm elementary        sample data, no source needed; report: ./report/elementary_report.html
+#   INGEST_MODE=mysql MYSQL_HOST=... MYSQL_USER=... MYSQL_PASSWORD=... MYSQL_DATABASE=archetype_intranet \
+#     docker compose run --build --rm elementary      real Intranet data (read only)
 #   docker compose down -v                            clean up
-name: archetype-demo
+name: archetype
 
 services:
-  pg-source:                     # the Intranet (simulated)
-    image: postgres:16
-    environment: {POSTGRES_PASSWORD: postgres, POSTGRES_DB: intranet}
-    volumes: ["./sample/source.sql:/docker-entrypoint-initdb.d/source.sql:ro"]
-    healthcheck: {test: ["CMD-SHELL", "pg_isready -U postgres -d intranet"], interval: 3s, retries: 20}
-
-  pg-analytics:                  # the warehouse; raw_init.sql = what the platform team creates once
+  pg-analytics:                  # the warehouse; warehouse/init = what the platform team creates once (schemas, login, raw tables)
     image: postgres:16
     environment: {POSTGRES_PASSWORD: postgres, POSTGRES_DB: analytics_db}
-    volumes: ["./sample/raw_init.sql:/docker-entrypoint-initdb.d/raw_init.sql:ro"]
+    volumes: ["./warehouse/init:/docker-entrypoint-initdb.d:ro"]
     healthcheck: {test: ["CMD-SHELL", "pg_isready -U postgres -d analytics_db"], interval: 3s, retries: 20}
 
   ingest:                        # stands in for Azure Data Factory
-    image: postgres:16
+    build: {context: ., dockerfile: ingest.Dockerfile}
     environment:
+      INGEST_MODE: ${INGEST_MODE:-sample}
+      PGHOST: pg-analytics
+      PGUSER: postgres
       PGPASSWORD: postgres
-      SRC_URL: postgresql://postgres:postgres@pg-source/intranet
-      DST_URL: postgresql://postgres:postgres@pg-analytics/analytics_db
-    volumes: ["./sample/ingest_demo.sh:/ingest.sh:ro"]
-    command: ["sh", "/ingest.sh"]
-    depends_on: {pg-source: {condition: service_healthy}, pg-analytics: {condition: service_healthy}}
+      PGSSLMODE: disable
+      MYSQL_HOST: ${MYSQL_HOST:-}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_USER: ${MYSQL_USER:-}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-archetype_intranet}
+    depends_on: {pg-analytics: {condition: service_healthy}}
 
   dbt:
     build: {context: ., dockerfile: dbt.Dockerfile}
     environment: &pg {PGHOST: pg-analytics, PGUSER: dbt_rw, PGPASSWORD: dbt_rw, PGDATABASE: analytics_db, PGSSLMODE: disable}
     depends_on: {ingest: {condition: service_completed_successfully}}
 
+  report-dir:                    # makes ./report writable for the non-root user of the Elementary image
+    image: busybox
+    command: ["chmod", "777", "/report"]
+    volumes: ["./report:/report"]
+
   elementary:
     build: {context: ., dockerfile: elementary.Dockerfile}
     environment: *pg
     volumes: ["./report:/report"]
-    depends_on: {dbt: {condition: service_completed_successfully}}
+    depends_on:
+      dbt: {condition: service_completed_successfully}
+      report-dir: {condition: service_completed_successfully}
