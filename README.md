@@ -1,6 +1,6 @@
 # dbt + Elementary framework
 
-🇻🇳 [Tiếng Việt](README.vi.md) · 📘 [Hướng dẫn cho khách hàng (VI): dbt & Elementary là gì?](GUIDELINE.vi.md) · 📐 [Quy ước đặt tên](NAMING.vi.md) · 📋 [Playbook migrate SSIS](PLAYBOOK.vi.md)
+🇻🇳 [Tiếng Việt](README.vi.md) · 📘 [Hướng dẫn cho khách hàng (VI): dbt & Elementary là gì?](GUIDELINE.vi.md) · 📐 [Quy ước đặt tên](NAMING.vi.md) · 📋 [Playbook migrate SSIS](PLAYBOOK.vi.md) · ⚖️ [Quyết định chung](DECISIONS.vi.md)
 
 Migration of the `ACT_Intranet_warehouse_3` SSIS package to ELT: Intranet (MySQL) tables are copied as they are into `raw_intranet`,
 and dbt exposes them in `staging`. Business logic (joins, aggregates) belongs to the next layers, `dwh` and `mart`.
@@ -54,6 +54,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 | `warehouse/init/` | what the platform team creates once: schemas and login, raw tables, grants |
 | `ingest/`, `ingest.Dockerfile` | local stand-in for ADF (`sample` or `mysql` mode) |
 | `dbt.Dockerfile`, `elementary.Dockerfile` | the two production images |
+| `scripts/`, `.github/workflows/ci.yml` | automated checks (CI) |
 | `docker-compose.yml` | the local test |
 
 ## Add a model

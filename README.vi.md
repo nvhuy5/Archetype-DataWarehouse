@@ -1,6 +1,6 @@
 # Khung dbt + Elementary
 
-🇬🇧 [English](README.md) · 📘 [Hướng dẫn cho khách hàng: dbt & Elementary là gì?](GUIDELINE.vi.md) · 📐 [Quy ước đặt tên](NAMING.vi.md) · 📋 [Playbook migrate SSIS](PLAYBOOK.vi.md)
+🇬🇧 [English](README.md) · 📘 [Hướng dẫn cho khách hàng: dbt & Elementary là gì?](GUIDELINE.vi.md) · 📐 [Quy ước đặt tên](NAMING.vi.md) · 📋 [Playbook migrate SSIS](PLAYBOOK.vi.md) · ⚖️ [Quyết định chung](DECISIONS.vi.md)
 
 Chuyển package SSIS `ACT_Intranet_warehouse_3` sang ELT: các bảng Intranet (MySQL) được copy nguyên bản vào `raw_intranet`,
 dbt đưa chúng lên `staging`. Logic nghiệp vụ (join, tổng hợp) thuộc các layer sau là `dwh` và `mart`.
@@ -54,6 +54,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 | `warehouse/init/` | phần platform tạo một lần: schema và login, bảng raw, phân quyền |
 | `ingest/`, `ingest.Dockerfile` | thay thế ADF khi test local (chế độ `sample` hoặc `mysql`) |
 | `dbt.Dockerfile`, `elementary.Dockerfile` | hai image chạy thật |
+| `scripts/`, `.github/workflows/ci.yml` | kiểm tra tự động (CI) |
 | `docker-compose.yml` | môi trường test local |
 
 ## Thêm một model

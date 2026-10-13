@@ -9,7 +9,8 @@
 | `raw_<nguồn>` | Bản sao nguyên gốc của nguồn. Ví dụ `raw_intranet`; sau này `raw_nav`, `raw_static`, `raw_sharepoint` | ADF (ở local là `ingest/load_raw.py`) |
 | `staging` | Model `stg_*` | dbt |
 | `dwh` | `dim_*`, `fact_*`, `int_*`, seed | dbt |
-| `mart` | `mart_*` | dbt |
+| `mart` | `mart_*`: bản đã che dữ liệu cá nhân, cho Power BI | dbt |
+| `mart_restricted` | `mart_*_pii`: bản đầy đủ, chỉ role admin đọc | dbt |
 | `elementary` | Kết quả test và lịch sử chạy | dbt (package Elementary) |
 
 Tên schema do dbt macro `generate_schema_name` quyết định: lấy đúng tên đặt trong `dbt_project.yml`, không ghép thêm tiền tố.
@@ -72,7 +73,8 @@ Tất cả `snake_case`, viết thường, không dấu cách, không viết hoa
 ## 5. Model mart
 - Mẫu: **`mart_<domain>_<thực thể>`**. Ví dụ `mart_ts_details`. Domain viết tắt: `ts` là Timesheet, `hr` là nhân sự.
 - Mỗi mart phục vụ một báo cáo hoặc một bảng trong mô hình báo cáo. Chỉ mart được phép mang logic riêng của báo cáo.
-- Nếu Power BI cần tên cột cũ (`TS_Details`, `Dim_Employees`), tạo lớp view `reporting` riêng, không đổi tên cột trong dwh.
+- Power BI đọc thẳng mart (cột `snake_case`), không có lớp view `reporting` giữ tên cũ (xem [DECISIONS.vi.md](DECISIONS.vi.md)).
+- Dữ liệu cá nhân: bản đầy đủ là `mart_<domain>_<thực thể>_pii` trong schema `mart_restricted`; bản `mart_<domain>_<thực thể>` trong `mart` là view đã che dựng từ bản đó.
 
 ## 6. Test và tài liệu model
 - Mỗi model có mô tả (`description`) trong file `_<...>__models.yml` hoặc `_dwh__models.yml`.

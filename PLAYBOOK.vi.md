@@ -1,6 +1,6 @@
 # Playbook: migrate một package SSIS sang ADF + dbt
 
-Dùng cho mọi package SSIS. Mỗi package đi qua đúng 7 bước dưới đây. Tên và cấu trúc xem [NAMING.vi.md](NAMING.vi.md); chạy thử xem [README.vi.md](README.vi.md).
+Dùng cho mọi package SSIS. Các quyết định chung (Power BI, dữ liệu cá nhân, CI) ở [DECISIONS.vi.md](DECISIONS.vi.md). Mỗi package đi qua đúng 7 bước dưới đây. Tên và cấu trúc xem [NAMING.vi.md](NAMING.vi.md); chạy thử xem [README.vi.md](README.vi.md).
 
 ```
 Phân tích → Phân loại → Raw + Staging → DWH → Mart → Đối soát → Bàn giao
@@ -68,9 +68,9 @@ Chạy kiểm tra: `docker compose run --build --rm elementary`. Kết quả ph�
 - [ ] Dữ liệu mẫu: bảo đảm loader tạo dữ liệu đủ để model có dòng, kiểm tra kết quả bằng truy vấn thật.
 
 ## Bước 5. Mart
-- [ ] Chốt với khách báo cáo nào cần và Power BI trỏ vào tên mới hay tên cũ.
-- [ ] Mỗi bảng của mô hình báo cáo là một `mart_<domain>_<thực thể>`; chỉ đọc từ dwh.
-- [ ] Nếu cần tên cột cũ, thêm lớp view `reporting`.
+- [ ] Chốt với khách báo cáo nào cần.
+- [ ] Mỗi bảng của mô hình báo cáo là một `mart_<domain>_<thực thể>`; chỉ đọc từ dwh. Power BI đọc thẳng mart, không có lớp `reporting` ([DECISIONS.vi.md](DECISIONS.vi.md)).
+- [ ] Mart có dữ liệu cá nhân: bản đầy đủ `*_pii` ở schema `mart_restricted`, bản đã che là view ở `mart`; gắn quyền bằng `grants`.
 
 ## Bước 6. Đối soát
 - [ ] Chạy với dữ liệu nguồn thật (`INGEST_MODE=mysql`, chỉ đọc).
@@ -86,6 +86,8 @@ Chạy kiểm tra: `docker compose run --build --rm elementary`. Kết quả ph�
 - [ ] Mọi thay đổi đã commit local, sạch `git status`. Người phụ trách tự push.
 
 ## Định nghĩa hoàn thành (Definition of Done)
+CI (`.github/workflows/ci.yml`) kiểm tra tự động phần lớn mục dưới đây khi tạo pull request.
+
 - `docker compose run --build --rm elementary` thành công từ trạng thái sạch (`docker compose down -v`), `ERROR=0`.
 - Mọi model có mô tả; khóa có test.
 - Không còn `SELECT *`, mốc ngày hay `LIMIT` hardcode trong model.

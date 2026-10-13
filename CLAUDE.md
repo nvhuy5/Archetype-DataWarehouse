@@ -12,6 +12,6 @@
 - Trả lời bằng tiếng Việt.
 
 ## Tài liệu
-- `PLAYBOOK.vi.md`: quy trình migrate một package SSIS; `NAMING.vi.md`: quy ước đặt tên. Code mới phải theo hai file này.
+- `PLAYBOOK.vi.md`: quy trình migrate một package SSIS; `NAMING.vi.md`: quy ước đặt tên. Code mới phải theo hai file này. Quyết định chung (Power BI, dữ liệu cá nhân, CI) ở `DECISIONS.vi.md`.
 - `README.md` (EN) và `README.vi.md` (VI) chỉ chứa phần kỹ thuật ngắn gọn; giữ hai bản đồng bộ khi sửa.
 - `GUIDELINE.vi.md` là tài liệu giới thiệu dbt và Elementary cho khách hàng; không nhồi nội dung này vào README.
