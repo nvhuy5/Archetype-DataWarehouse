@@ -17,7 +17,7 @@ docker compose down -v                          # clean up
 ```
 
 Starts an empty warehouse (raw tables created from `warehouse/init`), fills `raw_intranet` with a few synthetic rows per table
-(stands in for ADF), runs `dbt build` (61 staging models + tests), then Elementary.
+(stands in for ADF), runs `dbt build` (61 staging models, the `dwh` models and their tests), then Elementary.
 
 Real Intranet data (read only, needs network access to MySQL):
 
@@ -32,11 +32,13 @@ INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL
 |---|---|---|
 | `raw_intranet` | 61 tables, same name and columns as the MySQL source | loaded by ADF, no logic, never edited in place |
 | `staging` | one `stg_intranet__<table>` view per raw table (`_2015` suffix dropped) | trim text, empty string to NULL, snake_case, no joins, no business rules |
-| `dwh` (next) | `dim_*`, `fact_*`: joins, aggregates, business rules | e.g. employee with department/office, `fact_timesheet` |
-| `mart` (next) | one set of tables per report | e.g. `mart_ts_*` |
+| `dwh` | `dim_*`, `fact_*`, `int_*`: joins, aggregates, business rules | `dim_employee`, `dim_office`, `dim_phase`, `fact_timesheet`, `fact_headcount_monthly`... (Timesheet and HR head count) |
+| `mart` (next, round 3) | one set of tables per report | e.g. `mart_ts_*` |
+
+`fact_timesheet` has one row per timesheet entry since `timesheet_from_date` (dbt var, default 2020-01-01 as in SSIS). The NAV columns of the old `Dim_Offices` are not in `dim_office` yet because NAV is not loaded.
 
 From the SSIS package, only the plain copy of tables lands in raw and staging. The enrichment joins of `hr_table_contract`, the
-`Summarized_Timesheet` aggregate and the `get_employee_etl` view are rebuilt in `dwh` from the raw base tables. Raw therefore holds
+`Summarized_Timesheet` aggregate and the `get_employee_etl` view are rebuilt in `dwh` from the raw base tables (`int_hr_contract`, `dim_employee`, `fact_timesheet`). Raw therefore holds
 `hr_table_main` (not the view) plus `hr_menu_process_status`, `crm_list_reason` and `timesheet_phase_2015`, which those joins need.
 
 Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but is **not exposed in staging**; see the model descriptions.
@@ -46,6 +48,8 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 | Path | |
 |---|---|
 | `dbt/` | the dbt project |
+| `dbt/models/dwh/` | dimensions, facts, `intermediate/` |
+| `dbt/seeds/` | `public_holidays` (empty, waiting for the customer) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (tests) |
 | `warehouse/init/` | what the platform team creates once: schemas and login, raw tables, grants |
 | `ingest/`, `ingest.Dockerfile` | local stand-in for ADF (`sample` or `mysql` mode) |
