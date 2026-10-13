@@ -26,9 +26,19 @@ models:
           +tags: [prm]
         strategic:
           +tags: [strategic]
-    # dwh:
-    #   +materialized: table
-    #   +schema: dwh
+    dwh:
+      +materialized: table
+      +schema: dwh
+      intermediate:
+        +materialized: view
     # mart:
     #   +materialized: table
     #   +schema: mart
+
+seeds:
+  archetype:
+    +schema: dwh
+
+vars:
+  # First day of timesheet history kept in dwh.fact_timesheet. Same as the old SSIS package (2020-01-01); change when the customer sets the retention rule.
+  timesheet_from_date: "2020-01-01"

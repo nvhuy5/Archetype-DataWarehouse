@@ -1,0 +1,7 @@
+version: 2
+
+seeds:
+  - name: public_holidays
+    description: "Public holidays used by dim_date (is_public_holiday, is_work_day). Empty until the customer provides the list (question A5/A11)."
+    config:
+      column_types: {holiday_date: date, country: varchar(100), name: varchar(200)}

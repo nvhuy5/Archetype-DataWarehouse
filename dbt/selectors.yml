@@ -2,5 +2,8 @@ selectors:
   # What the scheduled run builds. Add a selector per report/pipeline when there is more than one.
   - name: default
     definition:
-      method: path
-      value: models
+      union:
+        - method: path
+          value: models
+        - method: path
+          value: seeds
