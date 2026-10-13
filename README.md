@@ -1,5 +1,7 @@
 # dbt + Elementary framework
 
+🇻🇳 [Tiếng Việt](README.vi.md) · 📘 [Hướng dẫn cho khách hàng (VI): dbt & Elementary là gì?](GUIDELINE.vi.md)
+
 Standard skeleton, with one sample source table and one sample model to prove it works. From here on you only add models.
 
 ```
