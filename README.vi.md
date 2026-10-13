@@ -1,6 +1,6 @@
 # Khung dbt + Elementary
 
-🇬🇧 [English](README.md) · 📘 [Hướng dẫn cho khách hàng: dbt & Elementary là gì?](GUIDELINE.vi.md)
+🇬🇧 [English](README.md) · 📘 [Hướng dẫn cho khách hàng: dbt & Elementary là gì?](GUIDELINE.vi.md) · 📐 [Quy ước đặt tên](NAMING.vi.md) · 📋 [Playbook migrate SSIS](PLAYBOOK.vi.md)
 
 Chuyển package SSIS `ACT_Intranet_warehouse_3` sang ELT: các bảng Intranet (MySQL) được copy nguyên bản vào `raw_intranet`,
 dbt đưa chúng lên `staging`. Logic nghiệp vụ (join, tổng hợp) thuộc các layer sau là `dwh` và `mart`.
