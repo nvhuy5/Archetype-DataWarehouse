@@ -2,7 +2,11 @@
 -- and Dim_Employees (current contract, direct manager, first interview) added. Birthday is not exposed, only the age.
 -- working_pays follows get_employee_etl (country of working_location); the report takes the country from dim_office instead.
 with employee as (
-    select * from {{ ref('stg_intranet__hr_table_main') }}
+    select
+        ide, code, fname, lname, gender, birthday, nationality, marital_status, arche_email, type, manager_level,
+        estatus, department_id, job_title_id, employee_level_id, country_work, working_location, startworking, resign_date,
+        termination_reason, regretted_loss, p_reference, id_md5
+    from {{ ref('stg_intranet__hr_table_main') }}
 ),
 
 main_manager as (
@@ -13,7 +17,8 @@ main_manager as (
 ),
 
 current_contract as (
-    select distinct on (employee_id) *
+    select distinct on (employee_id)
+        employee_id, contract_id, contract_to, job_title, contract_type, contract_term
     from {{ ref('int_hr_contract') }}
     where terminated_date is null
       and current_date between contract_from and contract_to
