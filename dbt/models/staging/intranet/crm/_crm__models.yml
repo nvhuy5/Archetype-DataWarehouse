@@ -13,12 +13,34 @@ models:
       - elementary.schema_changes
   - name: stg_intranet__crm_link_project_client
     description: "Link between CRM projects and clients. No primary key in the source."
+    columns:
+      - name: idc
+        tests:
+          - not_null: {config: {severity: warn}}
+      - name: idp
+        tests:
+          - not_null: {config: {severity: warn}}
     tests:
+      # No primary key in the source: the combination below is the assumed key, so a duplicate only warns
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [idc, idp]
+          config: {severity: warn}
       # Elementary: fails when a column is added, removed or changes type
       - elementary.schema_changes
   - name: stg_intranet__crm_link_project_scope
     description: "Link between CRM projects and project scopes. No primary key in the source."
+    columns:
+      - name: idp
+        tests:
+          - not_null: {config: {severity: warn}}
+      - name: idps
+        tests:
+          - not_null: {config: {severity: warn}}
     tests:
+      # No primary key in the source: the combination below is the assumed key, so a duplicate only warns
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [idp, idps]
+          config: {severity: warn}
       # Elementary: fails when a column is added, removed or changes type
       - elementary.schema_changes
   - name: stg_intranet__crm_list_competitors

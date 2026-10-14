@@ -120,7 +120,18 @@ models:
       - elementary.schema_changes
   - name: stg_intranet__hr_table_leave_approval_detail
     description: "One row per leave day of a leave request. No primary key in the source."
+    columns:
+      - name: approval_id
+        tests:
+          - not_null: {config: {severity: warn}}
+      - name: date
+        tests:
+          - not_null: {config: {severity: warn}}
     tests:
+      # No primary key in the source: the combination below is the assumed key, so a duplicate only warns
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [approval_id, date]
+          config: {severity: warn}
       # Elementary: fails when a column is added, removed or changes type
       - elementary.schema_changes
   - name: stg_intranet__hr_table_main
@@ -135,7 +146,18 @@ models:
       - elementary.schema_changes
   - name: stg_intranet__hr_table_office_tracking
     description: "Office transfer history. No primary key in the source."
+    columns:
+      - name: id_e
+        tests:
+          - not_null: {config: {severity: warn}}
+      - name: updated_date
+        tests:
+          - not_null: {config: {severity: warn}}
     tests:
+      # No primary key in the source: the combination below is the assumed key, so a duplicate only warns
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns: [id_e, updated_date]
+          config: {severity: warn}
       # Elementary: fails when a column is added, removed or changes type
       - elementary.schema_changes
   - name: stg_intranet__hr_table_phone_interview
