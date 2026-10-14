@@ -52,7 +52,7 @@ Output trong các file lấy từ lần chạy thật; con số như `PASS=65`, 
 
 Cách xem chi tiết:
 - `report/logs/3-dbt.log`: log đầy đủ (tìm tên test hoặc model ở dòng `Failure in test` hoặc `Database Error`).
-- Dòng `compiled code at target/...` trong log trỏ vào **bên trong container** (container bị xóa sau mỗi lần chạy), nên bạn không mở file đó được. Muốn thấy dòng dữ liệu hỏng thì tự truy vấn, mỗi file có sẵn câu lệnh.
+- Dòng `compiled code at target/...` trong log trỏ vào **bên trong container** (container bị xóa sau mỗi lần chạy), nên bạn không mở file đó được. Muốn thấy dòng dữ liệu hỏng thì dùng **Result Query** trong báo cáo Elementary (Tests → mở dòng test; xem [ELEMENTARY-REPORT](../ELEMENTARY-REPORT.vi.md)) hoặc câu truy vấn có sẵn trong từng file.
 - Kết quả test cũng được ghi vào schema `elementary` (bảng `elementary.elementary_test_results`) và `report/elementary_report.html` được tạo cả khi có lỗi:
   ```bash
   docker compose exec -T postgres-local psql -U postgres -d analytics_db \

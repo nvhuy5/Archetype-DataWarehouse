@@ -53,7 +53,7 @@ Tùy chọn:
 ```bash
 docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "select * from dwh.dim_phase limit 5"
 ```
-Các schema: `raw_intranet` (bảng nguồn mẫu), `staging`, `dwh`, `mart`, `mart_restricted`, `elementary`. Mở `report/elementary_report.html` bằng trình duyệt để xem kết quả test.
+Các schema: `raw_intranet` (bảng nguồn mẫu), `staging`, `dwh`, `mart`, `mart_restricted`, `elementary`. Mở `report/elementary_report.html` bằng trình duyệt để xem kết quả test; cách đọc từng phần của báo cáo: [ELEMENTARY-REPORT.vi.md](ELEMENTARY-REPORT.vi.md).
 
 ### Xem câu SQL mà dbt gửi cho Postgres
 File model viết bằng Jinja (`ref`, `source`, macro), nên SQL thật khác với file trong repo. Muốn xem SQL thật (đã thay `ref`/`source` bằng tên bảng) thì dùng:

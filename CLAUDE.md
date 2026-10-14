@@ -12,7 +12,7 @@
 - Trả lời bằng tiếng Việt.
 
 ## Tài liệu
-- Tài liệu của repo nằm trong `docs/`: `PLAYBOOK.vi.md` (quy trình migrate một package SSIS), `NAMING.vi.md` (quy ước đặt tên), `DECISIONS.vi.md` (quyết định chung: Power BI, dữ liệu cá nhân, CI), `GUIDELINE.vi.md` (giới thiệu cho khách hàng), `TEST-LOCAL.vi.md` (cách chạy và test dưới local sau khi code xong), `DEPLOY-AZURE.vi.md` (đưa lên Azure: chuẩn bị Postgres prod, image, biến môi trường, thứ tự chạy), `ERROR-SCENARIOS/` (mỗi lỗi một file: cách tạo, thông báo thật, cách sửa; thêm ca mới theo khuôn trong README của thư mục). Code mới phải theo các file này.
+- Tài liệu của repo nằm trong `docs/`: `PLAYBOOK.vi.md` (quy trình migrate một package SSIS), `NAMING.vi.md` (quy ước đặt tên), `DECISIONS.vi.md` (quyết định chung: Power BI, dữ liệu cá nhân, CI), `GUIDELINE.vi.md` (giới thiệu cho khách hàng), `TEST-LOCAL.vi.md` (cách chạy và test dưới local sau khi code xong), `DEPLOY-AZURE.vi.md` (đưa lên Azure: chuẩn bị Postgres prod, image, biến môi trường, thứ tự chạy), `ELEMENTARY-REPORT.vi.md` (đọc báo cáo Elementary từng phần, có ảnh chụp), `ERROR-SCENARIOS/` (mỗi lỗi một file: cách tạo, thông báo thật, cách sửa; thêm ca mới theo khuôn trong README của thư mục). Code mới phải theo các file này.
 - `reference/` là tài liệu tham khảo nội bộ (không commit); đọc để hiểu nguồn, không sửa.
 - `README.md` (EN) và `README.vi.md` (VI) chỉ chứa phần kỹ thuật ngắn gọn; giữ hai bản đồng bộ khi sửa.
 - `docs/GUIDELINE.vi.md` là tài liệu giới thiệu dbt và Elementary cho khách hàng; không nhồi nội dung này vào README.
