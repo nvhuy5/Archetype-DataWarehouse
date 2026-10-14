@@ -90,69 +90,19 @@ Sau cùng commit **local** (tiếng Anh, ngắn gọn, mỗi commit một ý). K
 - Chạy cả chuỗi `run_local.sh`: khoảng 1,5 phút. Phần lớn là `dbt build` (khoảng 55 giây, trong đó Elementary tốn khoảng 20 giây) và báo cáo Elementary (khoảng 38 giây).
 
 ## 6. Thử xem lỗi được bắt như thế nào
-Mỗi tình huống dưới đây cố ý làm hỏng dữ liệu raw rồi chạy dbt, để bạn thấy lỗi hiện ra ở đâu. Chạy theo thứ tự bất kỳ; **sau mỗi tình huống nhớ chạy `./scripts/seed_local.sh`** để trả raw về như cũ (3 giây). Cần đã chạy `./scripts/run_local.sh` thành công ít nhất một lần.
+Mỗi lỗi có một file hướng dẫn riêng trong [ERROR-SCENARIOS/](ERROR-SCENARIOS/README.vi.md): tình huống giả định, lệnh tạo lỗi, thông báo thật, nguyên nhân, cách sửa và cách trả lại như cũ. Mục lục có bảng tra nhanh theo thông báo lỗi.
 
-Gọn lệnh: `psql_local` dưới đây chỉ là tên gọi tắt, bạn có thể dán nguyên lệnh `docker compose exec ...`.
-```bash
-psql_local() { docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "$1"; }
-```
-
-| | Làm hỏng | dbt bắt bằng | Kết quả mong đợi |
-|---|---|---|---|
-| A | bảng raw rỗng | `not_empty` (test source) | `FAILED`, **model phía sau bị `SKIP`** |
-| B | trùng khóa | `unique` | `FAILED`, model phía sau bị `SKIP` |
-| C | khóa bị `NULL` | `not_null` | `FAILED` |
-| D | tham chiếu tới bản ghi không tồn tại | `relationships` (`severity: warn`) | `OK` nhưng có `WARN`, script thoát mã 0 |
-| E | đổi cột của model staging | `elementary.schema_changes` | `FAILED` ở lần chạy đổi, các lần sau xanh |
-
-**A. Bảng raw rỗng** (nguồn nạp ra bảng trống)
-```bash
-psql_local "truncate raw_intranet.hr_table_main"
-./scripts/run_local.sh --select "--select +dim_employee"
-```
-Mong đợi: bước 3 `FAILED  PASS=65 ... ERROR=1 SKIP=10` và dòng `! ... FAIL 1 source_not_empty_raw_intranet_hr_table_main_`. 10 model phía sau (trong đó `dim_employee`) bị bỏ qua nên không cập nhật mart bằng dữ liệu rỗng. Không có test này thì dbt vẫn xanh trên bảng rỗng.
-
-**B. Trùng khóa**
-```bash
-psql_local "insert into raw_intranet.hr_table_main select * from raw_intranet.hr_table_main where ide = 1"
-./scripts/run_local.sh --select "--select +dim_employee"
-```
-Mong đợi: `FAILED ... ERROR=1 SKIP=6` và `! ... FAIL 1 unique_stg_intranet__hr_table_main_ide`.
-
-**C. Khóa bị NULL**
-```bash
-psql_local "update raw_intranet.hr_menu_country set idp = null where idp = 1"
-./scripts/run_local.sh --select "--select +stg_intranet__hr_menu_country"
-```
-Mong đợi: `FAILED ... ERROR=1` và `! ... FAIL 1 not_null_stg_intranet__hr_menu_country_idp`.
-
-**D. Tham chiếu hỏng (chỉ cảnh báo)**
-```bash
-psql_local "update raw_intranet.timesheet_entry_2015 set phase_id = 999 where id = 1"
-./scripts/run_local.sh --select "--select +fact_timesheet"
-```
-Mong đợi: bước 3 `OK  PASS=28 WARN=1 ERROR=0` kèm dòng `! ... WARN 1 relationships_fact_timesheet_phase_id__phase_id__ref_dim_phase_`. Test này đặt `severity: warn` nên không chặn chuỗi; đây là cách phân biệt lỗi nặng và lỗi nhẹ.
-
-**E. Đổi cột của model staging** (`schema_changes`)
-```bash
-./scripts/run_local.sh --select "--select stg_intranet__hr_menu_country"          # lấy mốc
-sed -i 's/^    hr_hide$/    hr_hide,\n    1 as extra_column/' dbt/models/staging/intranet/hr/stg_intranet__hr_menu_country.sql
-./scripts/run_local.sh --select "--select stg_intranet__hr_menu_country"          # FAILED
-git checkout dbt/models/staging/intranet/hr/stg_intranet__hr_menu_country.sql
-./scripts/run_local.sh --select "--select stg_intranet__hr_menu_country"          # FAILED lần nữa (cột bị bớt đi)
-./scripts/run_local.sh --select "--select stg_intranet__hr_menu_country"          # xanh trở lại
-```
-Mong đợi: `FAILED ... ! ... FAIL 1 elementary_schema_changes_stg_intranet__hr_menu_country_`. `schema_changes` so cột với **lần chạy trước**, nên mỗi thay đổi cột báo lỗi đúng một lần rồi lần sau thành mốc mới. Lưu ý: test này canh cột của **model staging**. Cột raw bị xóa mà staging còn dùng thì Postgres báo lỗi ngay (không xóa được vì view đang phụ thuộc), còn cột raw thêm mới không ảnh hưởng vì staging liệt kê cột tường minh.
-
-**Xem chi tiết lỗi**
-- Log chi tiết: `report/logs/3-dbt.log` (tìm tên test, có câu SQL và số dòng lỗi).
-- Mở `report/elementary_report.html` bằng trình duyệt: báo cáo vẫn được tạo khi có lỗi và liệt kê test nào hỏng.
-- Sau khi xem xong: `./scripts/seed_local.sh` rồi `./scripts/run_local.sh`, kết quả phải về `ERROR=0 WARN=0`.
+| Muốn thử | File |
+|---|---|
+| bảng raw rỗng, trùng khóa, khóa NULL, thiếu bảng, nguồn bỏ cột, tham chiếu mồ côi | [01](ERROR-SCENARIOS/01-raw-table-empty.vi.md) đến [06](ERROR-SCENARIOS/06-orphan-reference-warning.vi.md) |
+| lỗi SQL, Compilation Error, join nhân đôi dòng, `schema_changes` | [07](ERROR-SCENARIOS/07-sql-error-in-model.vi.md) đến [10](ERROR-SCENARIOS/10-schema-changes.vi.md) |
+| vi phạm quy ước, model rỗng mà build vẫn xanh | [11](ERROR-SCENARIOS/11-convention-check.vi.md), [12](ERROR-SCENARIOS/12-empty-model-silent.vi.md) |
+| quyền, kết nối, seed, thư mục `report/` | [13](ERROR-SCENARIOS/13-permission-denied.vi.md) đến [17](ERROR-SCENARIOS/17-report-folder-not-writable.vi.md) |
 
 ## Lỗi thường gặp
 | Hiện tượng | Nguyên nhân và cách xử lý |
 |---|---|
-| `report/ is not writable` | Thư mục `report/` thuộc root từ lần chạy cũ: `docker run --rm -v "$PWD":/w busybox rm -rf /w/report` |
+| `report/logs/...: Permission denied` (kèm `Build images FAILED` và log cũ gây hiểu nhầm) | Thư mục `report/logs/` thuộc root từ lần chạy cũ: `docker run --rm -v "$PWD":/w busybox rm -rf /w/report`. Chi tiết: [17](ERROR-SCENARIOS/17-report-folder-not-writable.vi.md) |
 | Kiểm tra quy ước báo đường dẫn cũ hoặc thiếu model mới | Image chưa build lại: `docker compose build dbt` |
 | `relation "..." does not exist` khi dùng `--select` | Thiếu dấu `+` trước tên model (chưa build upstream), hoặc DB vừa bị `seed_local.sh --reset` (chưa seed lại) |
 | Test `relationships` báo `ERROR` khi chỉ build một phần | Bình thường: các dim khác chưa được build trong lần chạy đó |
