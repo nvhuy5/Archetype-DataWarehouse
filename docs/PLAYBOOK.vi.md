@@ -70,7 +70,9 @@ Chạy kiểm tra: `./scripts/run_local.sh`. Kết quả phải là `ERROR=0`.
 ## Bước 5. Mart
 - [ ] Chốt với khách báo cáo nào cần.
 - [ ] Mỗi bảng của mô hình báo cáo là một `mart_<domain>_<thực thể>`; chỉ đọc từ dwh. Power BI đọc thẳng mart, không có lớp `reporting` ([DECISIONS.vi.md](DECISIONS.vi.md)).
-- [ ] Mart có dữ liệu cá nhân: bản đầy đủ `*_pii` ở schema `mart_restricted`, bản đã che là view ở `mart`; gắn quyền bằng `grants`.
+- [ ] Mart có dữ liệu cá nhân: bản đầy đủ `*_pii` ở schema `mart_restricted`, bản đã che là view ở `mart` dựng từ bản đầy đủ (dùng macro `mask_partial`, `age_from_birthday` trong `dbt/macros/mask.sql`; cột cần bỏ hẳn thì không chọn). Quyền gắn sẵn theo thư mục trong `dbt_project.yml`: `mart` cho `powerbi_ro` và `pii_admin`, `mart_restricted` chỉ cho `pii_admin`. Bản `*_pii` là bảng duy nhất được đọc cột cá nhân từ raw.
+- [ ] Mart không có cột cá nhân (như `mart_ts_*`): chỉ cần model ở `mart`, ghi rõ trong mô tả là không có gì để che. `mart_restricted` để trống.
+- [ ] Test: khóa (`unique`, `not_null`); khóa ngoại để `severity: warn`. Mart không cần `schema_changes`.
 
 ## Bước 6. Đối soát
 - [ ] Chạy với dữ liệu nguồn thật (`INGEST_MODE=mysql`, chỉ đọc).

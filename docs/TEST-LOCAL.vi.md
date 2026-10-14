@@ -56,6 +56,13 @@ python3 scripts/check_repo.py
 
 **Đạt khi:** cả hai in ra `OK`.
 
+### Kiểm tra quyền mart
+Sau `--reset` (script init chỉ chạy khi database trống), `powerbi_ro` phải đọc được `mart` và bị chặn ở `dwh` và `mart_restricted`:
+```bash
+docker compose exec -T -e PGPASSWORD=powerbi_ro pg-analytics psql -h localhost -U powerbi_ro -d analytics_db -c "select count(*) from mart.mart_ts_employees"   # đọc được
+docker compose exec -T -e PGPASSWORD=powerbi_ro pg-analytics psql -h localhost -U powerbi_ro -d analytics_db -c "select count(*) from dwh.dim_employee"        # permission denied
+```
+
 Sau cùng commit **local** (tiếng Anh, ngắn gọn, mỗi commit một ý). Không tự push (xem `CLAUDE.md`).
 
 ## 5. Chạy với dữ liệu Intranet thật (chỉ đọc)

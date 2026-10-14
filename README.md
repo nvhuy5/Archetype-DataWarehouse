@@ -33,7 +33,8 @@ INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL
 | `raw_intranet` | 61 tables, same name and columns as the MySQL source | loaded by ADF, no logic, never edited in place |
 | `staging` | one `stg_intranet__<table>` view per raw table (`_2015` suffix dropped) | trim text, empty string to NULL, snake_case, no joins, no business rules |
 | `dwh` | `dim_*`, `fact_*`, `int_*`: joins, aggregates, business rules | `dim_employee`, `dim_office`, `dim_phase`, `fact_timesheet`, `fact_headcount_monthly`... (Timesheet and HR head count) |
-| `mart` (next, round 3) | one set of tables per report | e.g. `mart_ts_*` |
+| `mart` | one set of tables per report, personal data masked, read by Power BI (`powerbi_ro`) | `mart_ts_details`, `mart_ts_employees`, `mart_ts_offices`, `mart_ts_departments` |
+| `mart_restricted` | unmasked `mart_*_pii` tables, admin role only (`pii_admin`); empty for now, Timesheet has no personal data | |
 
 `fact_timesheet` has one row per timesheet entry since `timesheet_from_date` (dbt var, default 2020-01-01 as in SSIS). The NAV columns of the old `Dim_Offices` are not in `dim_office` yet because NAV is not loaded.
 
@@ -49,6 +50,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 |---|---|
 | `dbt/` | the dbt project |
 | `dbt/models/dwh/` | dimensions, facts, `intermediate/` |
+| `dbt/models/mart/`, `mart_restricted/` | report tables; `*_pii` tables (empty for now) |
 | `dbt/seeds/` | `public_holidays` (empty, waiting for the customer) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (tests) |
 | `warehouse/init/` | what the platform team creates once: schemas and login, raw tables, grants |
@@ -62,7 +64,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 1. New raw table? Add its `CREATE TABLE` to `warehouse/init/02_raw_intranet.sql` (and ADF must load it into `raw_intranet`, same name).
    Declare it in the `_<domain>__sources.yml` of its domain.
 2. Add `stg_intranet__<table>.sql` and its tests in `_<domain>__models.yml`.
-3. New layer (`dwh`, `mart`)? Make the folder under `dbt/models/` and uncomment its block in `dbt/dbt_project.yml`.
+3. New layer? Make the folder under `dbt/models/` and add its block in `dbt/dbt_project.yml`.
 4. Create the schema once in the warehouse and grant `dbt_rw` on it (see `warehouse/init/03_grants.sql`).
 5. `./scripts/run_local.sh` to check.
 

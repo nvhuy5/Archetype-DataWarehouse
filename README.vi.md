@@ -33,7 +33,8 @@ INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL
 | `raw_intranet` | 61 bảng, cùng tên và cột với nguồn MySQL | ADF nạp, không có logic, không sửa tại chỗ |
 | `staging` | mỗi bảng raw một view `stg_intranet__<bảng>` (bỏ hậu tố `_2015`) | cắt khoảng trắng, chuỗi rỗng thành NULL, snake_case; không join, không quy tắc nghiệp vụ |
 | `dwh` | `dim_*`, `fact_*`, `int_*`: join, tổng hợp, quy tắc nghiệp vụ | `dim_employee`, `dim_office`, `dim_phase`, `fact_timesheet`, `fact_headcount_monthly`... (Timesheet và headcount HR) |
-| `mart` (đợt 3) | bảng riêng cho từng báo cáo | ví dụ `mart_ts_*` |
+| `mart` | bảng riêng cho từng báo cáo, đã che dữ liệu cá nhân, Power BI đọc (`powerbi_ro`) | `mart_ts_details`, `mart_ts_employees`, `mart_ts_offices`, `mart_ts_departments` |
+| `mart_restricted` | bảng `mart_*_pii` đầy đủ, chỉ role `pii_admin` đọc; hiện trống vì Timesheet không có dữ liệu cá nhân | |
 
 `fact_timesheet` có một dòng cho mỗi dòng timesheet từ `timesheet_from_date` (biến dbt, mặc định 2020-01-01 như SSIS). `dim_office` chưa có các cột NAV của `Dim_Offices` cũ vì NAV chưa được nạp.
 
@@ -49,6 +50,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 |---|---|
 | `dbt/` | project dbt |
 | `dbt/models/dwh/` | dimension, fact, thư mục `intermediate/` |
+| `dbt/models/mart/`, `mart_restricted/` | bảng cho báo cáo; bảng `*_pii` (hiện trống) |
 | `dbt/seeds/` | `public_holidays` (đang để trống, chờ khách cung cấp) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (test) |
 | `warehouse/init/` | phần platform tạo một lần: schema và login, bảng raw, phân quyền |
@@ -62,7 +64,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 1. Có bảng raw mới? Thêm `CREATE TABLE` vào `warehouse/init/02_raw_intranet.sql` (và ADF phải nạp vào `raw_intranet` với cùng tên).
    Khai báo trong `_<domain>__sources.yml` của domain đó.
 2. Thêm `stg_intranet__<bảng>.sql` và test tương ứng trong `_<domain>__models.yml`.
-3. Cần layer mới (`dwh`, `mart`)? Tạo thư mục dưới `dbt/models/` và bỏ comment khối tương ứng trong `dbt/dbt_project.yml`.
+3. Cần layer mới? Tạo thư mục dưới `dbt/models/` và thêm khối tương ứng trong `dbt/dbt_project.yml`.
 4. Tạo schema một lần trong warehouse và cấp quyền cho `dbt_rw` (xem `warehouse/init/03_grants.sql`).
 5. Chạy `./scripts/run_local.sh` để kiểm tra.
 

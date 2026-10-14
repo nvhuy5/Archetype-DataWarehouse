@@ -17,6 +17,7 @@ Mô hình: **một nguồn đầy đủ, một bản đã che**, tách quyền t
 
 - Bản đã che là view dựng từ bảng gốc nên hai bản **không thể lệch nhau**.
 - Quyền gắn bằng cấu hình `grants` của dbt; `powerbi_ro` chỉ được đọc schema `mart`.
+- **Hiện trạng:** `mart_restricted` đang **trống** (có schema, role, grant, macro che; chưa có model `*_pii`). Báo cáo Timesheet (`mart_ts_*`) không cần cột cá nhân nào nên không có gì để che. Làm `*_pii` đầu tiên khi có package cần (ví dụ HR, lương) và khách chốt B5.
 - Staging và dwh dùng chung **vẫn ẩn** cột cá nhân. Chỉ các model `*_pii` đọc cột cá nhân từ raw, đặt trong phạm vi hạn chế.
 
 Danh sách cột và cách che (**mặc định tạm, chờ khách xác nhận B5**):
