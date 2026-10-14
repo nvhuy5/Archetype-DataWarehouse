@@ -31,9 +31,17 @@ models:
       +schema: dwh
       intermediate:
         +materialized: view
-    # mart:
-    #   +materialized: table
-    #   +schema: mart
+    mart:
+      +materialized: table
+      +schema: mart
+      # Power BI reads mart; the admin role also reads it. Models in mart_restricted override this (see NAMING.vi.md).
+      +grants:
+        select: [powerbi_ro, pii_admin]
+    mart_restricted:
+      +materialized: table
+      +schema: mart_restricted
+      +grants:
+        select: [pii_admin]
 
 seeds:
   archetype:

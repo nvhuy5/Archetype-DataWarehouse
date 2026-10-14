@@ -30,8 +30,11 @@ for node_id, node in manifest["nodes"].items():
     elif "/dwh/" in path:
         errors.append(f"{name}: dwh model must be in dwh/dim, dwh/fact or dwh/intermediate ({path})")
     elif "/mart/" in path:
-        if not name.startswith("mart_"):
-            errors.append(f"{name}: mart model must start with mart_")
+        if not name.startswith("mart_") or name.endswith("_pii"):
+            errors.append(f"{name}: mart model must start with mart_ and must not end with _pii (those go in mart_restricted)")
+    elif "/mart_restricted/" in path:
+        if not name.startswith("mart_") or not name.endswith("_pii"):
+            errors.append(f"{name}: mart_restricted model must be named mart_<domain>_<entity>_pii")
     else:
         errors.append(f"{name}: model outside staging, dwh or mart ({path})")
 
