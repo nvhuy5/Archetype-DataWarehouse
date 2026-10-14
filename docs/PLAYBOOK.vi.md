@@ -48,6 +48,7 @@ Bảng nguồn nào cần cho một phép join mà package không nạp riêng (
 - [ ] Lấy định nghĩa bảng nguồn (DDL), đổi kiểu theo bảng ánh xạ trong NAMING.vi.md.
 - [ ] Tạo `warehouse/local/seed/raw_intranet/<bảng>.sql` (hoặc thư mục raw của nguồn mới): `CREATE TABLE` đúng tên và cột, kèm vài dòng mẫu. Project ingestion nạp đúng bảng này ở môi trường thật.
 - [ ] Nạp **bảng gốc**, không nạp view của nguồn nếu dựng lại được ở dwh.
+- [ ] Khai báo test `not_empty` cho bảng trong `_<domain>__sources.yml` (bắt buộc, `check_conventions.py` kiểm tra). Mặc định mọi bảng raw phải có dòng, vì `unique`, `not_null`, `schema_changes` đều pass trên bảng rỗng. Bảng nào hợp lệ khi rỗng thì đặt `config: {severity: warn}` và ghi lý do bên cạnh.
 - [ ] Dòng mẫu: sửa tay trong file seed để các cột cần join khớp nhau; cột ngày mà model so với ngày hiện tại thì viết tương đối (`current_date - 30`). Chạy `./scripts/seed_local.sh` sau khi sửa.
 
 **Staging**

@@ -48,6 +48,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 | `dbt/` | project dbt |
 | `dbt/models/dwh/` | dimension, fact, thư mục `intermediate/` |
 | `dbt/models/mart/`, `mart_restricted/` | bảng cho báo cáo; bảng `*_pii` |
+| `dbt/tests/generic/` | test dùng chung; `not_empty` áp cho mọi bảng raw (nạp ra bảng rỗng không được qua im lặng) |
 | `dbt/seeds/` | `public_holidays` (đang để trống, chờ khách cung cấp) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (test) |
 | `warehouse/local/init/` | chỉ cho Postgres local: schema, role, phân quyền (chạy khi database còn trống) |
@@ -60,7 +61,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 ## Thêm một model
 
 1. Có bảng raw mới? Thêm `warehouse/local/seed/raw_intranet/<bảng>.sql` (`CREATE TABLE` đúng tên và cột của nguồn, kèm dòng mẫu;
-   project ingestion phải nạp đúng bảng đó vào `raw_intranet`). Khai báo trong `_<domain>__sources.yml` của domain đó.
+   project ingestion phải nạp đúng bảng đó vào `raw_intranet`). Khai báo trong `_<domain>__sources.yml` của domain đó, kèm test `not_empty` (`check_conventions.py` bắt buộc).
    Model cần giá trị khác (join, trường hợp biên)? Sửa dòng mẫu trong file seed của bảng nó đọc.
 2. Thêm `stg_intranet__<bảng>.sql` và test tương ứng trong `_<domain>__models.yml`.
 3. Cần layer mới? Tạo thư mục dưới `dbt/models/` và thêm khối tương ứng trong `dbt/dbt_project.yml`.

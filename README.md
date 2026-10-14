@@ -48,6 +48,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 | `dbt/` | the dbt project |
 | `dbt/models/dwh/` | dimensions, facts, `intermediate/` |
 | `dbt/models/mart/`, `mart_restricted/` | report tables; `*_pii` tables |
+| `dbt/tests/generic/` | generic tests; `not_empty` is applied to every raw table (an empty load must not pass silently) |
 | `dbt/seeds/` | `public_holidays` (empty, waiting for the customer) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (tests) |
 | `warehouse/local/init/` | local Postgres only: schemas, roles, grants (run when its database is empty) |
@@ -60,7 +61,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 ## Add a model
 
 1. New raw table? Add `warehouse/local/seed/raw_intranet/<table>.sql` (`CREATE TABLE` with the source's name and columns, plus sample rows;
-   the ingestion project must load the same table into `raw_intranet`). Declare it in the `_<domain>__sources.yml` of its domain.
+   the ingestion project must load the same table into `raw_intranet`). Declare it in the `_<domain>__sources.yml` of its domain with the `not_empty` test (`check_conventions.py` requires it).
    A model that needs other values (joins, edge cases)? Edit the rows of the seed file of the table it reads.
 2. Add `stg_intranet__<table>.sql` and its tests in `_<domain>__models.yml`.
 3. New layer? Make the folder under `dbt/models/` and add its block in `dbt/dbt_project.yml`.
