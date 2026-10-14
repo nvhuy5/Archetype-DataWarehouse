@@ -17,7 +17,7 @@ Sửa `dbt/models/dwh/dim/dim_office.sql` (bỏ CTE `eproject`, join thẳng):
 ./scripts/run_local.sh --select "--select +dim_office"
 ```
 ```
-[3/4] dbt build                   OK  PASS=25 WARN=0 ERROR=0 SKIP=0  (24s)
+[3/4] dbt build                   OK  PASS=26 WARN=0 ERROR=0 SKIP=0  (23s)
 ```
 Xanh. Model sai nhưng dữ liệu mẫu quan hệ 1-1 **che mất lỗi**.
 
@@ -37,8 +37,8 @@ Cách này giữ khóa `prm_e_project_country_id` của staging **duy nhất** (
 
 ## Thông báo lỗi
 ```
-[3/4] dbt build                   FAILED  PASS=24 WARN=0 ERROR=1 SKIP=0  (25s)
-      ! 23 of 23 FAIL 1 unique_dim_office_office_id .................................... [FAIL 1 in 0.03s]
+[3/4] dbt build                   FAILED  PASS=25 WARN=0 ERROR=1 SKIP=0  (24s)
+      ! 24 of 24 FAIL 1 unique_dim_office_office_id .................................... [FAIL 1 in 0.03s]
 ```
 Trong log:
 ```
@@ -79,7 +79,7 @@ Giữ nguyên dòng e-project thứ hai (dữ liệu "khó"):
 ./scripts/run_local.sh --select "--select +dim_office"
 ```
 ```
-[3/4] dbt build                   OK  PASS=25 WARN=0 ERROR=0 SKIP=0  (25s)
+[3/4] dbt build                   OK  PASS=26 WARN=0 ERROR=0 SKIP=0  (24s)
 ```
 Xanh **dù có dòng thứ hai**, nghĩa là model đã đúng.
 
@@ -90,4 +90,4 @@ Xanh **dù có dòng thứ hai**, nghĩa là model đã đúng.
 
 ## Phòng tránh
 - Test `unique` trên khóa của mọi `dim_*` là thứ bắt được lỗi này; đừng bỏ test.
-- **Dữ liệu mẫu quan hệ 1-1 che lỗi fan-out.** Khi viết model có join, thêm vào file seed những dòng "khó" (một văn phòng nhiều e-project, một nhân viên nhiều hợp đồng...) để lỗi hiện ở local. Xem [12](12-empty-model-silent.vi.md) cho cách chỉnh dòng seed.
+- **Dữ liệu mẫu quan hệ 1-1 che lỗi fan-out.** Khi viết model có join, thêm vào file seed những dòng "khó" (một văn phòng nhiều e-project, một nhân viên nhiều hợp đồng...) để lỗi hiện ở local. Xem [12](12-empty-model.vi.md) cho cách chỉnh dòng seed.

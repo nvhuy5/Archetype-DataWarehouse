@@ -27,8 +27,8 @@ Output trong các file lấy từ lần chạy thật; con số như `PASS=65`, 
 | `WARN N relationships_...` | khóa ngoại mồ côi (chỉ cảnh báo) | [06](06-orphan-reference-warning.vi.md) |
 | `Compilation Error ... which was not found` | `source()` hoặc `ref()` sai tên | [08](08-compilation-error.vi.md) |
 | `FAIL 1 elementary_schema_changes_...` | cột của model staging đổi so với lần chạy trước | [10](10-schema-changes.vi.md) |
-| `check_conventions.py` in ra `...: missing description`, `must start with`, `no key test`, `uses select *`, `has no not_empty test`, `seed file` | vi phạm quy ước | [11](11-convention-check.vi.md) |
-| build xanh nhưng báo cáo trống | dwh/mart rỗng mà không test nào bắt | [12](12-empty-model-silent.vi.md) |
+| `check_conventions.py` in ra `...: missing description`, `must start with`, `no key test`, `uses select *`, `no not_empty test`, `has no not_empty test`, `seed file` | vi phạm quy ước | [11](11-convention-check.vi.md) |
+| `FAIL 1 not_empty_<model>_` (model `dim_*`, `fact_*`, `mart_*`) | model dwh/mart rỗng; kèm tác dụng phụ lên view Power BI | [12](12-empty-model.vi.md) |
 | `permission denied for table/schema ...` | thiếu quyền | [13](13-permission-denied.vi.md) |
 | `password authentication failed`, `could not translate host name`, `server does not support SSL`, `Refusing to run: DBT_TARGET=local ...` | không kết nối được hoặc cấu hình môi trường sai | [14](14-connection-error.vi.md) |
 | `Seed files changed since the last ./scripts/seed_local.sh` | seed cũ | [15](15-raw-not-seeded-or-stale.vi.md) |
@@ -88,7 +88,7 @@ docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "<câu
 | 09 | [Join làm nhân đôi dòng](09-join-fan-out.vi.md) | code model |
 | 10 | [Đổi cột model staging (schema_changes)](10-schema-changes.vi.md) | code model |
 | 11 | [Vi phạm quy ước (check_conventions)](11-convention-check.vi.md) | quy ước |
-| 12 | [Model rỗng mà build vẫn xanh](12-empty-model-silent.vi.md) | dữ liệu mẫu |
+| 12 | [Model dwh/mart rỗng](12-empty-model.vi.md) | dữ liệu mẫu |
 | 13 | [Permission denied](13-permission-denied.vi.md) | quyền |
 | 14 | [Lỗi kết nối và cấu hình môi trường](14-connection-error.vi.md) | môi trường |
 | 15 | [Chưa seed hoặc seed cũ](15-raw-not-seeded-or-stale.vi.md) | môi trường local |

@@ -54,13 +54,13 @@ Quyết định trước: cột bị bỏ **nhầm** hay **có chủ ý**?
 ```
 Lần chạy **đầu** sau khi sửa:
 ```
-[3/4] dbt build                   FAILED  PASS=21 WARN=0 ERROR=1 SKIP=3  (25s)
-      ! 9 of 23 FAIL 1 elementary_schema_changes_stg_intranet__hr_menu_country_ ........ [FAIL 1 in 0.69s]
+[3/4] dbt build                   FAILED  PASS=21 WARN=0 ERROR=1 SKIP=4  (23s)
+      ! 9 of 24 FAIL 1 elementary_schema_changes_stg_intranet__hr_menu_country_ ........ [FAIL 1 in 0.69s]
 ```
 `schema_changes` báo cột `region` bị bỏ khỏi model staging, và `dim_office` bị bỏ qua (`SKIP`). Đây là chủ ý của test: mỗi lần đổi cột báo lỗi **một lần** (xem [10](10-schema-changes.vi.md)). Chạy lại lần **hai**, lỗi thật của model phía sau mới hiện:
 ```
-[3/4] dbt build                   FAILED  PASS=22 WARN=0 ERROR=1 SKIP=2  (25s)
-      ! 21 of 23 ERROR creating sql table model dwh.dim_office ......................... [ERROR in 0.04s]
+[3/4] dbt build                   FAILED  PASS=22 WARN=0 ERROR=1 SKIP=3  (23s)
+      ! 21 of 24 ERROR creating sql table model dwh.dim_office ......................... [ERROR in 0.04s]
 08:57:37    Database Error in model dim_office (models/dwh/dim/dim_office.sql)
   column c.region does not exist
   LINE 34:     c.region,

@@ -33,7 +33,7 @@ Script chạy lần lượt 4 bước và chỉ in tóm tắt; log chi tiết gh
 ```
 [1/4] Build images                OK  (2s)
 [2/4] Raw data (seeded)           OK  61 tables
-[3/4] dbt build                   OK  PASS=356 WARN=0 ERROR=0 SKIP=0  (59s)
+[3/4] dbt build                   OK  PASS=434 WARN=0 ERROR=0 SKIP=0  (59s)
 [4/4] Elementary report           OK  report/elementary_report.html  (41s)
 ---
 Done in 102s. Details: report/logs/
@@ -108,7 +108,7 @@ Mỗi lỗi có một file hướng dẫn riêng trong [ERROR-SCENARIOS/](ERROR-
 |---|---|
 | bảng raw rỗng, trùng khóa, khóa NULL, thiếu bảng, nguồn bỏ cột, tham chiếu mồ côi | [01](ERROR-SCENARIOS/01-raw-table-empty.vi.md) đến [06](ERROR-SCENARIOS/06-orphan-reference-warning.vi.md) |
 | lỗi SQL, Compilation Error, join nhân đôi dòng, `schema_changes` | [07](ERROR-SCENARIOS/07-sql-error-in-model.vi.md) đến [10](ERROR-SCENARIOS/10-schema-changes.vi.md) |
-| vi phạm quy ước, model rỗng mà build vẫn xanh | [11](ERROR-SCENARIOS/11-convention-check.vi.md), [12](ERROR-SCENARIOS/12-empty-model-silent.vi.md) |
+| vi phạm quy ước, model dwh/mart rỗng | [11](ERROR-SCENARIOS/11-convention-check.vi.md), [12](ERROR-SCENARIOS/12-empty-model.vi.md) |
 | quyền, kết nối, seed, thư mục `report/` | [13](ERROR-SCENARIOS/13-permission-denied.vi.md) đến [17](ERROR-SCENARIOS/17-report-folder-not-writable.vi.md) |
 
 ## Lỗi thường gặp

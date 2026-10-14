@@ -48,7 +48,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 | `dbt/` | the dbt project |
 | `dbt/models/dwh/` | dimensions, facts, `intermediate/` |
 | `dbt/models/mart/`, `mart_restricted/` | report tables; `*_pii` tables |
-| `dbt/tests/generic/` | generic tests; `not_empty` is applied to every raw table (an empty load must not pass silently) |
+| `dbt/tests/generic/` | generic tests; `not_empty` is applied to every raw table and every `dim_*`, `fact_*`, `mart_*` model (an empty table must not pass silently) |
 | `dbt/seeds/` | `public_holidays` (empty, waiting for the customer) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (tests) |
 | `warehouse/local/init/` | local Postgres only: schemas, roles, grants (run when its database is empty) |

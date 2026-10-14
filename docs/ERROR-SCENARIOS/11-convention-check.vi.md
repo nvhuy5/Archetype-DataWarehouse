@@ -21,6 +21,7 @@ select * from {{ ref('dim_employee') }}
 employee_summary: missing description
 employee_summary: model in dwh/dim must start with dim_
 employee_summary: no key test (unique/not_null) and the description does not say 'No primary key'
+employee_summary: no not_empty test (an empty model must not pass silently)
 employee_summary: uses select *; list the columns
 ```
 **Sửa**: từng dòng một:
@@ -29,6 +30,7 @@ employee_summary: uses select *; list the columns
 | `missing description` | thêm `description:` cho model trong `_dim__models.yml` |
 | `model in dwh/dim must start with dim_` | đổi tên file (và mọi `ref()` tới nó) thành `dim_employee_summary.sql`, hoặc đặt vào thư mục đúng loại |
 | `no key test` | thêm `tests: [unique, not_null]` trên cột khóa; bảng thật sự không có khóa thì ghi "No primary key" trong mô tả |
+| `no not_empty test` | thêm `tests: [not_empty]` ở **mức model** trong yml (bắt buộc cho mọi `dim_*`, `fact_*`, `mart_*`); xem [12](12-empty-model.vi.md) |
 | `uses select *` | liệt kê cột; `select *` làm cột nguồn đổi mà không ai biết |
 
 **Trả lại**: `rm dbt/models/dwh/dim/employee_summary.sql`
@@ -44,6 +46,7 @@ select employee_id from {{ ref('dim_employee') }}
 mart_hr_salary_pii: mart model must start with mart_ and must not end with _pii (those go in mart_restricted)
 mart_hr_salary_pii: missing description
 mart_hr_salary_pii: no key test (unique/not_null) and the description does not say 'No primary key'
+mart_hr_salary_pii: no not_empty test (an empty model must not pass silently)
 ```
 **Sửa**: bảng chứa dữ liệu cá nhân **chưa che** (`*_pii`) phải nằm ở `dbt/models/mart_restricted/`; bản đã che là view ở `mart`. Đặt sai thư mục sẽ làm Power BI (`powerbi_ro`) đọc được dữ liệu cá nhân, vì quyền gắn theo **thư mục** (xem `docs/DECISIONS.vi.md`, `docs/PLAYBOOK.vi.md` Bước 5).
 

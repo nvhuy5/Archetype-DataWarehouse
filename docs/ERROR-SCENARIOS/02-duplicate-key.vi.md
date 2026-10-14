@@ -16,14 +16,14 @@ docker compose exec -T postgres-local psql -U postgres -d analytics_db \
 ## Thông báo lỗi
 Trên màn hình:
 ```
-[3/4] dbt build                   FAILED  PASS=69 WARN=0 ERROR=1 SKIP=6  (28s)
-      ! 58 of 74 FAIL 1 unique_stg_intranet__hr_table_main_ide ......................... [FAIL 1 in 0.11s]
+[3/4] dbt build                   FAILED  PASS=69 WARN=0 ERROR=1 SKIP=7  (26s)
+      ! 55 of 75 FAIL 1 unique_stg_intranet__hr_table_main_ide ......................... [FAIL 1 in 0.11s]
 ```
 Trong `report/logs/3-dbt.log`:
 ```
-69 of 74 SKIP relation dwh.dim_employee ........................................ [SKIP]
+69 of 75 SKIP relation dwh.dim_employee ........................................ [SKIP]
 ...
-74 of 74 SKIP test unique_dim_employee_employee_id ............................. [SKIP]
+75 of 75 SKIP test unique_dim_employee_employee_id ............................. [SKIP]
 Failure in test unique_stg_intranet__hr_table_main_ide (models/staging/intranet/hr/_hr__models.yml)
   Got 1 result, configured to fail if != 0
 ```
@@ -32,7 +32,7 @@ Failure in test unique_stg_intranet__hr_table_main_ide (models/staging/intranet/
 - `unique_stg_intranet__hr_table_main_ide`: test `unique` trên cột `ide` của model `stg_intranet__hr_table_main`.
 - `Got 1 result`: có **1 giá trị** `ide` bị trùng (không phải 1 dòng thừa).
 - Staging là view, không lọc dòng, nên dòng trùng đi thẳng vào staging và test bắt được. Đây là chủ ý: dbt **không âm thầm bỏ dòng** (khác với redirect lỗi của SSIS cũ).
-- `SKIP=6`: `dim_employee` và các test của nó không chạy, nên `dwh.dim_employee` giữ bản của lần build trước thay vì nhân đôi nhân viên.
+- `SKIP=7`: `dim_employee` và các test của nó không chạy, nên `dwh.dim_employee` giữ bản của lần build trước thay vì nhân đôi nhân viên.
 
 Tìm dòng trùng:
 ```bash

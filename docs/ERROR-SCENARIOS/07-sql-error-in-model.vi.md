@@ -15,8 +15,8 @@ git diff dbt/models/dwh/dim/dim_employee.sql
 
 ## Thông báo lỗi
 ```
-[3/4] dbt build                   FAILED  PASS=70 WARN=0 ERROR=1 SKIP=5  (29s)
-      ! 69 of 74 ERROR creating sql table model dwh.dim_employee ....................... [ERROR in 0.05s]
+[3/4] dbt build                   FAILED  PASS=70 WARN=0 ERROR=1 SKIP=6  (27s)
+      ! 69 of 75 ERROR creating sql table model dwh.dim_employee ....................... [ERROR in 0.05s]
 08:37:06    Database Error in model dim_employee (models/dwh/dim/dim_employee.sql)
   column e.birthdy does not exist
   LINE 59:     date_part('year', age(current_date, e.birthdy))::int as ...
@@ -29,7 +29,7 @@ git diff dbt/models/dwh/dim/dim_employee.sql
 - `Database Error`: lỗi do Postgres trả về (khác với `FAIL` của test).
 - `column e.birthdy does not exist` cho tên cột sai. Dòng `HINT: Perhaps you meant ...` thường gợi ý đúng tên.
 - `LINE 59` là dòng trong **SQL đã biên dịch** (đã thay `{{ ref() }}` và macro), không phải dòng trong file model. Tìm bằng nội dung dòng đó (`age(current_date, e.birthdy)`).
-- `SKIP=5`: các test của `dim_employee` và test phụ thuộc không chạy.
+- `SKIP=6`: các test của `dim_employee` và test phụ thuộc không chạy.
 
 ## Cách sửa
 Sửa lại đúng tên cột:

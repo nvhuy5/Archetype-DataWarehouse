@@ -15,11 +15,11 @@ docker compose exec -T postgres-local psql -U postgres -d analytics_db \
 
 ## Thông báo lỗi
 ```
-[3/4] dbt build                   OK  PASS=28 WARN=1 ERROR=0 SKIP=0  (25s)
-      ! 24 of 27 WARN 1 relationships_fact_timesheet_phase_id__phase_id__ref_dim_phase_  [WARN 1 in 0.06s]
+[3/4] dbt build                   OK  PASS=30 WARN=1 ERROR=0 SKIP=0  (24s)
+      ! 26 of 29 WARN 1 relationships_fact_timesheet_phase_id__phase_id__ref_dim_phase_  [WARN 1 in 0.06s]
 [4/4] Elementary report           OK  report/elementary_report.html  (37s)
 ---
-Done in 64s. Details: report/logs/
+Done in 60s. Details: report/logs/
 ```
 Trong log:
 ```

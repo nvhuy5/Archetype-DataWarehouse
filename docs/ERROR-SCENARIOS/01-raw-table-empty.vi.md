@@ -16,18 +16,18 @@ docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "trunc
 Trên màn hình:
 ```
 [2/4] Raw data (seeded)           OK  61 tables
-[3/4] dbt build                   FAILED  PASS=65 WARN=0 ERROR=1 SKIP=10  (29s)
-      ! 10 of 74 FAIL 1 source_not_empty_raw_intranet_hr_table_main_ ................... [FAIL 1 in 0.06s]
+[3/4] dbt build                   FAILED  PASS=65 WARN=0 ERROR=1 SKIP=11  (26s)
+      ! 10 of 75 FAIL 1 source_not_empty_raw_intranet_hr_table_main_ ................... [FAIL 1 in 0.06s]
 [4/4] Elementary report           OK  report/elementary_report.html  (35s)
 ---
-Finished with errors in 66s. Details: report/logs/
+Finished with errors in 61s. Details: report/logs/
 ```
 Trong `report/logs/3-dbt.log`:
 ```
-10 of 74 FAIL 1 source_not_empty_raw_intranet_hr_table_main_ ................... [FAIL 1 in 0.06s]
-22 of 74 SKIP relation staging.stg_intranet__hr_table_main ..................... [SKIP]
+10 of 75 FAIL 1 source_not_empty_raw_intranet_hr_table_main_ ................... [FAIL 1 in 0.06s]
+22 of 75 SKIP relation staging.stg_intranet__hr_table_main ..................... [SKIP]
 ...
-69 of 74 SKIP relation dwh.dim_employee ........................................ [SKIP]
+69 of 75 SKIP relation dwh.dim_employee ........................................ [SKIP]
 ...
 Failure in test source_not_empty_raw_intranet_hr_table_main_ (models/staging/intranet/hr/_hr__sources.yml)
   Got 1 result, configured to fail if != 0
@@ -36,7 +36,7 @@ Failure in test source_not_empty_raw_intranet_hr_table_main_ (models/staging/int
 ## Đọc thông báo và nguyên nhân
 - Tên test `source_not_empty_raw_intranet_hr_table_main_` cho biết **bảng nào** rỗng: `raw_intranet.hr_table_main`.
 - `FAIL` (không phải `ERROR`): test chạy được và kết luận dữ liệu xấu.
-- `SKIP=10`: 10 phần tử phụ thuộc bảng này (view `stg_intranet__hr_table_main`, các test của nó, `dim_employee` và test của nó) **không chạy**. Nhờ vậy `dwh` và `mart` **không bị ghi đè bằng dữ liệu rỗng**; chúng giữ dữ liệu của lần build thành công trước.
+- `SKIP=11`: 11 phần tử phụ thuộc bảng này (view `stg_intranet__hr_table_main`, các test của nó, `dim_employee` và test của nó) **không chạy**. Nhờ vậy `dwh` và `mart` **không bị ghi đè bằng dữ liệu rỗng**; chúng giữ dữ liệu của lần build thành công trước.
 - Vì sao cần test riêng: `unique`, `not_null` và `schema_changes` đều **pass** trên bảng rỗng. Không có `not_empty` thì dbt xanh và `dim_employee` rỗng mà không ai biết.
 
 ## Cách sửa
@@ -68,5 +68,5 @@ Không còn `FAIL`, `ERROR` hay `SKIP`.
 `./scripts/seed_local.sh` (bước sửa ở trên đã là bước trả lại).
 
 ## Phòng tránh
-- `not_empty` được gắn vào **cả 61 source** (`dbt/tests/generic/not_empty.sql`), và `scripts/check_conventions.py` báo lỗi nếu có source thiếu test này.
-- Test này chỉ bắt bảng rỗng **hoàn toàn**. Bảng nạp thiếu nhiều dòng thì chưa có test; xem ý tưởng `elementary.volume_anomalies` trong [12](12-empty-model-silent.vi.md).
+- `not_empty` được gắn vào **cả 61 source** và **mọi model `dim_*`, `fact_*`, `mart_*`** (`dbt/tests/generic/not_empty.sql`), và `scripts/check_conventions.py` báo lỗi nếu thiếu.
+- Test này chỉ bắt bảng rỗng **hoàn toàn**. Bảng nạp thiếu nhiều dòng thì chưa có test; xem ý tưởng `elementary.volume_anomalies` trong [12](12-empty-model.vi.md).

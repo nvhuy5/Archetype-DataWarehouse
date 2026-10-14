@@ -48,7 +48,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 | `dbt/` | project dbt |
 | `dbt/models/dwh/` | dimension, fact, thư mục `intermediate/` |
 | `dbt/models/mart/`, `mart_restricted/` | bảng cho báo cáo; bảng `*_pii` |
-| `dbt/tests/generic/` | test dùng chung; `not_empty` áp cho mọi bảng raw (nạp ra bảng rỗng không được qua im lặng) |
+| `dbt/tests/generic/` | test dùng chung; `not_empty` áp cho mọi bảng raw và mọi model `dim_*`, `fact_*`, `mart_*` (bảng rỗng không được qua im lặng) |
 | `dbt/seeds/` | `public_holidays` (đang để trống, chờ khách cung cấp) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (test) |
 | `warehouse/local/init/` | chỉ cho Postgres local: schema, role, phân quyền (chạy khi database còn trống) |
