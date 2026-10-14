@@ -34,7 +34,7 @@ INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL
 | `staging` | mỗi bảng raw một view `stg_intranet__<bảng>` (bỏ hậu tố `_2015`) | cắt khoảng trắng, chuỗi rỗng thành NULL, snake_case; không join, không quy tắc nghiệp vụ |
 | `dwh` | `dim_*`, `fact_*`, `int_*`: join, tổng hợp, quy tắc nghiệp vụ | `dim_employee`, `dim_office`, `dim_phase`, `fact_timesheet`, `fact_headcount_monthly`... (Timesheet và headcount HR) |
 | `mart` | bảng riêng cho từng báo cáo, đã che dữ liệu cá nhân, Power BI đọc (`powerbi_ro`) | `mart_ts_details`, `mart_ts_employees`, `mart_ts_offices`, `mart_ts_departments` |
-| `mart_restricted` | bảng `mart_*_pii` đầy đủ, chỉ role `pii_admin` đọc; hiện trống vì Timesheet không có dữ liệu cá nhân | |
+| `mart_restricted` | bảng `mart_*_pii` đầy đủ, chỉ role `pii_admin` đọc | `mart_hr_employee_pii` (bản che: view `mart.mart_hr_employee`) | |
 
 `fact_timesheet` có một dòng cho mỗi dòng timesheet từ `timesheet_from_date` (biến dbt, mặc định 2020-01-01 như SSIS). `dim_office` chưa có các cột NAV của `Dim_Offices` cũ vì NAV chưa được nạp.
 
@@ -50,7 +50,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 |---|---|
 | `dbt/` | project dbt |
 | `dbt/models/dwh/` | dimension, fact, thư mục `intermediate/` |
-| `dbt/models/mart/`, `mart_restricted/` | bảng cho báo cáo; bảng `*_pii` (hiện trống) |
+| `dbt/models/mart/`, `mart_restricted/` | bảng cho báo cáo; bảng `*_pii` |
 | `dbt/seeds/` | `public_holidays` (đang để trống, chờ khách cung cấp) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (test) |
 | `warehouse/init/` | phần platform tạo một lần: schema và login, bảng raw, phân quyền |

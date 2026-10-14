@@ -34,7 +34,7 @@ INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL
 | `staging` | one `stg_intranet__<table>` view per raw table (`_2015` suffix dropped) | trim text, empty string to NULL, snake_case, no joins, no business rules |
 | `dwh` | `dim_*`, `fact_*`, `int_*`: joins, aggregates, business rules | `dim_employee`, `dim_office`, `dim_phase`, `fact_timesheet`, `fact_headcount_monthly`... (Timesheet and HR head count) |
 | `mart` | one set of tables per report, personal data masked, read by Power BI (`powerbi_ro`) | `mart_ts_details`, `mart_ts_employees`, `mart_ts_offices`, `mart_ts_departments` |
-| `mart_restricted` | unmasked `mart_*_pii` tables, admin role only (`pii_admin`); empty for now, Timesheet has no personal data | |
+| `mart_restricted` | unmasked `mart_*_pii` tables, admin role only (`pii_admin`) | `mart_hr_employee_pii` (masked view: `mart.mart_hr_employee`) | |
 
 `fact_timesheet` has one row per timesheet entry since `timesheet_from_date` (dbt var, default 2020-01-01 as in SSIS). The NAV columns of the old `Dim_Offices` are not in `dim_office` yet because NAV is not loaded.
 
@@ -50,7 +50,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 |---|---|
 | `dbt/` | the dbt project |
 | `dbt/models/dwh/` | dimensions, facts, `intermediate/` |
-| `dbt/models/mart/`, `mart_restricted/` | report tables; `*_pii` tables (empty for now) |
+| `dbt/models/mart/`, `mart_restricted/` | report tables; `*_pii` tables |
 | `dbt/seeds/` | `public_holidays` (empty, waiting for the customer) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (tests) |
 | `warehouse/init/` | what the platform team creates once: schemas and login, raw tables, grants |
