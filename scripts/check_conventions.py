@@ -1,7 +1,8 @@
 """Model conventions (see NAMING.vi.md), read from the dbt manifest, and the local seed files of the raw tables.
 Run after `dbt parse`: python3 scripts/check_conventions.py target/manifest.json [warehouse/local/seed]
 With the seed folder, every source table needs one file <seed>/<schema>/<table>.sql and every file needs a source.
-Every source table must carry the not_empty test (an empty raw table would otherwise pass every other test)."""
+Every source table must carry the not_empty test (an empty raw table would otherwise pass every other test),
+and so must every dim_*, fact_* and mart_* model (an empty model would otherwise pass unique and not_null)."""
 import json
 import os
 import re
@@ -51,6 +52,8 @@ for node_id, node in manifest["nodes"].items():
         (manifest["nodes"].get(child, {}).get("test_metadata") or {}).get("name")
         for child in manifest["child_map"].get(node_id, [])
     }
+    if re.search(r"/(dwh/(dim|fact)|mart|mart_restricted)/", path) and "not_empty" not in tests:
+        errors.append(f"{name}: no not_empty test (an empty model must not pass silently)")
     if not tests & KEY_TESTS and "No primary key" not in description:
         errors.append(f"{name}: no key test (unique/not_null) and the description does not say 'No primary key'")
 

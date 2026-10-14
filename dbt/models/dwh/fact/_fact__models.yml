@@ -4,6 +4,7 @@ models:
   - name: fact_headcount_monthly
     description: "Head count, leavers and newcomers per employee and month, while the employee has a contract."
     tests:
+      - not_empty
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns: [month_key, employee_id]
     columns:
@@ -14,6 +15,8 @@ models:
 
   - name: fact_timesheet
     description: "One row per timesheet entry since var timesheet_from_date."
+    tests:
+      - not_empty
     columns:
       - name: entry_id
         tests: [unique, not_null]

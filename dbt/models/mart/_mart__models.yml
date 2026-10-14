@@ -3,6 +3,8 @@ version: 2
 models:
   - name: mart_ts_details
     description: "Timesheet report, table TS_Details: one row per timesheet entry since var timesheet_from_date, with phase, project, contract, component and calendar columns."
+    tests:
+      - not_empty
     columns:
       - name: entry_id
         tests: [unique, not_null]
@@ -15,24 +17,32 @@ models:
 
   - name: mart_ts_employees
     description: "Timesheet report, table Employees: employees in status 7 and 8. No personal identity, bank, tax or insurance columns, so nothing to mask."
+    tests:
+      - not_empty
     columns:
       - name: employee_id
         tests: [unique, not_null]
 
   - name: mart_ts_offices
     description: "Timesheet report, table Offices."
+    tests:
+      - not_empty
     columns:
       - name: office_id
         tests: [unique, not_null]
 
   - name: mart_ts_departments
     description: "Timesheet report, table Departments."
+    tests:
+      - not_empty
     columns:
       - name: department_id
         tests: [unique, not_null]
 
   - name: mart_hr_employee
     description: "Masked employees for Power BI, a view on mart_hr_employee_pii. No ID card, tax, insurance, bank or installments; personal email and phones keep only the last 4 characters; only the age, not the birthday."
+    tests:
+      - not_empty
     columns:
       - name: employee_id
         tests: [unique, not_null]

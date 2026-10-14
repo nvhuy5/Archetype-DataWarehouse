@@ -3,6 +3,8 @@ version: 2
 models:
   - name: dim_date
     description: "Calendar, one row per day. Work day = Monday to Friday except public_holidays."
+    tests:
+      - not_empty
     columns:
       - name: date_key
         tests: [unique, not_null]
@@ -11,18 +13,24 @@ models:
 
   - name: dim_department
     description: "Departments with business line (empty business line becomes SUP) and full names."
+    tests:
+      - not_empty
     columns:
       - name: department_id
         tests: [unique, not_null]
 
   - name: dim_employee_level
     description: "Employee levels (categories)."
+    tests:
+      - not_empty
     columns:
       - name: employee_level_id
         tests: [unique, not_null]
 
   - name: dim_phase
     description: "Timesheet phases (types of event) with is_productive and main_group (Billable Project, Internal & Downtime, Leave & Holiday, Others)."
+    tests:
+      - not_empty
     columns:
       - name: phase_id
         tests: [unique, not_null]
@@ -33,12 +41,16 @@ models:
 
   - name: dim_project
     description: "Timesheet projects."
+    tests:
+      - not_empty
     columns:
       - name: project_id
         tests: [unique, not_null]
 
   - name: dim_contract
     description: "Timesheet contracts. A contract belongs to a project."
+    tests:
+      - not_empty
     columns:
       - name: contract_id
         tests: [unique, not_null]
@@ -48,6 +60,8 @@ models:
 
   - name: dim_component
     description: "Timesheet components. A component belongs to a contract."
+    tests:
+      - not_empty
     columns:
       - name: component_id
         tests: [unique, not_null]
@@ -57,12 +71,16 @@ models:
 
   - name: dim_office
     description: "Offices that have at least one employee record, with country and e-project office. NAV columns are not included yet."
+    tests:
+      - not_empty
     columns:
       - name: office_id
         tests: [unique, not_null]
 
   - name: dim_employee
     description: "Employees in status 7 and 8 with department, job title, level, offices, direct manager, current contract and first interview date. Birthday is not exposed, only the age."
+    tests:
+      - not_empty
     columns:
       - name: employee_id
         tests: [unique, not_null]
