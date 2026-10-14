@@ -21,3 +21,6 @@ CREATE SCHEMA IF NOT EXISTS elementary      AUTHORIZATION dbt_rw;
 CREATE SCHEMA IF NOT EXISTS mart            AUTHORIZATION dbt_rw;
 CREATE SCHEMA IF NOT EXISTS mart_restricted AUTHORIZATION dbt_rw;
 -- dwh is created by dbt itself (needs CREATE on the database, granted in 02_grants.sql)
+
+-- Nobody may create objects in public (already the default since PostgreSQL 15; explicit for older servers)
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
