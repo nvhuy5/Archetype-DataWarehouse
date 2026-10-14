@@ -30,3 +30,15 @@ models:
     columns:
       - name: department_id
         tests: [unique, not_null]
+
+  - name: mart_hr_employee
+    description: "Masked employees for Power BI, a view on mart_hr_employee_pii. No ID card, tax, insurance, bank or installments; personal email and phones keep only the last 4 characters; only the age, not the birthday."
+    columns:
+      - name: employee_id
+        tests: [unique, not_null]
+      - name: personal_email
+        tests:
+          - dbt_utils.expression_is_true: {expression: "is null or personal_email like '***%'"}
+      - name: phone_mobile
+        tests:
+          - dbt_utils.expression_is_true: {expression: "is null or phone_mobile like '***%'"}

@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: mart_hr_employee_pii
+    description: "Unmasked employees (status 7 and 8) with identity, bank, tax, insurance, contact and birthday. Admin role only. The masked version is mart_hr_employee."
+    columns:
+      - name: employee_id
+        tests: [unique, not_null]
