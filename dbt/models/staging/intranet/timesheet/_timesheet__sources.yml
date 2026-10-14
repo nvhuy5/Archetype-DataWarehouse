@@ -7,13 +7,25 @@ sources:
     tables:
       - name: timesheet_component_2015
         description: "Timesheet components."
+        tests:
+          - not_empty
       - name: timesheet_contract_2015
         description: "Timesheet contracts."
+        tests:
+          - not_empty
       - name: timesheet_delta
         description: "Timesheet delta written back by ACT_SendTSDelta. Expected to be dropped, kept for parity with the old package."
+        tests:
+          - not_empty
       - name: timesheet_entry_2015
         description: "Timesheet entries, one row per employee, day and phase. The biggest table (about 1.5 million rows)."
+        tests:
+          - not_empty
       - name: timesheet_phase_2015
         description: "Timesheet phases (type of event)."
+        tests:
+          - not_empty
       - name: timesheet_project_2015
         description: "Timesheet projects."
+        tests:
+          - not_empty

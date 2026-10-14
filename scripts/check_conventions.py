@@ -1,6 +1,7 @@
 """Model conventions (see NAMING.vi.md), read from the dbt manifest, and the local seed files of the raw tables.
 Run after `dbt parse`: python3 scripts/check_conventions.py target/manifest.json [warehouse/local/seed]
-With the seed folder, every source table needs one file <seed>/<schema>/<table>.sql and every file needs a source."""
+With the seed folder, every source table needs one file <seed>/<schema>/<table>.sql and every file needs a source.
+Every source table must carry the not_empty test (an empty raw table would otherwise pass every other test)."""
 import json
 import os
 import re
@@ -56,6 +57,17 @@ for node_id, node in manifest["nodes"].items():
     # no select * (column drift in the source must not pass silently)
     if re.search(r"select\s+(distinct(\s+on\s*\([^)]*\))?\s+)?\*|[\w\"]\.\*", code, re.I):
         errors.append(f"{name}: uses select *; list the columns")
+
+# every raw (source) table is tested for being empty (severity may be warn, with a reason in the yml)
+for source_id, source in manifest["sources"].items():
+    if source["package_name"] != "archetype":
+        continue
+    tests = {
+        (manifest["nodes"].get(child, {}).get("test_metadata") or {}).get("name")
+        for child in manifest["child_map"].get(source_id, [])
+    }
+    if "not_empty" not in tests:
+        errors.append(f"{source['source_name']}.{source['name']}: source has no not_empty test")
 
 # one seed file per raw (source) table, and no file without a source
 if len(sys.argv) > 2:

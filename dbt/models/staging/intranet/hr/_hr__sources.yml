@@ -7,41 +7,81 @@ sources:
     tables:
       - name: hr_menu_country
         description: "Countries."
+        tests:
+          - not_empty
       - name: hr_menu_department
         description: "Departments with business line."
+        tests:
+          - not_empty
       - name: hr_menu_employee_level
         description: "Employee levels (categories)."
+        tests:
+          - not_empty
       - name: hr_menu_job_title
         description: "Job titles."
+        tests:
+          - not_empty
       - name: hr_menu_leave_type
         description: "Leave types."
+        tests:
+          - not_empty
       - name: hr_menu_offices
         description: "Offices."
+        tests:
+          - not_empty
       - name: hr_menu_process_status
         description: "Employee process statuses (used to name hr_table_main.estatus)."
+        tests:
+          - not_empty
       - name: hr_table_contract
         description: "Employee contracts. Pay-related columns are not exposed in staging."
+        tests:
+          - not_empty
       - name: hr_table_contract_type
         description: "Contract types."
+        tests:
+          - not_empty
       - name: hr_table_direct_manager
         description: "Direct manager of each employee (composite key id_e, id_m)."
+        tests:
+          - not_empty
       - name: hr_table_leave
         description: "Leave balance per employee."
+        tests:
+          - not_empty
       - name: hr_table_leave_approval
         description: "Leave requests and their approval status."
+        tests:
+          - not_empty
       - name: hr_table_leave_approval_detail
         description: "One row per leave day of a leave request. No primary key in the source."
+        tests:
+          - not_empty
       - name: hr_table_main
         description: "Employees. Personal identity, bank, tax, insurance and contact columns are not exposed in staging."
+        tests:
+          - not_empty
       - name: hr_table_office_tracking
         description: "Office transfer history. No primary key in the source."
+        tests:
+          - not_empty
       - name: hr_table_phone_interview
         description: "Phone interviews. Candidate birthday, nationality and salary are not exposed in staging."
+        tests:
+          - not_empty
       - name: hr_table_pre_interview
         description: "Pre interviews. Salary, insurance and bonus columns are not exposed in staging."
+        tests:
+          - not_empty
       - name: hr_table_tech_interview
         description: "Technical interviews."
+        tests:
+          - not_empty
       - name: hr_table_training_kpi
         description: "Training KPI."
+        tests:
+          - not_empty
       - name: jobs_list
         description: "Open vacancies."
+        tests:
+          - not_empty

@@ -7,21 +7,41 @@ sources:
     tables:
       - name: finance_multiplier
         description: "Finance multipliers."
+        tests:
+          - not_empty
       - name: prm_budget_revision_position
         description: "Budget revision positions."
+        tests:
+          - not_empty
       - name: prm_budget_revision_setup
         description: "Budget revision setup."
+        tests:
+          - not_empty
       - name: prm_budget_revisions
         description: "Budget revisions."
+        tests:
+          - not_empty
       - name: prm_e_project_country
         description: "E-Project offices per country."
+        tests:
+          - not_empty
       - name: prm_organization_contact
         description: "Organization contacts of projects."
+        tests:
+          - not_empty
       - name: prm_project
         description: "Projects."
+        tests:
+          - not_empty
       - name: prm_project_addendum
         description: "Project addenda."
+        tests:
+          - not_empty
       - name: prm_purchase_order_position
         description: "Purchase order positions."
+        tests:
+          - not_empty
       - name: prm_subcontract
         description: "Subcontracts."
+        tests:
+          - not_empty

@@ -7,31 +7,61 @@ sources:
     tables:
       - name: crm_component
         description: "CRM contract components (parts of a contract)."
+        tests:
+          - not_empty
       - name: crm_link_project_client
         description: "Link between CRM projects and clients. No primary key in the source."
+        tests:
+          - not_empty
       - name: crm_link_project_scope
         description: "Link between CRM projects and project scopes. No primary key in the source."
+        tests:
+          - not_empty
       - name: crm_list_competitors
         description: "List of competitors."
+        tests:
+          - not_empty
       - name: crm_list_project_scope
         description: "List of project scopes."
+        tests:
+          - not_empty
       - name: crm_list_reason
         description: "List of reasons, joined to proposal dead reasons."
+        tests:
+          - not_empty
       - name: crm_main
         description: "CRM clients."
+        tests:
+          - not_empty
       - name: crm_market
         description: "CRM markets."
+        tests:
+          - not_empty
       - name: crm_proposal_dead_reason
         description: "Reasons why a proposal was lost."
+        tests:
+          - not_empty
       - name: crm_segment
         description: "CRM segments."
+        tests:
+          - not_empty
       - name: crm_sub_segment
         description: "CRM sub segments."
+        tests:
+          - not_empty
       - name: crm_table_contracts
         description: "CRM contracts."
+        tests:
+          - not_empty
       - name: crm_table_contracts_competitor
         description: "Competitors per CRM contract."
+        tests:
+          - not_empty
       - name: crm_table_projects
         description: "CRM projects."
+        tests:
+          - not_empty
       - name: crm_target
         description: "CRM targets."
+        tests:
+          - not_empty
