@@ -6,31 +6,28 @@ Chuyển package SSIS `ACT_Intranet_warehouse_3` sang ELT: các bảng Intranet 
 dbt đưa chúng lên `staging`. Logic nghiệp vụ (join, tổng hợp) thuộc các layer sau là `dwh` và `mart`.
 
 ```
-Intranet --[ADF]--> raw_intranet --[image dbt: dbt build]--> staging (→ dwh → mart) --[image Elementary]--> báo cáo HTML
+Intranet --[ADF, project ingestion]--> raw_intranet --[image dbt: dbt build]--> staging (→ dwh → mart) --[image Elementary]--> báo cáo HTML
 ```
 
 ## Chạy thử (chỉ cần Docker)
 
 ```bash
-./scripts/run_local.sh            # in tóm tắt ngắn, log chi tiết ở report/logs/
-./scripts/run_local.sh --reset    # xóa sạch database rồi chạy lại
+./scripts/seed_local.sh           # một lần, và sau khi sửa file seed: tạo bảng raw cùng dòng mẫu
+./scripts/run_local.sh            # dbt build + báo cáo Elementary; in tóm tắt ngắn, log chi tiết ở report/logs/
+./scripts/seed_local.sh --reset   # xóa sạch database local rồi seed lại
 ```
 
-Lệnh trên dựng warehouse rỗng (bảng raw tạo từ `warehouse/init`), nạp vào `raw_intranet` vài dòng dữ liệu giả cho mỗi bảng
-(thay cho ADF), chạy `dbt build` (61 model staging, các model `dwh` và test), rồi chạy Elementary.
-
-Chạy với dữ liệu Intranet thật (chỉ đọc, cần mạng tới MySQL):
-
-```bash
-INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL_DATABASE=archetype_intranet \
-  ./scripts/run_local.sh --mysql
-```
+dbt chỉ đọc `raw_intranet`; việc nạp từ MySQL là của project ingestion (ADF), nằm ngoài repo này.
+Ở local, `postgres-local` đóng vai warehouse: `seed_local.sh` tạo từng bảng raw từ file của nó trong
+`warehouse/local/seed/raw_intranet/` (câu `CREATE TABLE` cùng vài dòng mẫu). `run_local.sh` sau đó chạy `dbt build`
+(61 model staging, các model `dwh`, `mart` và test) rồi Elementary. Nó chỉ kiểm tra bảng raw đã có và cảnh báo khi file seed
+đổi (hoặc seed đã quá 7 ngày) so với lần seed cuối; nó không tự dựng lại raw.
 
 ## Các layer
 
 | Layer | Nội dung | Quy tắc |
 |---|---|---|
-| `raw_intranet` | 61 bảng, cùng tên và cột với nguồn MySQL | ADF nạp, không có logic, không sửa tại chỗ |
+| `raw_intranet` | 61 bảng, cùng tên và cột với nguồn MySQL | project ingestion (ADF) nạp, không có logic, không sửa tại chỗ |
 | `staging` | mỗi bảng raw một view `stg_intranet__<bảng>` (bỏ hậu tố `_2015`) | cắt khoảng trắng, chuỗi rỗng thành NULL, snake_case; không join, không quy tắc nghiệp vụ |
 | `dwh` | `dim_*`, `fact_*`, `int_*`: join, tổng hợp, quy tắc nghiệp vụ | `dim_employee`, `dim_office`, `dim_phase`, `fact_timesheet`, `fact_headcount_monthly`... (Timesheet và headcount HR) |
 | `mart` | bảng riêng cho từng báo cáo, đã che dữ liệu cá nhân, Power BI đọc (`powerbi_ro`) | `mart_ts_details`, `mart_ts_employees`, `mart_ts_offices`, `mart_ts_departments` |
@@ -53,20 +50,21 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 | `dbt/models/mart/`, `mart_restricted/` | bảng cho báo cáo; bảng `*_pii` |
 | `dbt/seeds/` | `public_holidays` (đang để trống, chờ khách cung cấp) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (test) |
-| `warehouse/init/` | phần platform tạo một lần: schema và login, bảng raw, phân quyền |
-| `ingest/`, `ingest.Dockerfile` | thay thế ADF khi test local (chế độ `sample` hoặc `mysql`) |
+| `warehouse/local/init/` | chỉ cho Postgres local: schema, role, phân quyền (chạy khi database còn trống) |
+| `warehouse/local/seed/raw_intranet/` | mỗi bảng raw một file: `CREATE TABLE` + dòng mẫu, `scripts/seed_local.sh` áp vào |
 | `dbt.Dockerfile`, `elementary.Dockerfile` | hai image chạy thật |
 | `scripts/` | kiểm tra chạy bằng tay: quy tắc repo và quy ước model (xem `docs/TEST-LOCAL.vi.md`) |
 | `docker-compose.yml` | môi trường test local |
 
 ## Thêm một model
 
-1. Có bảng raw mới? Thêm `CREATE TABLE` vào `warehouse/init/02_raw_intranet.sql` (và ADF phải nạp vào `raw_intranet` với cùng tên).
-   Khai báo trong `_<domain>__sources.yml` của domain đó.
+1. Có bảng raw mới? Thêm `warehouse/local/seed/raw_intranet/<bảng>.sql` (`CREATE TABLE` đúng tên và cột của nguồn, kèm dòng mẫu;
+   project ingestion phải nạp đúng bảng đó vào `raw_intranet`). Khai báo trong `_<domain>__sources.yml` của domain đó.
+   Model cần giá trị khác (join, trường hợp biên)? Sửa dòng mẫu trong file seed của bảng nó đọc.
 2. Thêm `stg_intranet__<bảng>.sql` và test tương ứng trong `_<domain>__models.yml`.
 3. Cần layer mới? Tạo thư mục dưới `dbt/models/` và thêm khối tương ứng trong `dbt/dbt_project.yml`.
-4. Tạo schema một lần trong warehouse và cấp quyền cho `dbt_rw` (xem `warehouse/init/03_grants.sql`).
-5. Chạy `./scripts/run_local.sh` để kiểm tra.
+4. Tạo schema một lần trong warehouse và cấp quyền cho `dbt_rw` (bản local: `warehouse/local/init/02_grants.sql`).
+5. Chạy `./scripts/seed_local.sh` (sau mỗi thay đổi seed), rồi `./scripts/run_local.sh` để kiểm tra.
 
 ## Biến môi trường khi chạy thật (production)
 

@@ -6,7 +6,7 @@
 
 | Schema | Nội dung | Ai ghi |
 |---|---|---|
-| `raw_<nguồn>` | Bản sao nguyên gốc của nguồn. Ví dụ `raw_intranet`; sau này `raw_nav`, `raw_static`, `raw_sharepoint` | ADF (ở local là `ingest/load_raw.py`) |
+| `raw_<nguồn>` | Bản sao nguyên gốc của nguồn. Ví dụ `raw_intranet`; sau này `raw_nav`, `raw_static`, `raw_sharepoint` | Project ingestion (ADF). Ở local: file seed trong `warehouse/local/seed/` |
 | `staging` | Model `stg_*` | dbt |
 | `dwh` | `dim_*`, `fact_*`, `int_*`, seed | dbt |
 | `mart` | `mart_*`: bản đã che dữ liệu cá nhân, cho Power BI | dbt |
@@ -19,7 +19,7 @@ Tên schema do dbt macro `generate_schema_name` quyết định: lấy đúng t�
 - **Tên bảng giống hệt nguồn** (`hr_table_main`, `timesheet_entry_2015`). Không đổi tên, không bỏ hậu tố.
 - **Tên cột viết thường.** MySQL không phân biệt hoa thường nên `TenantID` thành `tenantid`. Việc đổi sang `snake_case` làm ở staging.
 - Giữ **đủ cột** của nguồn, không `SELECT *` rồi bỏ cột. Không khóa, không ràng buộc, để một lần nạp không bao giờ bị từ chối.
-- Định nghĩa bảng nằm trong `warehouse/init/02_raw_intranet.sql`. Bảng raw mới phải thêm vào đây.
+- Mỗi bảng raw local là một file `warehouse/local/seed/raw_intranet/<bảng>.sql`: `CREATE TABLE` kèm vài dòng mẫu. Bảng raw mới phải có file này.
 
 Ánh xạ kiểu dữ liệu MySQL sang PostgreSQL:
 

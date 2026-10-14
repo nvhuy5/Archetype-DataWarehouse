@@ -46,9 +46,9 @@ Bảng nguồn nào cần cho một phép join mà package không nạp riêng (
 ## Bước 3. Raw và staging
 **Raw**
 - [ ] Lấy định nghĩa bảng nguồn (DDL), đổi kiểu theo bảng ánh xạ trong NAMING.vi.md.
-- [ ] Thêm `CREATE TABLE` vào `warehouse/init/02_raw_intranet.sql` (hoặc file raw của nguồn mới).
+- [ ] Tạo `warehouse/local/seed/raw_intranet/<bảng>.sql` (hoặc thư mục raw của nguồn mới): `CREATE TABLE` đúng tên và cột, kèm vài dòng mẫu. Project ingestion nạp đúng bảng này ở môi trường thật.
 - [ ] Nạp **bảng gốc**, không nạp view của nguồn nếu dựng lại được ở dwh.
-- [ ] Loader local: thêm giá trị mẫu cho các cột cần join trong `ingest/load_raw.py` (`OVERRIDES`).
+- [ ] Dòng mẫu: sửa tay trong file seed để các cột cần join khớp nhau; cột ngày mà model so với ngày hiện tại thì viết tương đối (`current_date - 30`). Chạy `./scripts/seed_local.sh` sau khi sửa.
 
 **Staging**
 - [ ] Khai báo bảng trong `_<domain>__sources.yml`, mô tả ngắn.
@@ -57,7 +57,7 @@ Bảng nguồn nào cần cho một phép join mà package không nạp riêng (
 - [ ] Test khóa chính trong `_<domain>__models.yml` (khóa ghép dùng `dbt_utils.unique_combination_of_columns`); `elementary.schema_changes`.
 - [ ] Bảng không có khóa chính: ghi rõ trong mô tả.
 
-Chạy kiểm tra: `./scripts/run_local.sh`. Kết quả phải là `ERROR=0`.
+Chạy kiểm tra: `./scripts/seed_local.sh` rồi `./scripts/run_local.sh`. Kết quả phải là `ERROR=0`.
 
 ## Bước 4. DWH
 - [ ] Tìm định nghĩa view hoặc stored procedure của kho cũ cho phần cần dựng.
@@ -65,7 +65,7 @@ Chạy kiểm tra: `./scripts/run_local.sh`. Kết quả phải là `ERROR=0`.
 - [ ] Phép join đặt ở dwh. Quy tắc nghiệp vụ cũ giữ nguyên; chỗ nào cố ý khác bản cũ thì ghi vào comment đầu file.
 - [ ] Mốc lịch sử, ngưỡng: dùng biến dbt có chú thích.
 - [ ] Test: khóa (`unique`, `not_null`); khóa ngoại và giá trị hợp lệ để `severity: warn`.
-- [ ] Dữ liệu mẫu: bảo đảm loader tạo dữ liệu đủ để model có dòng, kiểm tra kết quả bằng truy vấn thật.
+- [ ] Dữ liệu mẫu: bổ sung dòng mẫu trong file seed của các bảng raw mà model đọc, đủ để model có dòng; kiểm tra kết quả bằng truy vấn thật.
 
 ## Bước 5. Mart
 - [ ] Chốt với khách báo cáo nào cần.
@@ -75,7 +75,7 @@ Chạy kiểm tra: `./scripts/run_local.sh`. Kết quả phải là `ERROR=0`.
 - [ ] Test: khóa (`unique`, `not_null`); khóa ngoại để `severity: warn`. Mart không cần `schema_changes`.
 
 ## Bước 6. Đối soát
-- [ ] Chạy với dữ liệu nguồn thật (`INGEST_MODE=mysql`, chỉ đọc).
+- [ ] Chạy trên Postgres có dữ liệu raw thật (do project ingestion nạp; trỏ `PG*` tới đó, tài khoản chỉ đọc raw), không dùng seed.
 - [ ] So kho cũ và mới theo thứ tự: số dòng từng bảng raw so với nguồn; số dòng và tổng giờ/headcount ở dwh; số liệu KPI của báo cáo.
 - [ ] So **cùng khoảng ngày** (kho cũ có mốc cố định và có thể thiếu dòng do SSIS nuốt lỗi).
 - [ ] Lệch nào cũng phân loại: lỗi của hệ thống mới, lỗi của hệ thống cũ, hay khác biệt có chủ ý. Ghi kết quả.
@@ -90,7 +90,7 @@ Chạy kiểm tra: `./scripts/run_local.sh`. Kết quả phải là `ERROR=0`.
 ## Định nghĩa hoàn thành (Definition of Done)
 Cách chạy và kiểm tra từng mục: [TEST-LOCAL.vi.md](TEST-LOCAL.vi.md) (có script `scripts/check_conventions.py` và `scripts/check_repo.py`).
 
-- `./scripts/run_local.sh --reset` thành công từ trạng thái sạch, `ERROR=0`.
+- `./scripts/seed_local.sh --reset` rồi `./scripts/run_local.sh` thành công từ trạng thái sạch, `ERROR=0`.
 - Mọi model có mô tả; khóa có test.
 - Không còn `SELECT *`, mốc ngày hay `LIMIT` hardcode trong model.
 - Không có cột cá nhân hoặc secret trong staging, dwh, mart và trong commit.
@@ -105,6 +105,6 @@ Cách chạy và kiểm tra từng mục: [TEST-LOCAL.vi.md](TEST-LOCAL.vi.md) (
 | `char(n)` bị đệm khoảng trắng | Raw dùng `varchar(n)`, staging `btrim` |
 | Ngày `0000-00-00` trong MySQL | Loader chuyển thành `NULL`; hỏi khách nếu cột đó quan trọng |
 | `SELECT *` với view của nguồn: cột mới bị bỏ âm thầm | Nạp bảng gốc, liệt kê cột; `elementary.schema_changes` báo khi nguồn đổi |
-| Dữ liệu mẫu cho dim rỗng vì không khớp điều kiện lọc | Thêm giá trị vào `OVERRIDES` của loader |
+| Dữ liệu mẫu cho dim rỗng vì không khớp điều kiện lọc | Sửa dòng mẫu trong file seed của bảng raw tương ứng (rồi chạy `./scripts/seed_local.sh`) |
 | Thư mục `report/` thuộc root, Elementary không ghi được | Compose đã có service `report-dir` xử lý |
 | Test khóa ngoại fail trên dữ liệu thật (id 0, NULL) | Để `severity: warn`, xem lại khi đối soát |

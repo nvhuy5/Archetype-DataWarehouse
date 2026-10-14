@@ -6,31 +6,28 @@ Migration of the `ACT_Intranet_warehouse_3` SSIS package to ELT: Intranet (MySQL
 and dbt exposes them in `staging`. Business logic (joins, aggregates) belongs to the next layers, `dwh` and `mart`.
 
 ```
-Intranet --[ADF]--> raw_intranet --[dbt image: dbt build]--> staging (→ dwh → mart) --[Elementary image]--> HTML report
+Intranet --[ADF, ingestion project]--> raw_intranet --[dbt image: dbt build]--> staging (→ dwh → mart) --[Elementary image]--> HTML report
 ```
 
 ## Try it (Docker only)
 
 ```bash
-./scripts/run_local.sh            # short summary on screen, full logs in report/logs/
-./scripts/run_local.sh --reset    # wipe the database first
+./scripts/seed_local.sh           # once, and after editing a seed file: raw tables with their sample rows
+./scripts/run_local.sh            # dbt build + Elementary report; short summary on screen, full logs in report/logs/
+./scripts/seed_local.sh --reset   # wipe the local database, then seed again
 ```
 
-Starts an empty warehouse (raw tables created from `warehouse/init`), fills `raw_intranet` with a few synthetic rows per table
-(stands in for ADF), runs `dbt build` (61 staging models, the `dwh` models and their tests), then Elementary.
-
-Real Intranet data (read only, needs network access to MySQL):
-
-```bash
-INGEST_MODE=mysql MYSQL_HOST=<host> MYSQL_USER=<user> MYSQL_PASSWORD=<pwd> MYSQL_DATABASE=archetype_intranet \
-  ./scripts/run_local.sh --mysql
-```
+dbt only reads `raw_intranet`; loading it from MySQL is the job of the ingestion project (ADF), outside this repo.
+Locally, `postgres-local` plays the warehouse: `seed_local.sh` creates each raw table from its file in
+`warehouse/local/seed/raw_intranet/` (the `CREATE TABLE` plus a few sample rows). `run_local.sh` then runs `dbt build`
+(61 staging models, the `dwh` and `mart` models and their tests) and Elementary. It only checks that the raw tables exist
+and warns when the seed files changed (or are older than 7 days) since the last seed; it never rebuilds raw itself.
 
 ## Layers
 
 | Layer | Content | Rule |
 |---|---|---|
-| `raw_intranet` | 61 tables, same name and columns as the MySQL source | loaded by ADF, no logic, never edited in place |
+| `raw_intranet` | 61 tables, same name and columns as the MySQL source | loaded by the ingestion project (ADF), no logic, never edited in place |
 | `staging` | one `stg_intranet__<table>` view per raw table (`_2015` suffix dropped) | trim text, empty string to NULL, snake_case, no joins, no business rules |
 | `dwh` | `dim_*`, `fact_*`, `int_*`: joins, aggregates, business rules | `dim_employee`, `dim_office`, `dim_phase`, `fact_timesheet`, `fact_headcount_monthly`... (Timesheet and HR head count) |
 | `mart` | one set of tables per report, personal data masked, read by Power BI (`powerbi_ro`) | `mart_ts_details`, `mart_ts_employees`, `mart_ts_offices`, `mart_ts_departments` |
@@ -53,20 +50,21 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 | `dbt/models/mart/`, `mart_restricted/` | report tables; `*_pii` tables |
 | `dbt/seeds/` | `public_holidays` (empty, waiting for the customer) |
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (tests) |
-| `warehouse/init/` | what the platform team creates once: schemas and login, raw tables, grants |
-| `ingest/`, `ingest.Dockerfile` | local stand-in for ADF (`sample` or `mysql` mode) |
+| `warehouse/local/init/` | local Postgres only: schemas, roles, grants (run when its database is empty) |
+| `warehouse/local/seed/raw_intranet/` | one file per raw table: `CREATE TABLE` + sample rows, applied by `scripts/seed_local.sh` |
 | `dbt.Dockerfile`, `elementary.Dockerfile` | the two production images |
 | `scripts/` | checks to run by hand: repository rules and model conventions (see `docs/TEST-LOCAL.vi.md`) |
 | `docker-compose.yml` | the local test |
 
 ## Add a model
 
-1. New raw table? Add its `CREATE TABLE` to `warehouse/init/02_raw_intranet.sql` (and ADF must load it into `raw_intranet`, same name).
-   Declare it in the `_<domain>__sources.yml` of its domain.
+1. New raw table? Add `warehouse/local/seed/raw_intranet/<table>.sql` (`CREATE TABLE` with the source's name and columns, plus sample rows;
+   the ingestion project must load the same table into `raw_intranet`). Declare it in the `_<domain>__sources.yml` of its domain.
+   A model that needs other values (joins, edge cases)? Edit the rows of the seed file of the table it reads.
 2. Add `stg_intranet__<table>.sql` and its tests in `_<domain>__models.yml`.
 3. New layer? Make the folder under `dbt/models/` and add its block in `dbt/dbt_project.yml`.
-4. Create the schema once in the warehouse and grant `dbt_rw` on it (see `warehouse/init/03_grants.sql`).
-5. `./scripts/run_local.sh` to check.
+4. Create the schema once in the warehouse and grant `dbt_rw` on it (see `warehouse/local/init/02_grants.sql` for the local one).
+5. `./scripts/seed_local.sh` (after any seed change), then `./scripts/run_local.sh` to check.
 
 ## Run contract (production)
 
