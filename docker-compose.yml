@@ -16,7 +16,7 @@ services:
 
   dbt:
     build: {context: ., dockerfile: dbt.Dockerfile}
-    environment: &pg {PGHOST: postgres-local, PGUSER: dbt_rw, PGPASSWORD: dbt_rw, PGDATABASE: analytics_db, PGSSLMODE: disable}
+    environment: &pg {DBT_TARGET: local, PGHOST: postgres-local, PGUSER: dbt_rw, PGPASSWORD: dbt_rw, PGDATABASE: analytics_db}
     depends_on: {postgres-local: {condition: service_healthy}}
 
   report-dir:                    # makes ./report writable for the non-root user of the Elementary image

@@ -72,6 +72,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 |---|---|---|
 | `PGHOST`, `PGUSER`, `PGPASSWORD` | required | warehouse, the `dbt_rw` login, its password (secret store) |
 | `PGDATABASE` / `PGPORT` / `PGSSLMODE` | `analytics_db` / `5432` / `require` | |
+| `DBT_TARGET` | `prod` | profile target in `dbt/profiles.yml`; only `docker-compose.yml` sets `local` (no SSL), so a forgotten variable never uses local settings |
 | `DBT_ARGS` (dbt image) | `--selector default` | arguments of `dbt build` |
 
 **Network:** neither image needs internet at run time: the dbt packages (including the ones of `edr`) are baked in at build.

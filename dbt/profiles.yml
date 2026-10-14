@@ -1,6 +1,20 @@
+# DBT_TARGET picks the environment (default prod, so a missing variable never lands on a local setting):
+#   local  the postgres-local container of docker-compose.yml (no SSL)
+#   prod   the Azure PostgreSQL (SSL required)
+# Host, login and password always come from PG* variables, never from this file.
 archetype:
-  target: prod
+  target: "{{ env_var('DBT_TARGET', 'prod') }}"
   outputs:
+    local:
+      type: postgres
+      host: "{{ env_var('PGHOST') }}"
+      port: "{{ env_var('PGPORT', '5432') | as_number }}"
+      user: "{{ env_var('PGUSER') }}"
+      password: "{{ env_var('PGPASSWORD') }}"
+      dbname: "{{ env_var('PGDATABASE', 'analytics_db') }}"
+      schema: public
+      sslmode: "{{ env_var('PGSSLMODE', 'disable') }}"
+      threads: 4
     prod:
       type: postgres
       host: "{{ env_var('PGHOST') }}"
@@ -14,8 +28,18 @@ archetype:
 
 # Elementary (data observability): `edr report` reads the elementary schema written by `dbt build`
 elementary:
-  target: prod
+  target: "{{ env_var('DBT_TARGET', 'prod') }}"
   outputs:
+    local:
+      type: postgres
+      host: "{{ env_var('PGHOST') }}"
+      port: "{{ env_var('PGPORT', '5432') | as_number }}"
+      user: "{{ env_var('PGUSER') }}"
+      password: "{{ env_var('PGPASSWORD') }}"
+      dbname: "{{ env_var('PGDATABASE', 'analytics_db') }}"
+      schema: elementary
+      sslmode: "{{ env_var('PGSSLMODE', 'disable') }}"
+      threads: 4
     prod:
       type: postgres
       host: "{{ env_var('PGHOST') }}"
