@@ -52,6 +52,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (tests) |
 | `warehouse/local/init/` | local Postgres only: schemas, roles, grants (run when its database is empty) |
 | `warehouse/local/seed/raw_intranet/` | one file per raw table: `CREATE TABLE` + sample rows, applied by `scripts/seed_local.sh` |
+| `warehouse/prod/` | production PostgreSQL: schemas, roles (no passwords) and grants, run once by the platform team (see `docs/DEPLOY-AZURE.vi.md`) |
 | `dbt.Dockerfile`, `elementary.Dockerfile` | the two production images |
 | `scripts/` | `seed_local.sh`, `run_local.sh`, and checks to run by hand: repository rules, model conventions, `check_prod_sql.sh` (see `docs/TEST-LOCAL.vi.md`) |
 | `docker-compose.yml` | the local test |
@@ -63,7 +64,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
    A model that needs other values (joins, edge cases)? Edit the rows of the seed file of the table it reads.
 2. Add `stg_intranet__<table>.sql` and its tests in `_<domain>__models.yml`.
 3. New layer? Make the folder under `dbt/models/` and add its block in `dbt/dbt_project.yml`.
-4. Create the schema once in the warehouse and grant `dbt_rw` on it (see `warehouse/local/init/02_grants.sql` for the local one).
+4. Create the schema once in the warehouse and grant `dbt_rw` on it: in `warehouse/local/init/` for local and in `warehouse/prod/` for production (keep them the same, then run `./scripts/check_prod_sql.sh`).
 5. `./scripts/seed_local.sh` (after any seed change), then `./scripts/run_local.sh` to check.
 
 ## Run contract (production)

@@ -52,6 +52,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 | `dbt/models/staging/intranet/<domain>/` | `hr`, `timesheet`, `crm`, `prm`, `strategic`: `_<domain>__sources.yml`, `stg_*.sql`, `_<domain>__models.yml` (test) |
 | `warehouse/local/init/` | chỉ cho Postgres local: schema, role, phân quyền (chạy khi database còn trống) |
 | `warehouse/local/seed/raw_intranet/` | mỗi bảng raw một file: `CREATE TABLE` + dòng mẫu, `scripts/seed_local.sh` áp vào |
+| `warehouse/prod/` | PostgreSQL production: schema, role (không có mật khẩu) và phân quyền, platform team chạy một lần (xem `docs/DEPLOY-AZURE.vi.md`) |
 | `dbt.Dockerfile`, `elementary.Dockerfile` | hai image chạy thật |
 | `scripts/` | `seed_local.sh`, `run_local.sh` và các kiểm tra chạy bằng tay: quy tắc repo, quy ước model, `check_prod_sql.sh` (xem `docs/TEST-LOCAL.vi.md`) |
 | `docker-compose.yml` | môi trường test local |
@@ -63,7 +64,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
    Model cần giá trị khác (join, trường hợp biên)? Sửa dòng mẫu trong file seed của bảng nó đọc.
 2. Thêm `stg_intranet__<bảng>.sql` và test tương ứng trong `_<domain>__models.yml`.
 3. Cần layer mới? Tạo thư mục dưới `dbt/models/` và thêm khối tương ứng trong `dbt/dbt_project.yml`.
-4. Tạo schema một lần trong warehouse và cấp quyền cho `dbt_rw` (bản local: `warehouse/local/init/02_grants.sql`).
+4. Tạo schema một lần trong warehouse và cấp quyền cho `dbt_rw`: trong `warehouse/local/init/` cho local và `warehouse/prod/` cho production (giữ hai bên giống nhau, rồi chạy `./scripts/check_prod_sql.sh`).
 5. Chạy `./scripts/seed_local.sh` (sau mỗi thay đổi seed), rồi `./scripts/run_local.sh` để kiểm tra.
 
 ## Biến môi trường khi chạy thật (production)
