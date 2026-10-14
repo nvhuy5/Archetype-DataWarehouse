@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-# Runs the whole chain locally and prints a short summary. Full logs go to report/logs/.
-#   ./scripts/run_local.sh                 sample data, whole project
-#   ./scripts/run_local.sh --reset         wipe the database first (docker compose down -v)
-#   ./scripts/run_local.sh --reset-data    recreate the sample rows (use after changing OVERRIDES in ingest/load_raw.py)
+# dbt build (models + tests) and the Elementary report on the local Postgres, with a short summary. Full logs go to report/logs/.
+# The raw tables must exist: run ./scripts/seed_local.sh first, and again after editing a seed file.
+#   ./scripts/run_local.sh                 whole project
 #   ./scripts/run_local.sh --select "--select +fact_timesheet"   arguments of `dbt build` (the Elementary report is always built)
-#   INGEST_MODE=mysql MYSQL_HOST=... MYSQL_USER=... MYSQL_PASSWORD=... ./scripts/run_local.sh --mysql   real Intranet data
 set -u
 cd "$(dirname "$0")/.."
 export COMPOSE_IGNORE_ORPHANS=True
@@ -12,11 +10,8 @@ export COMPOSE_IGNORE_ORPHANS=True
 SELECT=""
 while [ $# -gt 0 ]; do
   case "$1" in
-    --reset) RESET=1 ;;
-    --reset-data) export SAMPLE_RESET=1 ;;
-    --mysql) export INGEST_MODE=mysql ;;
     --select) shift; SELECT="${1:-}" ;;
-    -h|--help) sed -n '2,8p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,6p' "$0"; exit 0 ;;
     *) echo "Unknown option: $1 (see --help)"; exit 2 ;;
   esac
   shift
@@ -26,8 +21,6 @@ if [ -t 1 ]; then OK=$'\e[32mOK\e[0m'; FAIL=$'\e[31mFAILED\e[0m'; WARN=$'\e[33m'
 strip() { sed 's/\x1b\[[0-9;]*m//g' "$1"; }
 status=0
 total_start=$SECONDS
-
-[ "${RESET:-0}" = 1 ] && docker compose down -v >/dev/null 2>&1
 
 # report/ must be writable by the container user; log files live there too
 docker compose run --rm --no-deps -T report-dir >/dev/null 2>&1
@@ -81,14 +74,22 @@ stage "[1/4] Build images"
 run_stage build "$LOGS/1-build.log" docker compose build
 if [ $RC -eq 0 ]; then echo "$OK  $(took)"; else echo "$FAIL"; tail -15 "$LOGS/1-build.log"; exit 1; fi
 
-# 2. warehouse + raw data
-stage "[2/4] Raw data (${INGEST_MODE:-sample})"
-run_stage ingest "$LOGS/2-ingest.log" bash -c 'docker compose up -d --wait pg-analytics && docker compose run --rm --no-deps -T ingest'
-if [ $RC -eq 0 ]; then
-  created=$(grep -c "rows created\| rows$" "$LOGS/2-ingest.log"); kept=$(grep -c ": kept" "$LOGS/2-ingest.log")
-  echo "$OK  $created tables loaded, $kept kept  $(took)"
-else
-  echo "$FAIL"; grep -E "FAILED|Error|error" "$LOGS/2-ingest.log" | head -10; exit 1
+# 2. raw data: only checked here, seed_local.sh creates it
+stage "[2/4] Raw data (seeded)"
+seed_hash() { find warehouse/local/seed -name '*.sql' | LC_ALL=C sort | xargs cat | sha256sum | cut -d' ' -f1; }
+psql_local() { docker compose exec -T postgres-local psql -At -U postgres -d analytics_db -c "$1"; }
+docker compose up -d --wait postgres-local >"$LOGS/2-raw.log" 2>&1
+expected=$(ls warehouse/local/seed/raw_intranet/*.sql | wc -l)
+have=$(psql_local "select count(*) from information_schema.tables where table_schema = 'raw_intranet'" 2>>"$LOGS/2-raw.log" || echo 0)
+if [ "$have" != "$expected" ]; then
+  printf '%-34s' "$LABEL"; echo "$FAIL  raw_intranet has $have of $expected tables. Run ./scripts/seed_local.sh first"; exit 1
+fi
+printf '%-34s' "$LABEL"; echo "$OK  $have tables"
+stamp=$(psql_local "select hash || ' ' || seeded_on from public.seed_stamp" 2>/dev/null || true)
+if [ "${stamp%% *}" != "$(seed_hash)" ]; then
+  echo "      ${WARN}! Seed files changed since the last ./scripts/seed_local.sh: dbt runs on the old rows${END}"
+elif [ -n "$stamp" ] && [ "$(( ($(date +%s) - $(date -d "${stamp##* }" +%s)) / 86400 ))" -gt 7 ]; then
+  echo "      ${WARN}! Raw data was seeded on ${stamp##* }: dates relative to today have drifted, run ./scripts/seed_local.sh${END}"
 fi
 
 # 3. dbt
