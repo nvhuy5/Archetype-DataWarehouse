@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.timesheet_component_2015 (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."timesheet_component_2015";
-CREATE TABLE raw_intranet."timesheet_component_2015" (
+CREATE TABLE IF NOT EXISTS raw_intranet."timesheet_component_2015" (
     "timesheet_component_id" integer,
     "contract_id" integer,
     "component_name" varchar(200),
@@ -16,6 +16,7 @@ CREATE TABLE raw_intranet."timesheet_component_2015" (
     "factor" varchar(5),
     "send_to_navision" date
 );
+TRUNCATE raw_intranet."timesheet_component_2015";
 INSERT INTO raw_intranet."timesheet_component_2015" ("timesheet_component_id", "contract_id", "component_name", "navision_code", "status", "department_check", "status_effect_date", "last_update", "change_status_date", "factor", "send_to_navision") VALUES
     (1, 1, 'component_name_1', 'navision_code_1', 'status_1', 1, '2026-01-02', '2026-01-02', '2026-01-02 08:00:00', 'facto', '2026-01-02'),
     (2, 2, 'component_name_2', 'navision_code_2', 'status_2', 2, '2026-01-03', '2026-01-03', '2026-01-03 08:00:00', 'facto', '2026-01-03'),

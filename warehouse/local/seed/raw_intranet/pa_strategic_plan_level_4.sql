@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.pa_strategic_plan_level_4 (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."pa_strategic_plan_level_4";
-CREATE TABLE raw_intranet."pa_strategic_plan_level_4" (
+CREATE TABLE IF NOT EXISTS raw_intranet."pa_strategic_plan_level_4" (
     "pa_strategic_plan_level_4_id" integer,
     "pa_strategic_plan_level_3_id" integer,
     "pa_strategic_plan_level_2_id" integer,
@@ -16,6 +16,7 @@ CREATE TABLE raw_intranet."pa_strategic_plan_level_4" (
     "person_in_charge_email" varchar(70),
     "person_report_email" varchar(70)
 );
+TRUNCATE raw_intranet."pa_strategic_plan_level_4";
 INSERT INTO raw_intranet."pa_strategic_plan_level_4" ("pa_strategic_plan_level_4_id", "pa_strategic_plan_level_3_id", "pa_strategic_plan_level_2_id", "pa_strategic_plan_level_1_id", "level_4_name", "status", "goal_description", "person_in_charge", "expected_date", "person_in_charge_email", "person_report_email") VALUES
     (1, 1, 1, 1, 'level_4_name_1', 'status_1', 'goal_description_1', 'person_in_charge_1', '2026-01-02', 'person_in_charge_email_1', 'person_report_email_1'),
     (2, 2, 2, 2, 'level_4_name_2', 'status_2', 'goal_description_2', 'person_in_charge_2', '2026-01-03', 'person_in_charge_email_2', 'person_report_email_2'),

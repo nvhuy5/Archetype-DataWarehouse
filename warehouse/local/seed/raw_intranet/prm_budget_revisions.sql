@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.prm_budget_revisions (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."prm_budget_revisions";
-CREATE TABLE raw_intranet."prm_budget_revisions" (
+CREATE TABLE IF NOT EXISTS raw_intranet."prm_budget_revisions" (
     "prm_budget_revisions_id" integer,
     "component_code" varchar(50),
     "type_contract" varchar(15),
@@ -19,6 +19,7 @@ CREATE TABLE raw_intranet."prm_budget_revisions" (
     "created_at" timestamp,
     "validated_at" timestamp
 );
+TRUNCATE raw_intranet."prm_budget_revisions";
 INSERT INTO raw_intranet."prm_budget_revisions" ("prm_budget_revisions_id", "component_code", "type_contract", "office_id", "currency", "value", "serial", "type", "status", "oldrevision", "description", "created_by", "created_at", "validated_at") VALUES
     (1, 'component_code_1', 'type_contract_1', 1, 'currency_1', 1, 1, 'type_1', 1, 1, 'description_1', 'created_by_1', '2026-01-02 08:00:00', '2026-01-02 08:00:00'),
     (2, 'component_code_2', 'type_contract_2', 2, 'currency_2', 2, 2, 'type_2', 2, 2, 'description_2', 'created_by_2', '2026-01-03 08:00:00', '2026-01-03 08:00:00'),

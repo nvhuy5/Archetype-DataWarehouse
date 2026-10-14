@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.crm_main (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."crm_main";
-CREATE TABLE raw_intranet."crm_main" (
+CREATE TABLE IF NOT EXISTS raw_intranet."crm_main" (
     "idc" integer,
     "code" varchar(255),
     "name" varchar(255),
@@ -36,6 +36,7 @@ CREATE TABLE raw_intranet."crm_main" (
     "tenantid" smallint,
     "mother_company_id" integer
 );
+TRUNCATE raw_intranet."crm_main";
 INSERT INTO raw_intranet."crm_main" ("idc", "code", "name", "mother_company_type", "mother_company_info", "crm_company_industry_code_id", "crm_market_id", "crm_segment_id", "crm_sub_segment_id", "green_roadmap_status", "status", "flag2", "new_flag2", "risk_ass", "risk_comment", "is_key", "representative", "last_modified", "cdate", "key_company", "asia_headquarter", "worldwide_headquarter", "nationality", "crm_market", "crm_segment", "crm_sub_segment", "list_nationality", "opportunities", "comment", "tenantid", "mother_company_id") VALUES
     (1, 'code_1', 'name_1', 1, 'mother_company_info_1', 'crm_c', 1, 1, 1, 'green_roadmap_status_1', 'status_1', 'flag2_1', 'new_flag2_1', 'risk_', 'risk_comment_1', 'i', 'representative_1', '2026-01-02 08:00:00', '2026-01-02 08:00:00', 'k', 'asia_headquarter_1', 'worldwide_headquarter_1', 1, 'crm_market_1', 'crm_segment_1', 'crm_sub_segment_1', 'list_nationality_1', 1, 'comment_1', 1, 1),
     (2, 'code_2', 'name_2', 2, 'mother_company_info_2', 'crm_c', 2, 2, 2, 'green_roadmap_status_2', 'status_2', 'flag2_2', 'new_flag2_2', 'risk_', 'risk_comment_2', 'i', 'representative_2', '2026-01-03 08:00:00', '2026-01-03 08:00:00', 'k', 'asia_headquarter_2', 'worldwide_headquarter_2', 2, 'crm_market_2', 'crm_segment_2', 'crm_sub_segment_2', 'list_nationality_2', 2, 'comment_2', 2, 2),

@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.hr_table_leave_approval (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."hr_table_leave_approval";
-CREATE TABLE raw_intranet."hr_table_leave_approval" (
+CREATE TABLE IF NOT EXISTS raw_intranet."hr_table_leave_approval" (
     "id" integer,
     "id_e" integer,
     "type" varchar(20),
@@ -18,6 +18,7 @@ CREATE TABLE raw_intranet."hr_table_leave_approval" (
     "force_send_to_managing_director" smallint,
     "managing_director_ide" integer
 );
+TRUNCATE raw_intranet."hr_table_leave_approval";
 INSERT INTO raw_intranet."hr_table_leave_approval" ("id", "id_e", "type", "balance", "from", "to", "approved", "cuser", "cdate", "withdraw_history", "replace_by", "force_send_to_managing_director", "managing_director_ide") VALUES
     (1, 1, 'type_1', 1, '2026-01-02', '2026-01-02', 1, 1, '2026-01-02 08:00:00', 'withdraw_history_1', 1, 1, 1),
     (2, 2, 'type_2', 2, '2026-01-03', '2026-01-03', 2, 2, '2026-01-03 08:00:00', 'withdraw_history_2', 2, 2, 2),

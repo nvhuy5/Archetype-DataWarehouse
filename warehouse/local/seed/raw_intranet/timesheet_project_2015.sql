@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.timesheet_project_2015 (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."timesheet_project_2015";
-CREATE TABLE raw_intranet."timesheet_project_2015" (
+CREATE TABLE IF NOT EXISTS raw_intranet."timesheet_project_2015" (
     "timesheet_project_id" integer,
     "project_name" varchar(200),
     "office" smallint,
@@ -14,6 +14,7 @@ CREATE TABLE raw_intranet."timesheet_project_2015" (
     "last_update" timestamp,
     "change_status_date" timestamp
 );
+TRUNCATE raw_intranet."timesheet_project_2015";
 INSERT INTO raw_intranet."timesheet_project_2015" ("timesheet_project_id", "project_name", "office", "project_type", "status", "status_effect_date", "project_manager", "last_update", "change_status_date") VALUES
     (1, 'project_name_1', 1, 'pr', 'status_1', '2026-01-02', 'project_manager_1', '2026-01-02 08:00:00', '2026-01-02 08:00:00'),
     (2, 'project_name_2', 2, 'pr', 'status_2', '2026-01-03', 'project_manager_2', '2026-01-03 08:00:00', '2026-01-03 08:00:00'),

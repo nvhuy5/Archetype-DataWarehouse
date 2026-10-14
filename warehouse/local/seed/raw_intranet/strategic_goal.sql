@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.strategic_goal (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."strategic_goal";
-CREATE TABLE raw_intranet."strategic_goal" (
+CREATE TABLE IF NOT EXISTS raw_intranet."strategic_goal" (
     "strategic_goal_id" integer,
     "strategic_objective_id" integer,
     "goal" varchar(500),
@@ -15,6 +15,7 @@ CREATE TABLE raw_intranet."strategic_goal" (
     "year" varchar(4),
     "priority" varchar(1)
 );
+TRUNCATE raw_intranet."strategic_goal";
 INSERT INTO raw_intranet."strategic_goal" ("strategic_goal_id", "strategic_objective_id", "goal", "start_date", "deadline", "level", "status", "weight_goal", "year", "priority") VALUES
     (1, 1, 'goal_1', '2026-01-02', '2026-01-02', 'level_1', 'status_1', 'weig', 'year', 'p'),
     (2, 2, 'goal_2', '2026-01-03', '2026-01-03', 'level_2', 'status_2', 'weig', 'year', 'p'),

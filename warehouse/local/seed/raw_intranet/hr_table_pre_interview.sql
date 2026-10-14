@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.hr_table_pre_interview (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."hr_table_pre_interview";
-CREATE TABLE raw_intranet."hr_table_pre_interview" (
+CREATE TABLE IF NOT EXISTS raw_intranet."hr_table_pre_interview" (
     "idpre" integer,
     "id_e" integer,
     "ap_date" date,
@@ -50,6 +50,7 @@ CREATE TABLE raw_intranet."hr_table_pre_interview" (
     "ex_school" varchar(255),
     "ex_retire" varchar(255)
 );
+TRUNCATE raw_intranet."hr_table_pre_interview";
 INSERT INTO raw_intranet."hr_table_pre_interview" ("idpre", "id_e", "ap_date", "adate", "interviewer", "location", "motivation", "marital", "wife_occ", "child_nb", "child_school", "current_employer", "current_position", "position_since", "notice_delay", "umployed_since", "reason", "current_salary", "current_accomodo", "current_transp", "current_mobili", "current_fticket", "current_insurances", "current_other", "expected_salary", "expected_accomodo", "expected_transp", "expected_mobili", "expected_fticket", "expected_insurances", "expected_other", "preferred_location", "tech_interview", "prefered_date", "contact_number", "not_selected", "not_selected_reason", "salary_curr_gross", "salary_exp_gross", "bonus", "school", "retire", "ex_bonus", "ex_school", "ex_retire") VALUES
     (1, 1, '2026-01-02', '2026-01-02', 'interviewer_1', 'location_1', 'motivation_1', 'marital_1', 'wife_occ_1', 1, 'c', 'current_employer_1', 'current_position_1', 'position_since_1', 'notice_delay_1', 'umployed_since_1', 'reason_1', 'current_salary_1', 'current_accomodo_1', 'current_transp_1', 'current_mobili_1', 'current_fticket_1', 'current_insurances_1', 'current_other_1', 'expected_salary_1', 'expected_accomodo_1', 'expected_transp_1', 'expected_mobili_1', 'expected_fticket_1', 'expected_insurances_1', 'expected_other_1', 'preferred_location_1', 'tech_interview_1', '2026-01-02', 'contact_number_1', 'n', 'not_selected_reason_1', 'salary_curr_gross_1', 'salary_exp_gross_1', 'bonus_1', 'school_1', 'retire_1', 'ex_bonus_1', 'ex_school_1', 'ex_retire_1'),
     (2, 2, '2026-01-03', '2026-01-03', 'interviewer_2', 'location_2', 'motivation_2', 'marital_2', 'wife_occ_2', 2, 'c', 'current_employer_2', 'current_position_2', 'position_since_2', 'notice_delay_2', 'umployed_since_2', 'reason_2', 'current_salary_2', 'current_accomodo_2', 'current_transp_2', 'current_mobili_2', 'current_fticket_2', 'current_insurances_2', 'current_other_2', 'expected_salary_2', 'expected_accomodo_2', 'expected_transp_2', 'expected_mobili_2', 'expected_fticket_2', 'expected_insurances_2', 'expected_other_2', 'preferred_location_2', 'tech_interview_2', '2026-01-03', 'contact_number_2', 'n', 'not_selected_reason_2', 'salary_curr_gross_2', 'salary_exp_gross_2', 'bonus_2', 'school_2', 'retire_2', 'ex_bonus_2', 'ex_school_2', 'ex_retire_2'),

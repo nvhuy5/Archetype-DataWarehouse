@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.finance_multiplier (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."finance_multiplier";
-CREATE TABLE raw_intranet."finance_multiplier" (
+CREATE TABLE IF NOT EXISTS raw_intranet."finance_multiplier" (
     "id" integer,
     "country_id" integer,
     "year" varchar(10),
@@ -13,6 +13,7 @@ CREATE TABLE raw_intranet."finance_multiplier" (
     "business_line" varchar(100),
     "overhead_rate" real
 );
+TRUNCATE raw_intranet."finance_multiplier";
 INSERT INTO raw_intranet."finance_multiplier" ("id", "country_id", "year", "percent_of_other_cost", "external_client", "internal_client", "business_line", "overhead_rate") VALUES
     (1, 1, 'year_1', 'percent_of_other_cos', 'external_client_1', 'internal_client_1', 'business_line_1', 1),
     (2, 2, 'year_2', 'percent_of_other_cos', 'external_client_2', 'internal_client_2', 'business_line_2', 2),

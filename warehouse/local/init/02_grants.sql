@@ -1,7 +1,7 @@
 -- Local test only: access of the three roles. Same grants as warehouse/prod/02_grants.sql (see 01_schemas_roles.sql).
 GRANT USAGE ON SCHEMA raw_intranet TO dbt_rw;
 GRANT SELECT ON ALL TABLES IN SCHEMA raw_intranet TO dbt_rw;
--- The seed files drop and recreate the raw tables (as postgres): new ones must stay readable by dbt without a new grant
+-- Raw tables are created by the seed files (as postgres): new ones must be readable by dbt without a new grant
 ALTER DEFAULT PRIVILEGES IN SCHEMA raw_intranet GRANT SELECT ON TABLES TO dbt_rw;
 
 GRANT USAGE ON SCHEMA mart TO powerbi_ro, pii_admin;

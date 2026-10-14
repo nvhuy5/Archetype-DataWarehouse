@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.hr_menu_offices (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."hr_menu_offices";
-CREATE TABLE raw_intranet."hr_menu_offices" (
+CREATE TABLE IF NOT EXISTS raw_intranet."hr_menu_offices" (
     "idf" integer,
     "offices" varchar(255),
     "display_office_name" varchar(500),
@@ -32,6 +32,7 @@ CREATE TABLE raw_intranet."hr_menu_offices" (
     "default_tax" integer,
     "hrm_hide" smallint
 );
+TRUNCATE raw_intranet."hr_menu_offices";
 INSERT INTO raw_intranet."hr_menu_offices" ("idf", "offices", "display_office_name", "legal_office_name", "countrywork", "workinglocation", "address", "address_v2", "default_phone_number", "area_code", "work_location_only", "crm_office", "office_code", "country_code", "country_id", "crm_project_category", "crm_country", "hide", "candidate_hide", "grp", "bd_manager", "managing_director", "regional_director", "location_longitude", "location_latitude", "default_tax", "hrm_hide") VALUES
     (1, 'offices_1', 'display_office_name_1', 'legal_office_name_1', 'countrywork_1', 'workinglocation_1', 'address_1', 'address_v2_1', 'default_phone_number_1', 'area_code_1', 'w', 1, 'off', 'cou', 1, 1, 'crm_country_1', 1, 1, 'g', 'bd_manager_1', 'managing_director_1', 'regional_director_1', 'location_longitude_1', 'location_latitude_1', 1, 1),
     (2, 'offices_2', 'display_office_name_2', 'legal_office_name_2', 'countrywork_2', 'workinglocation_2', 'address_2', 'address_v2_2', 'default_phone_number_2', 'area_code_2', 'w', 2, 'off', 'cou', 2, 2, 'crm_country_2', 2, 2, 'g', 'bd_manager_2', 'managing_director_2', 'regional_director_2', 'location_longitude_2', 'location_latitude_2', 2, 2),

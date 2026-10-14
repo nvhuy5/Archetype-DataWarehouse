@@ -1,15 +1,16 @@
 -- Sample rows for raw_intranet.strategic_member_of_task (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."strategic_member_of_task";
-CREATE TABLE raw_intranet."strategic_member_of_task" (
+CREATE TABLE IF NOT EXISTS raw_intranet."strategic_member_of_task" (
     "strategic_member_of_task_id" integer,
     "strategic_task_id" integer,
     "email" varchar(250),
     "added_by" varchar(250),
     "added_time" timestamp
 );
+TRUNCATE raw_intranet."strategic_member_of_task";
 INSERT INTO raw_intranet."strategic_member_of_task" ("strategic_member_of_task_id", "strategic_task_id", "email", "added_by", "added_time") VALUES
     (1, 1, 'email_1', 'added_by_1', '2026-01-02 08:00:00'),
     (2, 2, 'email_2', 'added_by_2', '2026-01-03 08:00:00'),

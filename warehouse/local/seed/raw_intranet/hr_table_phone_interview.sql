@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.hr_table_phone_interview (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."hr_table_phone_interview";
-CREATE TABLE raw_intranet."hr_table_phone_interview" (
+CREATE TABLE IF NOT EXISTS raw_intranet."hr_table_phone_interview" (
     "hr_table_phone_interview_id" integer,
     "idm" varchar(50),
     "birthday" date,
@@ -28,6 +28,7 @@ CREATE TABLE raw_intranet."hr_table_phone_interview" (
     "vacant_position" varchar(55),
     "family_childs" varchar(55)
 );
+TRUNCATE raw_intranet."hr_table_phone_interview";
 INSERT INTO raw_intranet."hr_table_phone_interview" ("hr_table_phone_interview_id", "idm", "birthday", "nationality", "family_status", "education", "current_location", "current_position_detail", "technical_specialty", "reason_leaving", "personality", "current_salary", "expectations", "availabilities", "recommend", "interview_date", "interviewer", "precommend", "frecommend", "pnote", "fnote", "vacant_position", "family_childs") VALUES
     (1, 'md5_1', '2026-01-02', 'nationality_1', 'family_status_1', 'education_1', 'current_location_1', 'current_position_detail_1', 'technical_specialty_1', 'reason_leaving_1', 'personality_1', 'current_salary_1', 'expectations_1', 'availabilities_1', 'recommend_1', '2026-01-02', 'interviewer_1', 'precommend_1', 'frecommend_1', 'pnote_1', 'fnote_1', 'vacant_position_1', 'family_childs_1'),
     (2, 'md5_2', '2026-01-03', 'nationality_2', 'family_status_2', 'education_2', 'current_location_2', 'current_position_detail_2', 'technical_specialty_2', 'reason_leaving_2', 'personality_2', 'current_salary_2', 'expectations_2', 'availabilities_2', 'recommend_2', '2026-01-03', 'interviewer_2', 'precommend_2', 'frecommend_2', 'pnote_2', 'fnote_2', 'vacant_position_2', 'family_childs_2'),

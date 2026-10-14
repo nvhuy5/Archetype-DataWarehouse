@@ -13,11 +13,11 @@ Sửa model/test ─────────────────────
 ```bash
 ./scripts/seed_local.sh
 ```
-Chạy **lần đầu**, và **mỗi khi thêm hoặc sửa file seed**. Mỗi bảng raw là một file `warehouse/local/seed/raw_intranet/<bảng>.sql`: `DROP` + `CREATE TABLE` (đúng tên và cột của nguồn) + vài dòng mẫu, trong một transaction. Script áp cả 61 file (khoảng 7 giây) và ghi lại dấu (hash của thư mục seed và ngày seed).
+Chạy **lần đầu**, và **mỗi khi thêm hoặc sửa file seed**. Mỗi bảng raw là một file `warehouse/local/seed/raw_intranet/<bảng>.sql`: `CREATE TABLE IF NOT EXISTS` (đúng tên và cột của nguồn) + `TRUNCATE` + vài dòng mẫu, trong một transaction. Giống cách ingestion ở prod, bảng chỉ được tạo một lần còn dòng thì được thay, nên view staging của dbt không bị đụng tới và seed chạy lại được bất cứ lúc nào. Script áp cả 61 file (khoảng 7 giây) và ghi lại dấu (hash của thư mục seed và ngày seed).
 
 | Lệnh | Tác dụng |
 |---|---|
-| `./scripts/seed_local.sh` | Dựng lại mọi bảng raw từ file seed; schema, role, quyền (`warehouse/local/init`) đã có từ lần đầu |
+| `./scripts/seed_local.sh` | Tạo bảng raw nếu chưa có và thay dòng của mọi bảng theo file seed; schema, role, quyền (`warehouse/local/init`) đã có từ lần đầu |
 | `./scripts/seed_local.sh --reset` | Xóa sạch database local (`docker compose down -v`), tạo lại schema, role rồi seed |
 
 - Database nằm trong volume Docker `postgres_local_data`, **sống qua các lần chạy** và qua `docker compose down`; chỉ mất khi `--reset` hoặc `docker compose down -v`.
@@ -98,4 +98,5 @@ Sau cùng commit **local** (tiếng Anh, ngắn gọn, mỗi commit một ý). K
 | Test `relationships` báo `ERROR` khi chỉ build một phần | Bình thường: các dim khác chưa được build trong lần chạy đó |
 | `raw_intranet has N of 61 tables. Run ./scripts/seed_local.sh first` | Chưa seed, hoặc database vừa bị xóa: chạy `./scripts/seed_local.sh` |
 | Cảnh báo `Seed files changed since the last seed` | Vừa sửa file seed mà chưa seed lại: chạy `./scripts/seed_local.sh` |
-| Sau khi sửa file seed mà dữ liệu vẫn như cũ | Chưa chạy `./scripts/seed_local.sh` (đổi cột hay đổi giá trị đều chỉ cần chạy lại, không cần `--reset`) |
+| Sau khi sửa file seed mà dữ liệu vẫn như cũ | Chưa chạy `./scripts/seed_local.sh` |
+| `seed_local.sh` báo `FAILED: ... (columns changed in an existing table?)` | Bạn đã đổi cột của bảng đã tồn tại (bảng chỉ được tạo một lần): chạy `./scripts/seed_local.sh --reset` |

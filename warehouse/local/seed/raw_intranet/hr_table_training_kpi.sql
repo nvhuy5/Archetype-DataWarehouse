@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.hr_table_training_kpi (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."hr_table_training_kpi";
-CREATE TABLE raw_intranet."hr_table_training_kpi" (
+CREATE TABLE IF NOT EXISTS raw_intranet."hr_table_training_kpi" (
     "idhr_table_training_kpi" bigint,
     "office_id" varchar(5),
     "dept_id" varchar(5),
@@ -25,6 +25,7 @@ CREATE TABLE raw_intranet."hr_table_training_kpi" (
     "total_hours_course" varchar(45),
     "total_fee_course" varchar(45)
 );
+TRUNCATE raw_intranet."hr_table_training_kpi";
 INSERT INTO raw_intranet."hr_table_training_kpi" ("idhr_table_training_kpi", "office_id", "dept_id", "emp_code", "internal", "external", "technical", "non_technical", "total_hours_person", "trainers_facilitators", "month", "position", "course_name", "tfrom", "tto", "ctfrom", "ctto", "update_by", "total_hours_course", "total_fee_course") VALUES
     (1, 'offic', 'dept_', 'emp_code_1', 'internal_1', 'external_1', 'technical_1', 'non_technical_1', 'total_hours_person_1', 'trainers_facilitators_1', 'month_1', 'position_1', 'course_name_1', 'tfrom_1', 'tto_1', 'ctfrom_1', 'ctto_1', 'update_by_1', 'total_hours_course_1', 'total_fee_course_1'),
     (2, 'offic', 'dept_', 'emp_code_2', 'internal_2', 'external_2', 'technical_2', 'non_technical_2', 'total_hours_person_2', 'trainers_facilitators_2', 'month_2', 'position_2', 'course_name_2', 'tfrom_2', 'tto_2', 'ctfrom_2', 'ctto_2', 'update_by_2', 'total_hours_course_2', 'total_fee_course_2'),

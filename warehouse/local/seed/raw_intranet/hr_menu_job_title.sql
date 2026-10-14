@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.hr_menu_job_title (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."hr_menu_job_title";
-CREATE TABLE raw_intranet."hr_menu_job_title" (
+CREATE TABLE IF NOT EXISTS raw_intranet."hr_menu_job_title" (
     "idjt" integer,
     "title" varchar(255),
     "title_for_business_card" varchar(255),
@@ -11,6 +11,7 @@ CREATE TABLE raw_intranet."hr_menu_job_title" (
     "employee_level_id" integer,
     "hide" smallint
 );
+TRUNCATE raw_intranet."hr_menu_job_title";
 INSERT INTO raw_intranet."hr_menu_job_title" ("idjt", "title", "title_for_business_card", "dept", "employee_level_id", "hide") VALUES
     (1, 'title_1', 'title_for_business_card_1', 1, 1, 1),
     (2, 'title_2', 'title_for_business_card_2', 2, 2, 2),

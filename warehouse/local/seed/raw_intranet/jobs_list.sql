@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.jobs_list (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."jobs_list";
-CREATE TABLE raw_intranet."jobs_list" (
+CREATE TABLE IF NOT EXISTS raw_intranet."jobs_list" (
     "idj" integer,
     "code" varchar(25),
     "posting_date" date,
@@ -47,6 +47,7 @@ CREATE TABLE raw_intranet."jobs_list" (
     "group_department" varchar(255),
     "project_name" varchar(255)
 );
+TRUNCATE raw_intranet."jobs_list";
 INSERT INTO raw_intranet."jobs_list" ("idj", "code", "posting_date", "job_title", "job_title_id", "job_status", "job_reason", "job_type", "job_office", "job_office_id", "no_of_vacancy", "job_location", "job_department", "job_department_id", "job_reports", "job_respons", "job_education", "job_skills", "job_experience", "job_package", "job_package_note", "project_work", "manage_peoples", "hr_rep", "hr_email", "hr_sent_to", "valid", "confidential", "request_user", "request_date", "offer_date", "offer_ide", "arrival_date", "arrival_asap", "closed", "canceled", "completed", "onhold", "ondraft", "group_department_id", "group_department", "project_name") VALUES
     (1, 'code_1', '2026-01-02', 'job_title_1', 1, '2026-01-02', 'job_reason_1', 'job_type_1', 'job_office_1', 1, 1, 'job_location_1', 'job_department_1', 1, 'job_reports_1', 'job_respons_1', 'job_education_1', 'job_skills_1', 'job_experience_1', 'job_package_1', 'job_package_note_1', 'project_work_1', 'manage_peoples_1', 'hr_rep_1', 'hr_email_1', 'hr_sent_to_1', 'v', 1, 1, '2026-01-02 08:00:00', '2026-01-02', 1, '2026-01-02', 1, 1, 1, 1, 1, 1, 1, 'group_department_1', 'project_name_1'),
     (2, 'code_2', '2026-01-03', 'job_title_2', 2, '2026-01-03', 'job_reason_2', 'job_type_2', 'job_office_2', 2, 2, 'job_location_2', 'job_department_2', 2, 'job_reports_2', 'job_respons_2', 'job_education_2', 'job_skills_2', 'job_experience_2', 'job_package_2', 'job_package_note_2', 'project_work_2', 'manage_peoples_2', 'hr_rep_2', 'hr_email_2', 'hr_sent_to_2', 'v', 2, 2, '2026-01-03 08:00:00', '2026-01-03', 2, '2026-01-03', 2, 2, 2, 2, 2, 2, 2, 'group_department_2', 'project_name_2'),

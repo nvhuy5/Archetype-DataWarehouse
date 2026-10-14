@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.crm_table_projects (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."crm_table_projects";
-CREATE TABLE raw_intranet."crm_table_projects" (
+CREATE TABLE IF NOT EXISTS raw_intranet."crm_table_projects" (
     "idproj" integer,
     "author" varchar(255),
     "new_author" varchar(200),
@@ -40,6 +40,7 @@ CREATE TABLE raw_intranet."crm_table_projects" (
     "cdate" date,
     "pcode" varchar(50)
 );
+TRUNCATE raw_intranet."crm_table_projects";
 INSERT INTO raw_intranet."crm_table_projects" ("idproj", "author", "new_author", "pname", "pstatus", "ptype", "share_users", "plocation", "pcountry", "pdesc", "gfa", "psdate", "pduration", "capex", "prepresentative", "new_prepresentative", "project_initiator", "quote_ref", "quote_date", "quote_fees", "quote_fees_currency", "quote_fees_comments", "nb_storey", "nb_star", "nb_key", "id_office", "id_fu_office", "category_office", "crm_market_id", "crm_segment_id", "crm_sub_segment_id", "pfee", "repquotation", "cdate", "pcode") VALUES
     (1, 'author_1', 'new_author_1', 'pname_1', 'pstatus_1', 1, 'share_users_1', 'plocation_1', 'pcountry_1', 'pdesc_1', 'gfa_1', '2026-01-02', 'pduration_1', 'capex_1', 'prepresentative_1', 'new_prepresentative_1', 'project_initiator_1', 'quote_ref_1', '2026-01-02', 1, 'quote_fees_currency_1', 'quote_fees_comments_1', 'nb_storey_1', 'nb_star_1', 'nb_key_1', 1, 1, 1, 1, 1, 1, 'pfee_1', 'repquotation_1', '2026-01-02', 'pcode_1'),
     (2, 'author_2', 'new_author_2', 'pname_2', 'pstatus_2', 2, 'share_users_2', 'plocation_2', 'pcountry_2', 'pdesc_2', 'gfa_2', '2026-01-03', 'pduration_2', 'capex_2', 'prepresentative_2', 'new_prepresentative_2', 'project_initiator_2', 'quote_ref_2', '2026-01-03', 2, 'quote_fees_currency_2', 'quote_fees_comments_2', 'nb_storey_2', 'nb_star_2', 'nb_key_2', 2, 2, 2, 2, 2, 2, 'pfee_2', 'repquotation_2', '2026-01-03', 'pcode_2'),

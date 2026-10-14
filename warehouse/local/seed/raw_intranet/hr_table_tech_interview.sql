@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.hr_table_tech_interview (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."hr_table_tech_interview";
-CREATE TABLE raw_intranet."hr_table_tech_interview" (
+CREATE TABLE IF NOT EXISTS raw_intranet."hr_table_tech_interview" (
     "idtech" integer,
     "id_e" integer,
     "tadate" timestamp,
@@ -33,6 +33,7 @@ CREATE TABLE raw_intranet."hr_table_tech_interview" (
     "taddinfo" varchar(255),
     "office" varchar(55)
 );
+TRUNCATE raw_intranet."hr_table_tech_interview";
 INSERT INTO raw_intranet."hr_table_tech_interview" ("idtech", "id_e", "tadate", "tdatej", "tinterviewer", "tevaluation", "tcomments", "tlocation", "organizer", "recommend", "vacant_position", "interviewer_position", "trequirements", "tfactors", "texperience", "tqualifications", "tdemonstation", "tweaknesses", "tstrength", "tpersonality", "precommend", "frecommend", "fnote", "pnote", "tenglish", "tlevel", "taddinfo", "office") VALUES
     (1, 1, '2026-01-02 08:00:00', '2026-01-02 08:00:00', 'tinterviewer_1', 'tevaluation_1', 'tcomments_1', 'tlocation_1', 'organizer_1', 'recommend_1', 'vacant_position_1', 'interviewer_position_1', 'trequirements_1', 'tfactors_1', 'texperience_1', 'tqualifications_1', 'tdemonstation_1', 'tweaknesses_1', 'tstrength_1', 'tpersonality_1', 'preco', 'freco', 'fnote_1', 'pnote_1', 'tenglish_1', 'tlevel_1', 'taddinfo_1', 'office_1'),
     (2, 2, '2026-01-03 08:00:00', '2026-01-03 08:00:00', 'tinterviewer_2', 'tevaluation_2', 'tcomments_2', 'tlocation_2', 'organizer_2', 'recommend_2', 'vacant_position_2', 'interviewer_position_2', 'trequirements_2', 'tfactors_2', 'texperience_2', 'tqualifications_2', 'tdemonstation_2', 'tweaknesses_2', 'tstrength_2', 'tpersonality_2', 'preco', 'freco', 'fnote_2', 'pnote_2', 'tenglish_2', 'tlevel_2', 'taddinfo_2', 'office_2'),

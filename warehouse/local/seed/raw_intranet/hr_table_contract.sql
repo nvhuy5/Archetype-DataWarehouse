@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.hr_table_contract (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."hr_table_contract";
-CREATE TABLE raw_intranet."hr_table_contract" (
+CREATE TABLE IF NOT EXISTS raw_intranet."hr_table_contract" (
     "idcont" integer,
     "id_e" integer,
     "cfrom" date,
@@ -35,6 +35,7 @@ CREATE TABLE raw_intranet."hr_table_contract" (
     "exit_interview_date" date,
     "hr_menu_grade_id" integer
 );
+TRUNCATE raw_intranet."hr_table_contract";
 INSERT INTO raw_intranet."hr_table_contract" ("idcont", "id_e", "cfrom", "cto", "job_title_id", "cposition", "ccontract", "ctype", "tdate", "lock", "idcontracttype", "probation_end_date", "archived", "probation_appraisal_data", "appraisal_data", "appraisal_submited", "appraisal_comments", "contract_appraisal_comments", "contract_appraisal_submited", "end_contract_comment", "added_user", "added_time", "last_updated_user", "last_updated_time", "exit_interviewed", "manager_level", "market", "payment", "exit_interview_date", "hr_menu_grade_id") VALUES
     (1, 1, current_date - 400, current_date + 365, 1, 'cposition_1', 'ccontract_1', 'c', NULL, 'l', 1, NULL, 1, 'probation_appraisal_data_1', 'appraisal_data_1', 1, 'appraisal_comments_1', 'contract_appraisal_comments_1', 1, 'end_contract_comment_1', 1, '2026-01-02 08:00:00', 1, '2026-01-02 08:00:00', 'exit_interviewed_1', 'm', 'market_1', 'p', '2026-01-02', 1),
     (2, 2, current_date - 400, current_date + 365, 2, 'cposition_2', 'ccontract_2', 'c', NULL, 'l', 2, NULL, 2, 'probation_appraisal_data_2', 'appraisal_data_2', 2, 'appraisal_comments_2', 'contract_appraisal_comments_2', 2, 'end_contract_comment_2', 2, '2026-01-03 08:00:00', 2, '2026-01-03 08:00:00', 'exit_interviewed_2', 'm', 'market_2', 'p', '2026-01-03', 2),

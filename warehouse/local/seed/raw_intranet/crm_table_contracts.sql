@@ -1,9 +1,9 @@
 -- Sample rows for raw_intranet.crm_table_contracts (local test only; same name and columns as the Intranet MySQL table).
--- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Applied by scripts/seed_local.sh: the table is created once, then its rows are replaced (the views over it stay).
+-- Edit the rows when a model needs other values (joins, edge cases). Changing the columns of an existing table needs `seed_local.sh --reset`.
 -- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
-DROP TABLE IF EXISTS raw_intranet."crm_table_contracts";
-CREATE TABLE raw_intranet."crm_table_contracts" (
+CREATE TABLE IF NOT EXISTS raw_intranet."crm_table_contracts" (
     "id" integer,
     "parent_lead_id" integer,
     "parent_proposal_id" integer,
@@ -60,6 +60,7 @@ CREATE TABLE raw_intranet."crm_table_contracts" (
     "green_service" varchar(30),
     "green_optional" varchar(255)
 );
+TRUNCATE raw_intranet."crm_table_contracts";
 INSERT INTO raw_intranet."crm_table_contracts" ("id", "parent_lead_id", "parent_proposal_id", "refer_contract_id", "title", "proj_id", "description", "status", "expected_sign_contract_date", "reason", "code", "manager_in_charge", "contract_type", "country_initial", "office_initial", "year", "sequential", "revision", "fee", "hide", "attachment", "attachment_risk_review", "attachment_liquidation", "cgroup", "last_updated_user", "last_updated_date", "create_date", "biz_revision", "contract_date", "seller", "office_id", "fu_office_id", "category_office", "legal_entity", "currency", "downpayment", "subcontracting", "vat", "wht", "wht_rate", "payment_terms", "new_version", "is_new_proposal", "is_register_only", "criteria_for_bonus", "next_criteria_validator", "validate_criteria_status", "crm_finance_client_information_id", "client_legal_representative", "validate_status", "verified_status", "signing_date", "communication", "green_service", "green_optional") VALUES
     (1, 1, 1, 1, 'title_1', 1, 'description_1', 1, '2026-01-02', 1, 'code_1', 'manager_in_charge_1', 'con', 'count', 'offic', 'year_', 'seque', 'revis', 1, 1, 'attachment_1', 'attachment_risk_review_1', 'attachment_liquidation_1', 1, 'last_updated_user_1', '2026-01-02 08:00:00', '2026-01-02 08:00:00', 1, '2026-01-02', 'seller_1', 1, 1, 'category_office_1', 'legal_entity_1', 'currency_1', 'downpayment_1', 'subcontracting_1', 'vat_1', 'wht', 'wht_r', 'payme', 1, 1, 1, 'crite', 'next_criteria_validator_1', 1, 1, 'client_legal_representative_1', 'v', 'verified_status_1', '2026-01-02', 1, 'green_service_1', 'green_optional_1'),
     (2, 2, 2, 2, 'title_2', 2, 'description_2', 2, '2026-01-03', 2, 'code_2', 'manager_in_charge_2', 'con', 'count', 'offic', 'year_', 'seque', 'revis', 2, 2, 'attachment_2', 'attachment_risk_review_2', 'attachment_liquidation_2', 2, 'last_updated_user_2', '2026-01-03 08:00:00', '2026-01-03 08:00:00', 2, '2026-01-03', 'seller_2', 2, 2, 'category_office_2', 'legal_entity_2', 'currency_2', 'downpayment_2', 'subcontracting_2', 'vat_2', 'wht', 'wht_r', 'payme', 2, 2, 2, 'crite', 'next_criteria_validator_2', 2, 2, 'client_legal_representative_2', 'v', 'verified_status_2', '2026-01-03', 2, 'green_service_2', 'green_optional_2'),
