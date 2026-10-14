@@ -55,6 +55,18 @@ docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "selec
 ```
 Các schema: `raw_intranet` (bảng nguồn mẫu), `staging`, `dwh`, `mart`, `mart_restricted`, `elementary`. Mở `report/elementary_report.html` bằng trình duyệt để xem kết quả test.
 
+### Xem câu SQL mà dbt gửi cho Postgres
+File model viết bằng Jinja (`ref`, `source`, macro), nên SQL thật khác với file trong repo. Muốn xem SQL thật (đã thay `ref`/`source` bằng tên bảng) thì dùng:
+```bash
+./scripts/compile_local.sh dim_phase    # in SQL của một model ra màn hình, đồng thời lưu file
+./scripts/compile_local.sh +dim_phase   # model đó và mọi model nó đọc từ (selector của dbt)
+./scripts/compile_local.sh              # tất cả model
+```
+- File lưu ở `report/compiled/compiled/archetype/models/<layer>/...` (một file một model), mở bằng editor được. Mỗi lần chạy xóa kết quả lần trước. `report/` không được commit.
+- Chỉ biên dịch, **không ghi gì vào database**. Cần `postgres-local` đang chạy (script tự bật).
+- SQL này chưa bọc `create table/view`; dùng để soi lỗi SQL (xem [07](ERROR-SCENARIOS/07-sql-error-in-model.vi.md)), kiểm tra join, hoặc dán vào `psql` chạy thử.
+- Chỉ muốn xem vài dòng kết quả mà không tạo bảng: `docker compose run --rm --no-deps -T --entrypoint dbt dbt show --select dim_phase --limit 5`.
+
 ## 4. Kiểm tra quy ước và repo
 ```bash
 docker compose build dbt          # để image có code mới nhất (run_local.sh đã làm sẵn ở bước 1)
