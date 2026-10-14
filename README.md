@@ -1,6 +1,6 @@
 # dbt + Elementary framework
 
-🇻🇳 [Tiếng Việt](README.vi.md) · 📘 [Hướng dẫn cho khách hàng (VI): dbt & Elementary là gì?](docs/GUIDELINE.vi.md) · 📐 [Quy ước đặt tên](docs/NAMING.vi.md) · 📋 [Playbook migrate SSIS](docs/PLAYBOOK.vi.md) · 🧪 [Test local](docs/TEST-LOCAL.vi.md) · ⚖️ [Quyết định chung](docs/DECISIONS.vi.md)
+🇻🇳 [Tiếng Việt](README.vi.md) · 📘 [Hướng dẫn cho khách hàng (VI): dbt & Elementary là gì?](docs/GUIDELINE.vi.md) · 📐 [Quy ước đặt tên](docs/NAMING.vi.md) · 📋 [Playbook migrate SSIS](docs/PLAYBOOK.vi.md) · 🧪 [Test local](docs/TEST-LOCAL.vi.md) · ⚖️ [Quyết định chung](docs/DECISIONS.vi.md) · ☁️ [Lên Azure](docs/DEPLOY-AZURE.vi.md)
 
 Migration of the `ACT_Intranet_warehouse_3` SSIS package to ELT: Intranet (MySQL) tables are copied as they are into `raw_intranet`,
 and dbt exposes them in `staging`. Business logic (joins, aggregates) belongs to the next layers, `dwh` and `mart`.
