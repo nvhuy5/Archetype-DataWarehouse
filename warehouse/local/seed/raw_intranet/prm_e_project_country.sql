@@ -1,5 +1,6 @@
 -- Sample rows for raw_intranet.prm_e_project_country (local test only; same name and columns as the Intranet MySQL table).
 -- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+-- Dates that models compare with current_date are written relative to it, so they stay valid whenever the seed is applied.
 BEGIN;
 DROP TABLE IF EXISTS raw_intranet."prm_e_project_country";
 CREATE TABLE raw_intranet."prm_e_project_country" (
