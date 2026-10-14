@@ -58,11 +58,12 @@ Các schema: `raw_intranet` (bảng nguồn mẫu), `staging`, `dwh`, `mart`, `m
 ## 4. Kiểm tra quy ước và repo
 ```bash
 docker compose build dbt          # để image có code mới nhất (run_local.sh đã làm sẵn ở bước 1)
-docker compose run --rm --no-deps -T -v "$PWD/scripts:/scripts:ro" --entrypoint sh dbt \
-  -c "dbt parse >/dev/null && python /scripts/check_conventions.py target/manifest.json"
+docker compose run --rm --no-deps -T -v "$PWD/scripts:/scripts:ro" -v "$PWD/warehouse/local/seed:/seed:ro" --entrypoint sh dbt \
+  -c "dbt parse >/dev/null && python /scripts/check_conventions.py target/manifest.json /seed"
 python3 scripts/check_repo.py
 ```
 - `check_conventions.py`: tên model đúng layer, có mô tả, có test khóa (hoặc ghi rõ "No primary key"), không dùng `select *`.
+  Khi có tham số seed (`/seed`) còn kiểm tra: mỗi bảng nguồn (source) khai báo trong dbt có đúng một file `warehouse/local/seed/<schema>/<bảng>.sql`, và không có file seed nào thiếu source.
 - `check_repo.py`: không có `reference/`, `.pem`, `.env` hay khóa riêng trong git.
 
 **Đạt khi:** cả hai in ra `OK`.

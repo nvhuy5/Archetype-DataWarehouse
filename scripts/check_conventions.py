@@ -1,6 +1,8 @@
-"""Model conventions (see NAMING.vi.md), read from the dbt manifest.
-Run after `dbt parse`: python3 scripts/check_conventions.py target/manifest.json"""
+"""Model conventions (see NAMING.vi.md), read from the dbt manifest, and the local seed files of the raw tables.
+Run after `dbt parse`: python3 scripts/check_conventions.py target/manifest.json [warehouse/local/seed]
+With the seed folder, every source table needs one file <seed>/<schema>/<table>.sql and every file needs a source."""
 import json
+import os
 import re
 import sys
 
@@ -54,6 +56,18 @@ for node_id, node in manifest["nodes"].items():
     # no select * (column drift in the source must not pass silently)
     if re.search(r"select\s+(distinct(\s+on\s*\([^)]*\))?\s+)?\*|[\w\"]\.\*", code, re.I):
         errors.append(f"{name}: uses select *; list the columns")
+
+# one seed file per raw (source) table, and no file without a source
+if len(sys.argv) > 2:
+    seed_root = sys.argv[2]
+    declared = {(n["schema"], n["identifier"]) for n in manifest["sources"].values() if n["package_name"] == "archetype"}
+    for schema, table in sorted(declared):
+        if not os.path.isfile(os.path.join(seed_root, schema, f"{table}.sql")):
+            errors.append(f"{schema}.{table}: source has no seed file {seed_root}/{schema}/{table}.sql")
+    for schema in sorted(os.listdir(seed_root)):
+        for f in sorted(os.listdir(os.path.join(seed_root, schema))):
+            if f.endswith(".sql") and (schema, f[:-4]) not in declared:
+                errors.append(f"{seed_root}/{schema}/{f}: seed file without a source declared in dbt")
 
 if errors:
     print("\n".join(sorted(errors)))
