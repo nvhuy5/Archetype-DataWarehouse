@@ -1,3 +1,7 @@
 packages:
   - package: elementary-data/elementary
     version: 0.19.4
+  # dbt_utils is also a dependency of elementary; pinned here so that rebuilding the images never changes its version.
+  # Used by dim_date (date_spine) and the unique_combination_of_columns tests.
+  - package: dbt-labs/dbt_utils
+    version: 1.4.1
