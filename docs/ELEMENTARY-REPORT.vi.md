@@ -179,7 +179,7 @@ Nhớ lưu bằng chứng **ngoài repo** (ví dụ `~/evidence/`): thư mục `
 | Model nào chạy chậm hoặc bị bỏ qua? | **Model Performance** |
 | Test nào hay hỏng? | **Test Performance**: cột Fail Rate |
 | Cảnh báo (WARN) là gì, có chặn gì không? | **Tests** → dòng Warning → `configured to warn`; không chặn chuỗi |
-| Lỗi SQL của model, `Compilation Error`, lỗi kết nối | **không nằm trong báo cáo**: xem màn hình và `report/logs/3-dbt.log` ([ERROR-SCENARIOS](ERROR-SCENARIOS/README.vi.md)). Khi dbt không chạy được, báo cáo vẫn được tạo nhưng chỉ phản ánh **lần chạy trước** |
+| Lỗi SQL của model, `Compilation Error`, lỗi kết nối | **không nằm trong báo cáo**: xem màn hình và `report/logs/3-dbt.log` ([ERROR-SCENARIOS](ERROR-SCENARIOS/README.vi.md)). Muốn đọc SQL thật của model đang lỗi: `./scripts/compile_local.sh <model>` ([TEST-LOCAL](TEST-LOCAL.vi.md)). Khi dbt không chạy được, báo cáo vẫn được tạo nhưng chỉ phản ánh **lần chạy trước** |
 
 ## 9. Lưu ý
 
