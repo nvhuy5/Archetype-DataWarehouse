@@ -29,7 +29,9 @@ Postgres trên Azure (ví dụ Azure Database for PostgreSQL) là server khác v
 3. Đặt mật khẩu từng login từ secret store (không ghi vào file hay repo), ví dụ `ALTER ROLE dbt_rw PASSWORD '<từ Key Vault>'`.
 4. Quyền `SELECT` trên từng bảng mart không nằm trong SQL này: dbt tự cấp ở mỗi lần build theo `+grants` trong `dbt_project.yml` (`mart` cho `powerbi_ro` và `pii_admin`, `mart_restricted` chỉ cho `pii_admin`).
 
-Chưa kiểm chứng trên Azure: `CREATE SCHEMA ... AUTHORIZATION dbt_rw` có thể đòi tài khoản admin là thành viên của `dbt_rw` (`GRANT dbt_rw TO <admin>`), tùy cấu hình server. Nếu gặp lỗi quyền ở bước 2, xử lý ở đây rồi chạy lại.
+Trước khi giao SQL này cho platform team, chạy `./scripts/check_prod_sql.sh` ([TEST-LOCAL.vi.md](TEST-LOCAL.vi.md)): nó dựng Postgres tạm theo đúng trình tự trên, chạy dbt và Elementary thật, và kiểm tra quyền của từng login.
+
+Chưa kiểm chứng trên Azure (script trên chạy bằng superuser của Postgres tạm): admin của Azure không phải superuser, nên `CREATE SCHEMA ... AUTHORIZATION dbt_rw` có thể đòi admin là thành viên của `dbt_rw` (`GRANT dbt_rw TO <admin>`), và `ALTER DEFAULT PRIVILEGES FOR ROLE <ingestion_role>` có thể đòi thành viên của role ingestion. Nếu gặp lỗi quyền ở bước 2, xử lý ở đây rồi chạy lại; nếu lệnh `ALTER DEFAULT PRIVILEGES` không dùng được thì ingestion phải cấp `SELECT` cho `dbt_rw` sau mỗi lần nạp.
 
 `warehouse/prod/` và `warehouse/local/init/` phải giữ giống nhau về schema và role; khác biệt có chủ ý là mật khẩu và việc tạo `raw_intranet`.
 

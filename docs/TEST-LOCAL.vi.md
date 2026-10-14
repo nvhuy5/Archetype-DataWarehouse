@@ -75,6 +75,13 @@ docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost
 docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d analytics_db -c "select count(*) from dwh.dim_employee"        # permission denied
 ```
 
+### Kiểm tra SQL của prod
+Sửa `warehouse/prod/` hoặc quyền/role của dự án dbt thì chạy:
+```bash
+./scripts/check_prod_sql.sh
+```
+Script dựng một Postgres tạm đúng như ở prod (ingestion tạo `raw_intranet`, platform chạy `warehouse/prod` hai lần, đặt mật khẩu, ingestion nạp raw sau cùng), chạy image dbt và Elementary thật trên đó, rồi kiểm tra từng login (`dbt_rw`, `powerbi_ro`, `pii_admin`) đọc được và bị chặn những gì. Mất khoảng 2 phút, không đụng tới database local. **Đạt khi** in `Prod SQL OK` (mã thoát 0). SSL tắt vì server tạm không có, nên cấu hình SSL của target `prod` chưa được kiểm tra ở đây.
+
 Sau cùng commit **local** (tiếng Anh, ngắn gọn, mỗi commit một ý). Không tự push (xem `CLAUDE.md`).
 
 ## 5. Tốc độ

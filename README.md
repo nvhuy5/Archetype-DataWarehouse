@@ -53,7 +53,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 | `warehouse/local/init/` | local Postgres only: schemas, roles, grants (run when its database is empty) |
 | `warehouse/local/seed/raw_intranet/` | one file per raw table: `CREATE TABLE` + sample rows, applied by `scripts/seed_local.sh` |
 | `dbt.Dockerfile`, `elementary.Dockerfile` | the two production images |
-| `scripts/` | checks to run by hand: repository rules and model conventions (see `docs/TEST-LOCAL.vi.md`) |
+| `scripts/` | `seed_local.sh`, `run_local.sh`, and checks to run by hand: repository rules, model conventions, `check_prod_sql.sh` (see `docs/TEST-LOCAL.vi.md`) |
 | `docker-compose.yml` | the local test |
 
 ## Add a model

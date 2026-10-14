@@ -53,7 +53,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 | `warehouse/local/init/` | chỉ cho Postgres local: schema, role, phân quyền (chạy khi database còn trống) |
 | `warehouse/local/seed/raw_intranet/` | mỗi bảng raw một file: `CREATE TABLE` + dòng mẫu, `scripts/seed_local.sh` áp vào |
 | `dbt.Dockerfile`, `elementary.Dockerfile` | hai image chạy thật |
-| `scripts/` | kiểm tra chạy bằng tay: quy tắc repo và quy ước model (xem `docs/TEST-LOCAL.vi.md`) |
+| `scripts/` | `seed_local.sh`, `run_local.sh` và các kiểm tra chạy bằng tay: quy tắc repo, quy ước model, `check_prod_sql.sh` (xem `docs/TEST-LOCAL.vi.md`) |
 | `docker-compose.yml` | môi trường test local |
 
 ## Thêm một model
