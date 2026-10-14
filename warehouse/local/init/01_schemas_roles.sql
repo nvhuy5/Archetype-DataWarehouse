@@ -1,5 +1,6 @@
--- Warehouse side: what the platform team creates once (schemas and the dbt login).
--- Runs first (files in this folder run in name order); 02_raw_intranet.sql creates the raw tables, 03_grants.sql grants access.
+-- Local test only: schemas and roles of the local Postgres, created once when its database is empty (files run in name order).
+-- The raw tables are not here: each one is a file in ../seed/raw_intranet, applied by scripts/seed_local.sh.
+-- In production the platform team creates the same schemas and roles from warehouse/prod, and the ingestion project loads raw_intranet.
 CREATE SCHEMA IF NOT EXISTS raw_intranet;
 CREATE SCHEMA IF NOT EXISTS staging;
 CREATE SCHEMA IF NOT EXISTS elementary;
