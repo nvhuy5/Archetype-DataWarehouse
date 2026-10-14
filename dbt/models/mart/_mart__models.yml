@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: mart_ts_details
+    description: "Timesheet report, table TS_Details: one row per timesheet entry since var timesheet_from_date, with phase, project, contract, component and calendar columns."
+    columns:
+      - name: entry_id
+        tests: [unique, not_null]
+      - name: employee_id
+        tests:
+          - relationships: {to: ref('mart_ts_employees'), field: employee_id, config: {severity: warn}}
+      - name: phase_id
+        tests:
+          - relationships: {to: ref('dim_phase'), field: phase_id, config: {severity: warn}}
+
+  - name: mart_ts_employees
+    description: "Timesheet report, table Employees: employees in status 7 and 8. No personal identity, bank, tax or insurance columns, so nothing to mask."
+    columns:
+      - name: employee_id
+        tests: [unique, not_null]
+
+  - name: mart_ts_offices
+    description: "Timesheet report, table Offices."
+    columns:
+      - name: office_id
+        tests: [unique, not_null]
+
+  - name: mart_ts_departments
+    description: "Timesheet report, table Departments."
+    columns:
+      - name: department_id
+        tests: [unique, not_null]
