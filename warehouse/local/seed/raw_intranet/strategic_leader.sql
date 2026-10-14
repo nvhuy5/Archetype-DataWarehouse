@@ -1,0 +1,20 @@
+-- Sample rows for raw_intranet.strategic_leader (local test only; same name and columns as the Intranet MySQL table).
+-- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+BEGIN;
+DROP TABLE IF EXISTS raw_intranet."strategic_leader";
+CREATE TABLE raw_intranet."strategic_leader" (
+    "strategic_leader_id" integer,
+    "strategic_goal_id" integer,
+    "leader_name" varchar(150),
+    "leader_email" varchar(150),
+    "type" smallint,
+    "added_by" varchar(200),
+    "added_time" timestamp
+);
+INSERT INTO raw_intranet."strategic_leader" ("strategic_leader_id", "strategic_goal_id", "leader_name", "leader_email", "type", "added_by", "added_time") VALUES
+    (1, 1, 'leader_name_1', 'leader_email_1', 1, 'added_by_1', '2026-01-02 08:00:00'),
+    (2, 2, 'leader_name_2', 'leader_email_2', 2, 'added_by_2', '2026-01-03 08:00:00'),
+    (3, 3, 'leader_name_3', 'leader_email_3', 3, 'added_by_3', '2026-01-04 08:00:00'),
+    (4, 4, '  ', '  ', 4, '  ', '2026-01-05 08:00:00'),
+    (5, 5, 'leader_name_5', 'leader_email_5', 5, 'added_by_5', '2026-01-06 08:00:00');
+COMMIT;

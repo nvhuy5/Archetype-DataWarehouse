@@ -1,0 +1,55 @@
+-- Sample rows for raw_intranet.jobs_list (local test only; same name and columns as the Intranet MySQL table).
+-- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+BEGIN;
+DROP TABLE IF EXISTS raw_intranet."jobs_list";
+CREATE TABLE raw_intranet."jobs_list" (
+    "idj" integer,
+    "code" varchar(25),
+    "posting_date" date,
+    "job_title" varchar(255),
+    "job_title_id" integer,
+    "job_status" date,
+    "job_reason" varchar(25),
+    "job_type" varchar(50),
+    "job_office" varchar(255),
+    "job_office_id" integer,
+    "no_of_vacancy" integer,
+    "job_location" varchar(255),
+    "job_department" varchar(255),
+    "job_department_id" integer,
+    "job_reports" varchar(255),
+    "job_respons" text,
+    "job_education" text,
+    "job_skills" text,
+    "job_experience" text,
+    "job_package" text,
+    "job_package_note" varchar(255),
+    "project_work" text,
+    "manage_peoples" text,
+    "hr_rep" varchar(100),
+    "hr_email" varchar(255),
+    "hr_sent_to" varchar(255),
+    "valid" varchar(1),
+    "confidential" smallint,
+    "request_user" integer,
+    "request_date" timestamp,
+    "offer_date" date,
+    "offer_ide" integer,
+    "arrival_date" date,
+    "arrival_asap" smallint,
+    "closed" smallint,
+    "canceled" smallint,
+    "completed" smallint,
+    "onhold" smallint,
+    "ondraft" smallint,
+    "group_department_id" integer,
+    "group_department" varchar(255),
+    "project_name" varchar(255)
+);
+INSERT INTO raw_intranet."jobs_list" ("idj", "code", "posting_date", "job_title", "job_title_id", "job_status", "job_reason", "job_type", "job_office", "job_office_id", "no_of_vacancy", "job_location", "job_department", "job_department_id", "job_reports", "job_respons", "job_education", "job_skills", "job_experience", "job_package", "job_package_note", "project_work", "manage_peoples", "hr_rep", "hr_email", "hr_sent_to", "valid", "confidential", "request_user", "request_date", "offer_date", "offer_ide", "arrival_date", "arrival_asap", "closed", "canceled", "completed", "onhold", "ondraft", "group_department_id", "group_department", "project_name") VALUES
+    (1, 'code_1', '2026-01-02', 'job_title_1', 1, '2026-01-02', 'job_reason_1', 'job_type_1', 'job_office_1', 1, 1, 'job_location_1', 'job_department_1', 1, 'job_reports_1', 'job_respons_1', 'job_education_1', 'job_skills_1', 'job_experience_1', 'job_package_1', 'job_package_note_1', 'project_work_1', 'manage_peoples_1', 'hr_rep_1', 'hr_email_1', 'hr_sent_to_1', 'v', 1, 1, '2026-01-02 08:00:00', '2026-01-02', 1, '2026-01-02', 1, 1, 1, 1, 1, 1, 1, 'group_department_1', 'project_name_1'),
+    (2, 'code_2', '2026-01-03', 'job_title_2', 2, '2026-01-03', 'job_reason_2', 'job_type_2', 'job_office_2', 2, 2, 'job_location_2', 'job_department_2', 2, 'job_reports_2', 'job_respons_2', 'job_education_2', 'job_skills_2', 'job_experience_2', 'job_package_2', 'job_package_note_2', 'project_work_2', 'manage_peoples_2', 'hr_rep_2', 'hr_email_2', 'hr_sent_to_2', 'v', 2, 2, '2026-01-03 08:00:00', '2026-01-03', 2, '2026-01-03', 2, 2, 2, 2, 2, 2, 2, 'group_department_2', 'project_name_2'),
+    (3, 'code_3', '2026-01-04', 'job_title_3', 3, '2026-01-04', 'job_reason_3', 'job_type_3', 'job_office_3', 3, 3, 'job_location_3', 'job_department_3', 3, 'job_reports_3', 'job_respons_3', 'job_education_3', 'job_skills_3', 'job_experience_3', 'job_package_3', 'job_package_note_3', 'project_work_3', 'manage_peoples_3', 'hr_rep_3', 'hr_email_3', 'hr_sent_to_3', 'v', 3, 3, '2026-01-04 08:00:00', '2026-01-04', 3, '2026-01-04', 3, 3, 3, 3, 3, 3, 3, 'group_department_3', 'project_name_3'),
+    (4, '  ', '2026-01-05', '  ', 4, '2026-01-05', '  ', '  ', '  ', 4, 4, '  ', '  ', 4, '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', 4, 4, '2026-01-05 08:00:00', '2026-01-05', 4, '2026-01-05', 4, 4, 4, 4, 4, 4, 4, '  ', '  '),
+    (5, 'code_5', '2026-01-06', 'job_title_5', 5, '2026-01-06', 'job_reason_5', 'job_type_5', 'job_office_5', 5, 5, 'job_location_5', 'job_department_5', 5, 'job_reports_5', 'job_respons_5', 'job_education_5', 'job_skills_5', 'job_experience_5', 'job_package_5', 'job_package_note_5', 'project_work_5', 'manage_peoples_5', 'hr_rep_5', 'hr_email_5', 'hr_sent_to_5', 'v', 5, 5, '2026-01-06 08:00:00', '2026-01-06', 5, '2026-01-06', 5, 5, 5, 5, 5, 5, 5, 'group_department_5', 'project_name_5');
+COMMIT;

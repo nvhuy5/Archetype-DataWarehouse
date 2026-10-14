@@ -1,0 +1,58 @@
+-- Sample rows for raw_intranet.hr_table_pre_interview (local test only; same name and columns as the Intranet MySQL table).
+-- Applied by scripts/seed_local.sh. Edit the rows when a model needs other values (joins, edge cases).
+BEGIN;
+DROP TABLE IF EXISTS raw_intranet."hr_table_pre_interview";
+CREATE TABLE raw_intranet."hr_table_pre_interview" (
+    "idpre" integer,
+    "id_e" integer,
+    "ap_date" date,
+    "adate" date,
+    "interviewer" varchar(100),
+    "location" varchar(255),
+    "motivation" varchar(255),
+    "marital" varchar(100),
+    "wife_occ" varchar(255),
+    "child_nb" integer,
+    "child_school" varchar(1),
+    "current_employer" varchar(255),
+    "current_position" varchar(255),
+    "position_since" varchar(100),
+    "notice_delay" varchar(100),
+    "umployed_since" varchar(100),
+    "reason" text,
+    "current_salary" varchar(100),
+    "current_accomodo" varchar(100),
+    "current_transp" varchar(100),
+    "current_mobili" varchar(100),
+    "current_fticket" varchar(100),
+    "current_insurances" varchar(100),
+    "current_other" varchar(100),
+    "expected_salary" varchar(100),
+    "expected_accomodo" varchar(100),
+    "expected_transp" varchar(100),
+    "expected_mobili" varchar(100),
+    "expected_fticket" varchar(100),
+    "expected_insurances" varchar(100),
+    "expected_other" varchar(100),
+    "preferred_location" varchar(255),
+    "tech_interview" varchar(255),
+    "prefered_date" date,
+    "contact_number" varchar(100),
+    "not_selected" varchar(1),
+    "not_selected_reason" text,
+    "salary_curr_gross" varchar(255),
+    "salary_exp_gross" varchar(255),
+    "bonus" varchar(255),
+    "school" varchar(255),
+    "retire" varchar(255),
+    "ex_bonus" varchar(255),
+    "ex_school" varchar(255),
+    "ex_retire" varchar(255)
+);
+INSERT INTO raw_intranet."hr_table_pre_interview" ("idpre", "id_e", "ap_date", "adate", "interviewer", "location", "motivation", "marital", "wife_occ", "child_nb", "child_school", "current_employer", "current_position", "position_since", "notice_delay", "umployed_since", "reason", "current_salary", "current_accomodo", "current_transp", "current_mobili", "current_fticket", "current_insurances", "current_other", "expected_salary", "expected_accomodo", "expected_transp", "expected_mobili", "expected_fticket", "expected_insurances", "expected_other", "preferred_location", "tech_interview", "prefered_date", "contact_number", "not_selected", "not_selected_reason", "salary_curr_gross", "salary_exp_gross", "bonus", "school", "retire", "ex_bonus", "ex_school", "ex_retire") VALUES
+    (1, 1, '2026-01-02', '2026-01-02', 'interviewer_1', 'location_1', 'motivation_1', 'marital_1', 'wife_occ_1', 1, 'c', 'current_employer_1', 'current_position_1', 'position_since_1', 'notice_delay_1', 'umployed_since_1', 'reason_1', 'current_salary_1', 'current_accomodo_1', 'current_transp_1', 'current_mobili_1', 'current_fticket_1', 'current_insurances_1', 'current_other_1', 'expected_salary_1', 'expected_accomodo_1', 'expected_transp_1', 'expected_mobili_1', 'expected_fticket_1', 'expected_insurances_1', 'expected_other_1', 'preferred_location_1', 'tech_interview_1', '2026-01-02', 'contact_number_1', 'n', 'not_selected_reason_1', 'salary_curr_gross_1', 'salary_exp_gross_1', 'bonus_1', 'school_1', 'retire_1', 'ex_bonus_1', 'ex_school_1', 'ex_retire_1'),
+    (2, 2, '2026-01-03', '2026-01-03', 'interviewer_2', 'location_2', 'motivation_2', 'marital_2', 'wife_occ_2', 2, 'c', 'current_employer_2', 'current_position_2', 'position_since_2', 'notice_delay_2', 'umployed_since_2', 'reason_2', 'current_salary_2', 'current_accomodo_2', 'current_transp_2', 'current_mobili_2', 'current_fticket_2', 'current_insurances_2', 'current_other_2', 'expected_salary_2', 'expected_accomodo_2', 'expected_transp_2', 'expected_mobili_2', 'expected_fticket_2', 'expected_insurances_2', 'expected_other_2', 'preferred_location_2', 'tech_interview_2', '2026-01-03', 'contact_number_2', 'n', 'not_selected_reason_2', 'salary_curr_gross_2', 'salary_exp_gross_2', 'bonus_2', 'school_2', 'retire_2', 'ex_bonus_2', 'ex_school_2', 'ex_retire_2'),
+    (3, 3, '2026-01-04', '2026-01-04', 'interviewer_3', 'location_3', 'motivation_3', 'marital_3', 'wife_occ_3', 3, 'c', 'current_employer_3', 'current_position_3', 'position_since_3', 'notice_delay_3', 'umployed_since_3', 'reason_3', 'current_salary_3', 'current_accomodo_3', 'current_transp_3', 'current_mobili_3', 'current_fticket_3', 'current_insurances_3', 'current_other_3', 'expected_salary_3', 'expected_accomodo_3', 'expected_transp_3', 'expected_mobili_3', 'expected_fticket_3', 'expected_insurances_3', 'expected_other_3', 'preferred_location_3', 'tech_interview_3', '2026-01-04', 'contact_number_3', 'n', 'not_selected_reason_3', 'salary_curr_gross_3', 'salary_exp_gross_3', 'bonus_3', 'school_3', 'retire_3', 'ex_bonus_3', 'ex_school_3', 'ex_retire_3'),
+    (4, 4, '2026-01-05', '2026-01-05', '  ', '  ', '  ', '  ', '  ', 4, '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '2026-01-05', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  ', '  '),
+    (5, 5, '2026-01-06', '2026-01-06', 'interviewer_5', 'location_5', 'motivation_5', 'marital_5', 'wife_occ_5', 5, 'c', 'current_employer_5', 'current_position_5', 'position_since_5', 'notice_delay_5', 'umployed_since_5', 'reason_5', 'current_salary_5', 'current_accomodo_5', 'current_transp_5', 'current_mobili_5', 'current_fticket_5', 'current_insurances_5', 'current_other_5', 'expected_salary_5', 'expected_accomodo_5', 'expected_transp_5', 'expected_mobili_5', 'expected_fticket_5', 'expected_insurances_5', 'expected_other_5', 'preferred_location_5', 'tech_interview_5', '2026-01-06', 'contact_number_5', 'n', 'not_selected_reason_5', 'salary_curr_gross_5', 'salary_exp_gross_5', 'bonus_5', 'school_5', 'retire_5', 'ex_bonus_5', 'ex_school_5', 'ex_retire_5');
+COMMIT;
