@@ -30,4 +30,4 @@ COPY --chown=edr dbt/ .
 USER edr
 VOLUME /report
 
-ENTRYPOINT ["edr", "report", "--profiles-dir", "/app", "--project-dir", "/app", "--file-path", "/report/elementary_report.html"]
+ENTRYPOINT ["sh", "-c", "sh /app/check_target.sh && exec edr report --profiles-dir /app --project-dir /app --file-path /report/elementary_report.html"]

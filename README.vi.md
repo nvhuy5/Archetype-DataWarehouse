@@ -72,7 +72,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 |---|---|---|
 | `PGHOST`, `PGUSER`, `PGPASSWORD` | bắt buộc | warehouse, tài khoản `dbt_rw`, mật khẩu (lấy từ secret store) |
 | `PGDATABASE` / `PGPORT` / `PGSSLMODE` | `analytics_db` / `5432` / `require` | |
-| `DBT_TARGET` | `prod` | target trong `dbt/profiles.yml`; chỉ `docker-compose.yml` đặt `local` (không SSL), nên quên biến này cũng không dùng cấu hình local |
+| `DBT_TARGET` | `prod` | target trong `dbt/profiles.yml`; chỉ `docker-compose.yml` đặt `local` (không SSL), nên quên biến này cũng không dùng cấu hình local; cả hai image từ chối chạy `local` nếu `PGHOST` không phải `postgres-local`/`localhost` |
 | `DBT_ARGS` (image dbt) | `--selector default` | tham số của `dbt build` |
 
 **Mạng:** cả hai image đều không cần internet khi chạy: package dbt (kể cả package riêng của `edr`) đã được đóng gói lúc build.

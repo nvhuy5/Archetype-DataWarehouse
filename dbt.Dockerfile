@@ -28,4 +28,4 @@ USER dbt
 # DBT_ARGS selects what to build. Exit code != 0 when a model or test fails.
 ENV DBT_ARGS="--selector default"
 # Elementary tables first (they receive the test results of the build that follows)
-ENTRYPOINT ["sh", "-c", "dbt run --select elementary && dbt build ${DBT_ARGS}"]
+ENTRYPOINT ["sh", "-c", "sh /app/check_target.sh && dbt run --select elementary && dbt build ${DBT_ARGS}"]
