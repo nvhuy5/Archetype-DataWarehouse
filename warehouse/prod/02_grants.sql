@@ -3,7 +3,8 @@
 -- ============================================================================
 -- Ai chạy: admin của platform team, sau file 1 và SAU KHI project ingestion đã tạo schema raw_<nguồn>.
 --   psql ... -f 02_grants.sql
--- Chạy lại bao nhiêu lần cũng an toàn. Thêm nguồn mới (raw_nav...): ingestion tạo schema xong thì chạy lại file này, không cần sửa gì.
+-- Bắt buộc chạy một lần khi dựng môi trường; chạy lại không gây hại gì. Khi thêm nguồn mới (raw_nav...): ingestion tạo schema xong
+-- thì PHẢI chạy lại file này để dbt_rw đọc được nguồn đó, không cần sửa gì trong file.
 --
 -- Kết quả cuối cùng:
 --   dbt_rw     : đọc mọi schema raw_*; tạo được schema mới (dwh); kết nối và tạo bảng tạm.
