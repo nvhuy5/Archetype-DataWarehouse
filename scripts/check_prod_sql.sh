@@ -37,9 +37,12 @@ psql_admin -c "create role azadmin login createrole createdb" -c "alter database
 # 1. the platform team creates the login of the ingestion project; the ingestion project creates raw_intranet with it
 docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -c "create role adf_loader login" || exit 1
 psql_admin -c "create schema raw_intranet authorization adf_loader" || exit 1
+# ... and a second source, with its own login, to check that every raw_<source> schema is picked up
+docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -c "create role adf_nav login" || exit 1
+psql_admin -c "create schema raw_nav authorization adf_nav" || exit 1
 # 2. the platform team runs the prod SQL twice (it must be safe to repeat), then sets the passwords
 for i in 1 2; do
-  cat warehouse/prod/01_schemas_roles.sql warehouse/prod/02_grants.sql | docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -o /dev/null -v ingestion_role=adf_loader 2>/dev/null \
+  cat warehouse/prod/01_schemas_roles.sql warehouse/prod/02_grants.sql | docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -o /dev/null 2>/dev/null \
     && ok "warehouse/prod applied by a non-superuser admin (run $i)" || bad "warehouse/prod failed (run $i)"
 done
 [ "$(psql_admin -Atc "select pg_has_role('azadmin','dbt_rw','usage') or pg_has_role('azadmin','dbt_rw','set') or pg_has_role('azadmin','adf_loader','usage') or pg_has_role('azadmin','adf_loader','set')")" = f ] \
@@ -51,6 +54,7 @@ for f in warehouse/local/seed/raw_intranet/*.sql; do
 done
 n=$(psql_admin -Atc "select count(*) from pg_tables where schemaname = 'raw_intranet'"); [ "$n" = "$(ls warehouse/local/seed/raw_intranet/*.sql | wc -l)" ] && ok "$n raw tables loaded by the ingestion login" || bad "raw tables: $n"
 
+(echo "set role adf_nav;"; echo "create table raw_nav.customer (id int); insert into raw_nav.customer values (1);") | psql_admin >/dev/null 2>&1 || bad "raw_nav load failed"
 echo "dbt and Elementary images (default target: prod)"
 run_env=(--network "$ID" -e PGHOST="$PG" -e PGUSER=dbt_rw -e PGPASSWORD=dbtpw -e PGSSLMODE=disable)
 summary=$(docker run --rm "${run_env[@]}" "$DBT_IMAGE" 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | grep -E "Done\. PASS" | tail -1)
@@ -74,6 +78,7 @@ for s in "dwh.dim_employee" "staging.stg_intranet__hr_table_main" "raw_intranet.
 done
 cannot pii_admin piipw "create table mart.x (a int)" "create a table in mart"
 can    dbt_rw dbtpw "select count(*) from raw_intranet.hr_table_main"        "read raw_intranet"
+can    dbt_rw dbtpw "select count(*) from raw_nav.customer"                 "read raw_nav (second source, table created after the grants)"
 cannot dbt_rw dbtpw "insert into raw_intranet.hr_table_main (idm) values ('x')" "write raw_intranet"
 
 echo "---"

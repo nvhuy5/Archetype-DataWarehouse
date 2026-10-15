@@ -1,8 +1,8 @@
 -- Production PostgreSQL (Azure): what the platform team runs ONCE, as an admin, on the analytics database.
---   psql "host=<server> dbname=analytics_db user=<admin> sslmode=require" -f 01_schemas_roles.sql -f 02_grants.sql -v ingestion_role=<login of the ingestion project>
+--   psql "host=<server> dbname=analytics_db user=<admin> sslmode=require" -f 01_schemas_roles.sql -f 02_grants.sql
 -- Same schemas and roles as warehouse/local/init (keep the two in step), with two differences:
 --   - the logins are created WITHOUT a password: set each one from the secret store (see docs/DEPLOY-AZURE.vi.md);
---   - raw_intranet is not created here: the ingestion project owns it and its tables, and must have created it before 02_grants.sql.
+--   - the raw_<source> schemas (raw_intranet...) are not created here: the ingestion project owns them and their tables, and must have created them before 02_grants.sql.
 -- Idempotent: safe to run again.
 -- Run it as an admin that is NOT a superuser (Azure): it needs CREATEROLE and CREATE on the database. It borrows membership of dbt_rw
 -- (CREATE SCHEMA ... AUTHORIZATION requires it) and gives it back at the end.

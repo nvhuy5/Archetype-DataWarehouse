@@ -37,11 +37,11 @@ docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "grant
 ```
 Kiểm tra lại bằng lệnh `select count(*)` ở trên: ra `5`. Rồi chạy lại dbt.
 
-**Nguyên nhân gốc ở môi trường thật**: bảng được tạo bởi một login mà `ALTER DEFAULT PRIVILEGES` chưa áp dụng. `warehouse/prod/02_grants.sql` có dòng cho phần này, theo login ingestion bạn truyền vào (`-v ingestion_role=<login>`):
+**Nguyên nhân gốc ở môi trường thật**: bảng được tạo bởi một login mà `ALTER DEFAULT PRIVILEGES` chưa áp dụng. `warehouse/prod/02_grants.sql` có dòng cho phần này. File tự tìm mọi schema `raw_<nguồn>` và lấy **chủ sở hữu của schema** làm login ingestion của nguồn đó:
 ```sql
-ALTER DEFAULT PRIVILEGES FOR ROLE :"ingestion_role" IN SCHEMA raw_intranet GRANT SELECT ON TABLES TO dbt_rw;
+ALTER DEFAULT PRIVILEGES FOR ROLE <chủ schema> IN SCHEMA raw_<nguồn> GRANT SELECT ON TABLES TO dbt_rw;
 ```
-Nếu ingestion đổi login hoặc dùng nhiều login, cần chạy lại dòng này cho login đó. `./scripts/check_prod_sql.sh` kiểm tra rằng bảng do ingestion tạo **sau** khi cấp quyền vẫn đọc được.
+Nếu ingestion đổi login hoặc bảng được tạo bởi một login khác chủ schema, cần chuyển quyền sở hữu schema hoặc cấp `SELECT` cho `dbt_rw` sau mỗi lần nạp. Thêm nguồn mới (`raw_nav`...) thì chạy lại `02_grants.sql`. `./scripts/check_prod_sql.sh` kiểm tra rằng bảng do ingestion tạo **sau** khi cấp quyền vẫn đọc được.
 
 **Trả lại**: bước sửa ở trên đã trả quyền; chạy lại dbt cho xanh.
 
