@@ -33,6 +33,7 @@ docker network create "$ID" >/dev/null
 docker run -d --name "$PG" --network "$ID" -e POSTGRES_PASSWORD=x -e POSTGRES_DB=analytics_db postgres:16 >/dev/null
 until docker exec "$PG" pg_isready -U postgres -d analytics_db >/dev/null 2>&1; do sleep 1; done; sleep 3
 # 0. the Azure admin is NOT a superuser: it can create roles and owns the database, nothing more
+psql_admin -c "create role stranger login" >/dev/null || exit 1
 psql_admin -c "create role azadmin login createrole createdb" -c "alter database analytics_db owner to azadmin" || exit 1
 # 1. the platform team creates the login of the ingestion project; the ingestion project creates raw_intranet with it
 docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -c "create role adf_loader login" || exit 1
@@ -57,8 +58,9 @@ n=$(psql_admin -Atc "select count(*) from pg_tables where schemaname = 'raw_intr
 (echo "set role adf_nav;"; echo "create table raw_nav.customer (id int); insert into raw_nav.customer values (1);") | psql_admin >/dev/null 2>&1 || bad "raw_nav load failed"
 echo "dbt and Elementary images (default target: prod)"
 run_env=(--network "$ID" -e PGHOST="$PG" -e PGUSER=dbt_rw -e PGPASSWORD=dbtpw -e PGSSLMODE=disable)
-summary=$(docker run --rm "${run_env[@]}" "$DBT_IMAGE" 2>&1 | sed 's/\x1b\[[0-9;]*m//g' | grep -E "Done\. PASS" | tail -1)
-case "$summary" in *"ERROR=0"*"SKIP=0"*) ok "dbt build: ${summary#*Done. }";; *) bad "dbt build: ${summary:-no result}";; esac
+dbt_log=$(docker run --rm "${run_env[@]}" "$DBT_IMAGE" 2>&1 | sed 's/\x1b\[[0-9;]*m//g')
+summary=$(echo "$dbt_log" | grep -E "Done\. PASS" | tail -1)
+case "$summary" in *"ERROR=0"*"SKIP=0"*) ok "dbt build: ${summary#*Done. }";; *) bad "dbt build: ${summary:-no result}"; echo "$dbt_log" | grep -E -B1 -A4 "Database Error" | head -30;; esac
 docker run --rm "${run_env[@]}" -v "$REPORT:/report" "$EDR_IMAGE" >/dev/null 2>&1 && [ -s "$REPORT/elementary_report.html" ] \
   && ok "Elementary report written" || bad "Elementary report failed"
 
@@ -78,6 +80,10 @@ for s in "dwh.dim_employee" "staging.stg_intranet__hr_table_main" "raw_intranet.
 done
 cannot pii_admin piipw "create table mart.x (a int)" "create a table in mart"
 can    dbt_rw dbtpw "select count(*) from raw_intranet.hr_table_main"        "read raw_intranet"
+can    adf_loader x "select 1" "connect (ingestion login of raw_intranet)"
+can    adf_nav x "select 1" "connect (ingestion login of raw_nav)"
+cannot stranger x "select 1" "connect (a role outside the project)"
+cannot powerbi_ro pbipw "create temp table t (a int)" "create a temporary table"
 can    dbt_rw dbtpw "select count(*) from raw_nav.customer"                 "read raw_nav (second source, table created after the grants)"
 cannot dbt_rw dbtpw "insert into raw_intranet.hr_table_main (idm) values ('x')" "write raw_intranet"
 

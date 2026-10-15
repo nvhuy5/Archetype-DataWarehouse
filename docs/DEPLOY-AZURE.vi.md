@@ -25,15 +25,15 @@ Postgres trên Azure (ví dụ Azure Database for PostgreSQL) là server khác v
    psql "host=<server> dbname=analytics_db user=<admin> sslmode=require" \
      -f warehouse/prod/01_schemas_roles.sql -f warehouse/prod/02_grants.sql
    ```
-   Kết quả: ba login `dbt_rw`, `powerbi_ro`, `pii_admin` (chưa có mật khẩu); các schema `staging`, `elementary`, `mart`, `mart_restricted` thuộc `dbt_rw`; quyền đọc mọi schema `raw_<nguồn>` cho `dbt_rw`, kể cả với bảng ingestion tạo lại sau này (theo chủ schema); thêm nguồn mới thì chạy lại `02_grants.sql`; quyền tạo schema (`dwh`) cho `dbt_rw`.
+   Kết quả: ba login `dbt_rw`, `powerbi_ro`, `pii_admin` (chưa có mật khẩu); các schema `staging`, `elementary`, `mart`, `mart_restricted` thuộc `dbt_rw`; quyền đọc mọi schema `raw_<nguồn>` cho `dbt_rw`, kể cả với bảng ingestion tạo lại sau này (theo chủ schema); thêm nguồn mới thì chạy lại `02_grants.sql`; quyền tạo schema (`dwh`) cho `dbt_rw`; thu hồi quyền mặc định của `PUBLIC` trên database, chỉ `dbt_rw`, `powerbi_ro`, `pii_admin`, login ingestion (chủ các schema raw) và admin đang chạy được `CONNECT`, riêng `dbt_rw` có thêm `TEMPORARY` (model incremental của Elementary tạo bảng tạm).
 3. Đặt mật khẩu từng login từ secret store (không ghi vào file hay repo), ví dụ `ALTER ROLE dbt_rw PASSWORD '<từ Key Vault>'`.
 4. Quyền `SELECT` trên từng bảng mart không nằm trong SQL này: dbt tự cấp ở mỗi lần build theo `+grants` trong `dbt_project.yml` (`mart` cho `powerbi_ro` và `pii_admin`, `mart_restricted` chỉ cho `pii_admin`).
 
 Trước khi giao SQL này cho platform team, chạy `./scripts/check_prod_sql.sh` ([TEST-LOCAL.vi.md](TEST-LOCAL.vi.md)): nó dựng Postgres tạm theo đúng trình tự trên, chạy dbt và Elementary thật, và kiểm tra quyền của từng login.
 
-Admin của Azure không phải superuser. Hai file SQL tự mượn quyền thành viên `dbt_rw` và của chủ từng schema raw (cần cho `CREATE SCHEMA ... AUTHORIZATION`, `ALTER DEFAULT PRIVILEGES`, `GRANT`) rồi trả lại khi xong; `./scripts/check_prod_sql.sh` chạy chúng bằng một admin không phải superuser trên Postgres tạm. **Chưa kiểm chứng trên Azure thật**: admin cần quyền `CREATEROLE` và là chủ database (hoặc có quyền `CREATE` trên nó). Nếu gặp lỗi quyền ở bước 2, xử lý ở đây rồi chạy lại; nếu `ALTER DEFAULT PRIVILEGES` không dùng được thì ingestion phải cấp `SELECT` cho `dbt_rw` sau mỗi lần nạp.
+Admin của Azure không phải superuser. Hai file SQL tự mượn quyền thành viên `dbt_rw` và của chủ từng schema raw (cần cho `CREATE SCHEMA ... AUTHORIZATION`, `ALTER DEFAULT PRIVILEGES`, `GRANT`) rồi trả lại khi xong; `./scripts/check_prod_sql.sh` chạy chúng bằng một admin không phải superuser trên Postgres tạm. **Chưa kiểm chứng trên Azure thật**: admin cần quyền `CREATEROLE` và là chủ database (hoặc có quyền `CREATE` trên nó). Sau khi thu hồi `PUBLIC`, các role hệ thống hoặc công cụ của Azure kết nối bằng role riêng có thể mất quyền vào database này; nếu có, cấp `CONNECT` cho role đó. Nếu gặp lỗi quyền ở bước 2, xử lý ở đây rồi chạy lại; nếu `ALTER DEFAULT PRIVILEGES` không dùng được thì ingestion phải cấp `SELECT` cho `dbt_rw` sau mỗi lần nạp.
 
-`warehouse/prod/` và `warehouse/local/init/` phải giữ giống nhau về schema và role; khác biệt có chủ ý là mật khẩu và việc tạo `raw_intranet`.
+`warehouse/prod/` và `warehouse/local/init/` phải giữ giống nhau về schema và role; khác biệt có chủ ý là mật khẩu, việc tạo `raw_intranet`, và việc local không thu hồi quyền `PUBLIC` trên database (local chạy bằng superuser, chỉ có container của dự án).
 
 ## 3. Build và đẩy image
 Từ thư mục gốc repo (cần internet; lần đầu vài phút):

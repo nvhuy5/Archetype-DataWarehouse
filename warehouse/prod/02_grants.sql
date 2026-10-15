@@ -19,8 +19,19 @@ BEGIN
     EXECUTE format('GRANT SELECT ON ALL TABLES IN SCHEMA %I TO dbt_rw', s.name);
     -- Tables that the ingestion project drops and recreates must stay readable by dbt without a new grant
     EXECUTE format('ALTER DEFAULT PRIVILEGES FOR ROLE %I IN SCHEMA %I GRANT SELECT ON TABLES TO dbt_rw', s.owner, s.name);
+    EXECUTE format('GRANT CONNECT ON DATABASE %I TO %I', current_database(), s.owner);
     IF s.owner <> current_user THEN EXECUTE format('REVOKE %I FROM CURRENT_USER', s.owner); END IF;
   END LOOP;
+END $$;
+
+-- Only the logins of this project may connect (by default every role may, and may create temporary tables).
+-- The ingestion logins (owners of the raw schemas, above) and the admin that runs this file keep their access.
+DO $$
+BEGIN
+  EXECUTE format('REVOKE ALL ON DATABASE %I FROM PUBLIC', current_database());
+  EXECUTE format('GRANT CONNECT ON DATABASE %I TO dbt_rw, powerbi_ro, pii_admin, CURRENT_USER', current_database());
+  -- Elementary's incremental models create temporary tables: dbt_rw needs this, the read-only logins do not
+  EXECUTE format('GRANT TEMPORARY ON DATABASE %I TO dbt_rw', current_database());
 END $$;
 
 GRANT USAGE ON SCHEMA mart TO powerbi_ro, pii_admin;
