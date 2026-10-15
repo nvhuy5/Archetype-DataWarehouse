@@ -4,6 +4,8 @@
 --   - the logins are created WITHOUT a password: set each one from the secret store (see docs/DEPLOY-AZURE.vi.md);
 --   - raw_intranet is not created here: the ingestion project owns it and its tables, and must have created it before 02_grants.sql.
 -- Idempotent: safe to run again.
+-- Run it as an admin that is NOT a superuser (Azure): it needs CREATEROLE and CREATE on the database. It borrows membership of dbt_rw
+-- (CREATE SCHEMA ... AUTHORIZATION requires it) and gives it back at the end.
 DO $$
 DECLARE r text;
 BEGIN
@@ -16,6 +18,8 @@ END $$;
 -- dbt_rw: reads raw, owns every schema dbt writes to (staging, dwh, mart, mart_restricted, elementary).
 -- powerbi_ro: Power BI, reads mart only.  pii_admin: admins, read mart and mart_restricted.
 
+GRANT dbt_rw TO CURRENT_USER;
+
 CREATE SCHEMA IF NOT EXISTS staging         AUTHORIZATION dbt_rw;
 CREATE SCHEMA IF NOT EXISTS elementary      AUTHORIZATION dbt_rw;
 CREATE SCHEMA IF NOT EXISTS mart            AUTHORIZATION dbt_rw;
@@ -24,3 +28,5 @@ CREATE SCHEMA IF NOT EXISTS mart_restricted AUTHORIZATION dbt_rw;
 
 -- Nobody may create objects in public (already the default since PostgreSQL 15; explicit for older servers)
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+
+REVOKE dbt_rw FROM CURRENT_USER;

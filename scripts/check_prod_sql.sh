@@ -32,13 +32,18 @@ echo "Database built like production"
 docker network create "$ID" >/dev/null
 docker run -d --name "$PG" --network "$ID" -e POSTGRES_PASSWORD=x -e POSTGRES_DB=analytics_db postgres:16 >/dev/null
 until docker exec "$PG" pg_isready -U postgres -d analytics_db >/dev/null 2>&1; do sleep 1; done; sleep 3
-# 1. the ingestion project (its own login) creates raw_intranet
-psql_admin -c "create role adf_loader login" -c "create schema raw_intranet authorization adf_loader" || exit 1
+# 0. the Azure admin is NOT a superuser: it can create roles and owns the database, nothing more
+psql_admin -c "create role azadmin login createrole createdb" -c "alter database analytics_db owner to azadmin" || exit 1
+# 1. the platform team creates the login of the ingestion project; the ingestion project creates raw_intranet with it
+docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -c "create role adf_loader login" || exit 1
+psql_admin -c "create schema raw_intranet authorization adf_loader" || exit 1
 # 2. the platform team runs the prod SQL twice (it must be safe to repeat), then sets the passwords
 for i in 1 2; do
-  cat warehouse/prod/01_schemas_roles.sql warehouse/prod/02_grants.sql | psql_admin -o /dev/null -v ingestion_role=adf_loader 2>/dev/null \
-    && ok "warehouse/prod applied (run $i)" || bad "warehouse/prod failed (run $i)"
+  cat warehouse/prod/01_schemas_roles.sql warehouse/prod/02_grants.sql | docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -o /dev/null -v ingestion_role=adf_loader 2>/dev/null \
+    && ok "warehouse/prod applied by a non-superuser admin (run $i)" || bad "warehouse/prod failed (run $i)"
 done
+[ "$(psql_admin -Atc "select pg_has_role('azadmin','dbt_rw','usage') or pg_has_role('azadmin','dbt_rw','set') or pg_has_role('azadmin','adf_loader','usage') or pg_has_role('azadmin','adf_loader','set')")" = f ] \
+  && ok "admin gave back the rights it borrowed on dbt_rw and the ingestion login" || bad "admin still holds rights on dbt_rw or the ingestion login"
 psql_admin -c "alter role dbt_rw password 'dbtpw'" -c "alter role powerbi_ro password 'pbipw'" -c "alter role pii_admin password 'piipw'" >/dev/null
 # 3. the ingestion project loads the raw tables AFTER the grants (the seed files stand in for the real data)
 for f in warehouse/local/seed/raw_intranet/*.sql; do
