@@ -33,7 +33,31 @@ Trước khi giao SQL này cho platform team, chạy `./scripts/check_prod_sql.s
 
 Admin của Azure không phải superuser. Hai file SQL tự mượn quyền thành viên `dbt_rw` và của chủ từng schema raw (cần cho `CREATE SCHEMA ... AUTHORIZATION`, `ALTER DEFAULT PRIVILEGES`, `GRANT`) rồi trả lại khi xong; `./scripts/check_prod_sql.sh` chạy chúng bằng một admin không phải superuser trên Postgres tạm. **Chưa kiểm chứng trên Azure thật**: admin cần quyền `CREATEROLE` và là chủ database (hoặc có quyền `CREATE` trên nó). Sau khi thu hồi `PUBLIC`, các role hệ thống hoặc công cụ của Azure kết nối bằng role riêng có thể mất quyền vào database này; nếu có, cấp `CONNECT` cho role đó. Nếu gặp lỗi quyền ở bước 2, xử lý ở đây rồi chạy lại; nếu `ALTER DEFAULT PRIVILEGES` không dùng được thì ingestion phải cấp `SELECT` cho `dbt_rw` sau mỗi lần nạp.
 
-`warehouse/prod/` và `warehouse/local/init/` phải giữ giống nhau về schema và role; khác biệt có chủ ý là mật khẩu, việc tạo `raw_intranet`, và việc local không thu hồi quyền `PUBLIC` trên database (local chạy bằng superuser, chỉ có container của dự án).
+### Đọc nhanh: ai được làm gì
+Có 5 user. Mỗi người chỉ có đúng quyền cần để làm việc của mình:
+
+| User | Là ai | Ai tạo | Được làm gì | Không được |
+|---|---|---|---|---|
+| **admin Azure** | tài khoản quản trị server | có sẵn | chạy 2 file SQL một lần | không dùng cho job; sau khi chạy xong không giữ quyền gì thêm |
+| **login ingestion** (ví dụ `adf_loader`) | ADF nạp dữ liệu; mỗi nguồn một login | platform team | tạo và nạp bảng trong schema `raw_<nguồn>` của mình (là chủ schema đó) | không đụng tới schema khác |
+| **`dbt_rw`** | job dbt và job Elementary | `01_schemas_roles.sql` | đọc mọi schema `raw_*`; tạo và ghi `staging`, `dwh`, `mart`, `mart_restricted`, `elementary`; tạo bảng tạm | không ghi vào `raw_*` |
+| **`powerbi_ro`** | Power BI | `01_schemas_roles.sql` | chỉ đọc các bảng trong `mart` | không thấy `raw`, `staging`, `dwh`, `elementary`, `mart_restricted`; không tạo được gì |
+| **`pii_admin`** | người được xem dữ liệu cá nhân | `01_schemas_roles.sql` | đọc `mart` và `mart_restricted` | không thấy `raw`, `staging`, `dwh`; không tạo được gì |
+
+Luồng dữ liệu và ai chạm vào lớp nào:
+```
+raw_<nguồn>  ──(dbt_rw đọc)──>  staging ──> dwh ──> mart ──(powerbi_ro đọc)──> Power BI
+ ingestion ghi                  └──── dbt_rw ghi hết ────┘   └─(pii_admin đọc)─> mart_restricted
+```
+
+Mấy điều dễ nhầm:
+- **Quyền đọc từng bảng mart do dbt cấp** mỗi lần build (theo `+grants` trong `dbt_project.yml`), không nằm trong file SQL. Thêm bảng mart mới không cần sửa SQL.
+- **"Mượn quyền" của admin**: admin Azure không phải superuser nên không tự có quyền trên schema của `dbt_rw` hay của ingestion. Trong lúc chạy, file SQL cho admin tạm làm thành viên của các role đó, làm xong thì rút lại. Mục đích chỉ là để chạy được; sau đó admin không còn quyền của họ.
+- **`PUBLIC`** là "mọi role trên server". Mặc định ai cũng kết nối được vào database và tạo bảng tạm. SQL thu hồi quyền đó: chỉ 3 login của dự án, các login ingestion và admin mới vào được. `dbt_rw` có thêm quyền tạo bảng tạm vì Elementary cần.
+- **Thêm nguồn mới** (ví dụ `raw_nav`): ingestion tạo schema bằng login riêng, rồi admin chạy lại `02_grants.sql`. Không phải sửa file.
+- **Đổi mật khẩu**: đổi trong Key Vault, rồi `ALTER ROLE ... PASSWORD` trong Postgres cho khớp (mục 4 bên dưới).
+
+`warehouse/prod/` và `warehouse/local/init/` phải giữ giống nhau về schema và role; khác biệt có chủ ý chỉ là mật khẩu và việc tạo `raw_intranet` (local tạo sẵn, prod do ingestion tạo). Quyền trên database (chỉ 3 login của dự án được `CONNECT`, `dbt_rw` có thêm `TEMPORARY`) giống nhau ở cả hai nơi.
 
 ## 3. Build và đẩy image
 Từ thư mục gốc repo (cần internet; lần đầu vài phút):
