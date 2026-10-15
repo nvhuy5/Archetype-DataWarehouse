@@ -4,7 +4,7 @@
 
 ## Cách tạo ra lỗi
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "truncate raw_intranet.hr_table_main"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "truncate raw_intranet.hr_table_main"
 ```
 
 ## Cách phát hiện

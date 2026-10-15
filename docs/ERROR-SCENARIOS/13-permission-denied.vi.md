@@ -8,7 +8,7 @@ Ba tài khoản có quyền khác nhau (xem `docs/DEPLOY-AZURE.vi.md`): `dbt_rw`
 
 **Tạo lỗi**
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "revoke select on raw_intranet.hr_menu_country from dbt_rw"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "revoke select on raw_intranet.hr_menu_country from dbt_rw"
 ```
 **Phát hiện**
 ```bash
@@ -23,7 +23,7 @@ docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "revok
 ```
 Tự kiểm tra bằng đúng tài khoản của dbt:
 ```bash
-docker compose exec -T -e PGPASSWORD=dbt_rw postgres-local psql -h localhost -U dbt_rw -d analytics_db -c "select count(*) from raw_intranet.hr_menu_country"
+docker compose exec -T -e PGPASSWORD=dbt_rw postgres-local psql -h localhost -U dbt_rw -d archetype_dwh -c "select count(*) from raw_intranet.hr_menu_country"
 ```
 ```
 ERROR:  permission denied for table hr_menu_country
@@ -33,7 +33,7 @@ ERROR:  permission denied for table hr_menu_country
 - Test `not_empty` của source là thứ đầu tiên đọc bảng nên nó lộ lỗi trước. Các model phía sau `SKIP=4`.
 **Sửa**: cấp lại quyền đọc cho `dbt_rw` (admin chạy):
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "grant select on raw_intranet.hr_menu_country to dbt_rw"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "grant select on raw_intranet.hr_menu_country to dbt_rw"
 ```
 Kiểm tra lại bằng lệnh `select count(*)` ở trên: ra `5`. Rồi chạy lại dbt.
 
@@ -51,7 +51,7 @@ Nếu ingestion đổi login hoặc bảng được tạo bởi một login khá
 
 **Tạo lỗi**: dùng tài khoản Power BI:
 ```bash
-docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d analytics_db \
+docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d archetype_dwh \
   -c "select count(*) from mart_restricted.mart_hr_employee_pii"
 ```
 **Thông báo**
@@ -63,7 +63,7 @@ LINE 1: select count(*) from mart_restricted.mart_hr_employee_pii
 
 **Sửa**: **không** cấp thêm quyền cho `powerbi_ro`. Đổi báo cáo sang bản đã che trong schema `mart`:
 ```bash
-docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d analytics_db \
+docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d archetype_dwh \
   -c "select count(*) from mart.mart_hr_employee"
 ```
 ```

@@ -8,10 +8,10 @@ GRANT USAGE ON SCHEMA mart TO powerbi_ro, pii_admin;
 GRANT USAGE ON SCHEMA mart_restricted TO pii_admin;
 -- SELECT on each mart table comes from the `grants` config of dbt_project.yml, applied at every dbt build
 
-GRANT CREATE ON DATABASE analytics_db TO dbt_rw;
+GRANT CREATE ON DATABASE archetype_dwh TO dbt_rw;
 
 -- Only the logins of this project may connect (by default every role may, and may create temporary tables). postgres (seed, healthcheck) is a superuser.
 -- Elementary's incremental models create temporary tables: dbt_rw needs this, the read-only logins do not.
-REVOKE ALL ON DATABASE analytics_db FROM PUBLIC;
-GRANT CONNECT ON DATABASE analytics_db TO dbt_rw, powerbi_ro, pii_admin;
-GRANT TEMPORARY ON DATABASE analytics_db TO dbt_rw;
+REVOKE ALL ON DATABASE archetype_dwh FROM PUBLIC;
+GRANT CONNECT ON DATABASE archetype_dwh TO dbt_rw, powerbi_ro, pii_admin;
+GRANT TEMPORARY ON DATABASE archetype_dwh TO dbt_rw;

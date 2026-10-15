@@ -8,7 +8,7 @@ Có hai biến thể: thiếu bảng ở **local** (script chặn trước khi c
 
 **Tạo lỗi**
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "drop table raw_intranet.hr_menu_country cascade"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "drop table raw_intranet.hr_menu_country cascade"
 ```
 ```
 NOTICE:  drop cascades to view staging.stg_intranet__hr_menu_country
@@ -61,7 +61,7 @@ from {{ source('raw_intranet', 'hr_new_table') }}
       ! 1 of 2 ERROR source_not_empty_raw_intranet_hr_new_table_ ....................... [ERROR in 0.06s]
 08:34:42    Database Error in test source_not_empty_raw_intranet_hr_new_table_ (models/staging/intranet/hr/_hr__sources.yml)
   relation "raw_intranet.hr_new_table" does not exist
-  LINE 13: where not exists (select 1 from "analytics_db"."raw_intranet...
+  LINE 13: where not exists (select 1 from "archetype_dwh"."raw_intranet...
 ```
 
 **Đọc thông báo**

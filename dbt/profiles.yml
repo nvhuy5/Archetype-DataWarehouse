@@ -11,7 +11,7 @@ archetype:
       port: "{{ env_var('PGPORT', '5432') | as_number }}"
       user: "{{ env_var('PGUSER') }}"
       password: "{{ env_var('PGPASSWORD') }}"
-      dbname: "{{ env_var('PGDATABASE', 'analytics_db') }}"
+      dbname: "{{ env_var('PGDATABASE', 'archetype_dwh') }}"
       schema: public
       sslmode: "{{ env_var('PGSSLMODE', 'disable') }}"
       threads: 4
@@ -21,7 +21,7 @@ archetype:
       port: "{{ env_var('PGPORT', '5432') | as_number }}"
       user: "{{ env_var('PGUSER') }}"
       password: "{{ env_var('PGPASSWORD') }}"
-      dbname: "{{ env_var('PGDATABASE', 'analytics_db') }}"
+      dbname: "{{ env_var('PGDATABASE', 'archetype_dwh') }}"
       schema: public
       sslmode: "{{ env_var('PGSSLMODE', 'require') }}"
       threads: 4
@@ -36,7 +36,7 @@ elementary:
       port: "{{ env_var('PGPORT', '5432') | as_number }}"
       user: "{{ env_var('PGUSER') }}"
       password: "{{ env_var('PGPASSWORD') }}"
-      dbname: "{{ env_var('PGDATABASE', 'analytics_db') }}"
+      dbname: "{{ env_var('PGDATABASE', 'archetype_dwh') }}"
       schema: elementary
       sslmode: "{{ env_var('PGSSLMODE', 'disable') }}"
       threads: 4
@@ -46,7 +46,7 @@ elementary:
       port: "{{ env_var('PGPORT', '5432') | as_number }}"
       user: "{{ env_var('PGUSER') }}"
       password: "{{ env_var('PGPASSWORD') }}"
-      dbname: "{{ env_var('PGDATABASE', 'analytics_db') }}"
+      dbname: "{{ env_var('PGDATABASE', 'archetype_dwh') }}"
       schema: elementary
       sslmode: "{{ env_var('PGSSLMODE', 'require') }}"
       threads: 4

@@ -5,7 +5,7 @@
 ## Cách tạo ra lỗi
 Thử xóa cột thẳng sẽ bị Postgres chặn, vì view staging đang phụ thuộc:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "alter table raw_intranet.hr_menu_country drop column region"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "alter table raw_intranet.hr_menu_country drop column region"
 ```
 ```
 ERROR:  cannot drop column region of table raw_intranet.hr_menu_country because other objects depend on it
@@ -13,8 +13,8 @@ DETAIL:  view staging.stg_intranet__hr_menu_country depends on column region of 
 ```
 Để mô phỏng kết quả cuối (bảng raw mất cột, view staging được dựng lại), xóa view trước:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "drop view staging.stg_intranet__hr_menu_country"
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "alter table raw_intranet.hr_menu_country drop column region"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "drop view staging.stg_intranet__hr_menu_country"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "alter table raw_intranet.hr_menu_country drop column region"
 ```
 Cách bảng raw ở môi trường thật đổi cấu trúc do project ingestion quyết định; ca này chỉ mô phỏng hệ quả mà dbt nhìn thấy.
 

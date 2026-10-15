@@ -48,7 +48,7 @@ Seeded 61 raw tables in 7s. Next: ./scripts/run_local.sh
 ```
 Kiểm tra cột mới có dữ liệu:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -Atc "select idp, extra_col from raw_intranet.hr_menu_country order by 1 limit 2"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -Atc "select idp, extra_col from raw_intranet.hr_menu_country order by 1 limit 2"
 ```
 ```
 1|1

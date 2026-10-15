@@ -55,7 +55,7 @@ Cách xem chi tiết:
 - Dòng `compiled code at target/...` trong log trỏ vào **bên trong container** (container bị xóa sau mỗi lần chạy), nên bạn không mở file đó được. Muốn thấy dòng dữ liệu hỏng thì dùng **Result Query** trong báo cáo Elementary (Tests → mở dòng test; xem [ELEMENTARY-REPORT](../ELEMENTARY-REPORT.vi.md)) hoặc câu truy vấn có sẵn trong từng file.
 - Kết quả test cũng được ghi vào schema `elementary` (bảng `elementary.elementary_test_results`) và `report/elementary_report.html` được tạo cả khi có lỗi:
   ```bash
-  docker compose exec -T postgres-local psql -U postgres -d analytics_db \
+  docker compose exec -T postgres-local psql -U postgres -d archetype_dwh \
     -c "select status, test_short_name, table_name, column_name from elementary.elementary_test_results where status <> 'pass' order by detected_at desc limit 5"
   ```
 
@@ -64,7 +64,7 @@ Cách xem chi tiết:
 Hai lệnh dùng ở mọi ca:
 ```bash
 # chạy SQL vào database local
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "<câu SQL>"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "<câu SQL>"
 # trả dữ liệu raw về như cũ (3 giây)
 ./scripts/seed_local.sh
 ```

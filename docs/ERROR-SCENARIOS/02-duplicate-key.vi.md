@@ -4,7 +4,7 @@
 
 ## Cách tạo ra lỗi
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db \
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh \
   -c "insert into raw_intranet.hr_table_main select * from raw_intranet.hr_table_main where ide = 1"
 ```
 
@@ -36,7 +36,7 @@ Failure in test unique_stg_intranet__hr_table_main_ide (models/staging/intranet/
 
 Tìm dòng trùng:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db \
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh \
   -c "select ide, count(*) from raw_intranet.hr_table_main group by ide having count(*) > 1"
 ```
 ```

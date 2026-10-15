@@ -6,7 +6,7 @@ Trước đây ca này **không test nào bắt**: build xanh, mã thoát 0, bá
 
 ## Cách tạo ra lỗi
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "update raw_intranet.hr_table_main set estatus = 1"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "update raw_intranet.hr_table_main set estatus = 1"
 ```
 
 ## Cách phát hiện
@@ -44,7 +44,7 @@ Failure in test not_empty_dim_employee_ (models/dwh/dim/_dim__models.yml)
 ## Tác dụng phụ: bảng đã bị thay, view Power BI biến mất
 dbt **dựng bảng trước rồi mới chạy test**. Nên khi `not_empty` fail thì bảng rỗng **đã được ghi**. Sau lần chạy trên:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "
   select 'dim_employee' t, count(*) from dwh.dim_employee
   union all select 'mart_hr_employee_pii', count(*) from mart_restricted.mart_hr_employee_pii
   union all select 'mart_ts_employees (giữ lại)', count(*) from mart.mart_ts_employees
@@ -69,7 +69,7 @@ Lý do: view này dựng trên bảng `mart_hr_employee_pii`. Khi dbt thay bản
 ## Cách sửa
 1. Tìm xem điều kiện lọc nào loại hết dòng. `dim_employee` ghi rõ ở đầu file: "Employees in status 7 and 8". Kiểm tra giá trị thật ở raw:
    ```bash
-   docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "select estatus, count(*) from raw_intranet.hr_table_main group by 1"
+   docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "select estatus, count(*) from raw_intranet.hr_table_main group by 1"
    ```
 2. Nếu mã trạng thái ở nguồn thật sự đổi: sửa điều kiện trong model theo quy tắc nghiệp vụ mới và ghi vào comment đầu file. Nếu chỉ là dòng dữ liệu mẫu lệch: sửa file seed `warehouse/local/seed/raw_intranet/hr_table_main.sql`.
 3. Chạy lại **cả chuỗi** để dựng lại dwh, mart và view:
@@ -84,7 +84,7 @@ Lý do: view này dựng trên bảng `mart_hr_employee_pii`. Khi dbt thay bản
 ```
 View đã trở lại, `powerbi_ro` đọc được:
 ```bash
-docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d analytics_db -Atc "select count(*) from mart.mart_hr_employee"
+docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d archetype_dwh -Atc "select count(*) from mart.mart_hr_employee"
 ```
 ```
 5

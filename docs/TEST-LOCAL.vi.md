@@ -51,7 +51,7 @@ Tùy chọn:
 
 ## 3. Xem dữ liệu đã tạo
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "select * from dwh.dim_phase limit 5"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "select * from dwh.dim_phase limit 5"
 ```
 Các schema: `raw_intranet` (bảng nguồn mẫu), `staging`, `dwh`, `mart`, `mart_restricted`, `elementary`. Mở `report/elementary_report.html` bằng trình duyệt để xem kết quả test; cách đọc từng phần của báo cáo: [ELEMENTARY-REPORT.vi.md](ELEMENTARY-REPORT.vi.md).
 
@@ -83,8 +83,8 @@ python3 scripts/check_repo.py
 ### Kiểm tra quyền mart
 Sau `./scripts/seed_local.sh --reset` (script init chỉ chạy khi database trống), `powerbi_ro` phải đọc được `mart` và bị chặn ở `dwh` và `mart_restricted`:
 ```bash
-docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d analytics_db -c "select count(*) from mart.mart_ts_employees"   # đọc được
-docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d analytics_db -c "select count(*) from dwh.dim_employee"        # permission denied
+docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d archetype_dwh -c "select count(*) from mart.mart_ts_employees"   # đọc được
+docker compose exec -T -e PGPASSWORD=powerbi_ro postgres-local psql -h localhost -U powerbi_ro -d archetype_dwh -c "select count(*) from dwh.dim_employee"        # permission denied
 ```
 
 ### Kiểm tra SQL của prod

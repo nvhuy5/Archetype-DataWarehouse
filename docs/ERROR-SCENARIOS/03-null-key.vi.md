@@ -4,7 +4,7 @@
 
 ## Cách tạo ra lỗi
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db \
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh \
   -c "update raw_intranet.hr_menu_country set idp = null where idp = 1"
 ```
 
@@ -32,7 +32,7 @@ Failure in test not_null_stg_intranet__hr_menu_country_idp (models/staging/intra
 
 Tìm dòng hỏng:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db \
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh \
   -c "select * from raw_intranet.hr_menu_country where idp is null"
 ```
 

@@ -4,7 +4,7 @@
 
 ## Cách tạo ra lỗi
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db \
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh \
   -c "update raw_intranet.timesheet_entry_2015 set phase_id = 999 where id = 1"
 ```
 
@@ -36,7 +36,7 @@ Mã thoát của `run_local.sh` là **0**.
 
 Tìm dòng mồ côi:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "
   select f.phase_id, count(*) as entries
   from dwh.fact_timesheet f left join dwh.dim_phase p using (phase_id)
   where p.phase_id is null and f.phase_id is not null group by 1"

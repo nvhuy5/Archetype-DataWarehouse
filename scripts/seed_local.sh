@@ -22,7 +22,7 @@ docker compose up -d --wait postgres-local >/dev/null 2>&1
 count=$(docker compose exec -T -e PGOPTIONS="-c client_min_messages=warning" postgres-local sh -c '
   n=0
   for f in /seed/raw_intranet/*.sql; do
-    psql -q -v ON_ERROR_STOP=1 -U postgres -d analytics_db -f "$f" >/dev/null || { echo "FAILED: $f (columns changed in an existing table? run ./scripts/seed_local.sh --reset)" >&2; exit 1; }
+    psql -q -v ON_ERROR_STOP=1 -U postgres -d archetype_dwh -f "$f" >/dev/null || { echo "FAILED: $f (columns changed in an existing table? run ./scripts/seed_local.sh --reset)" >&2; exit 1; }
     n=$((n + 1))
   done
   echo "$n"
@@ -30,7 +30,7 @@ count=$(docker compose exec -T -e PGOPTIONS="-c client_min_messages=warning" pos
 
 # Stamp read by run_local.sh: which seed files were applied, and when
 hash=$(find warehouse/local/seed -name '*.sql' | LC_ALL=C sort | xargs cat | sha256sum | cut -d' ' -f1)
-docker compose exec -T -e PGOPTIONS="-c client_min_messages=warning" postgres-local psql -q -v ON_ERROR_STOP=1 -U postgres -d analytics_db <<SQL
+docker compose exec -T -e PGOPTIONS="-c client_min_messages=warning" postgres-local psql -q -v ON_ERROR_STOP=1 -U postgres -d archetype_dwh <<SQL
 CREATE TABLE IF NOT EXISTS public.seed_stamp (hash text, seeded_on date);
 TRUNCATE public.seed_stamp;
 INSERT INTO public.seed_stamp VALUES ('$hash', current_date);

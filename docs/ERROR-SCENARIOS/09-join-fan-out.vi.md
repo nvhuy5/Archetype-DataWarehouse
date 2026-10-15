@@ -23,9 +23,9 @@ Xanh. Model sai nhưng dữ liệu mẫu quan hệ 1-1 **che mất lỗi**.
 
 **Bước 2: thêm một dòng e-project thứ hai cho văn phòng 1** (giống dữ liệu thật)
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db \
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh \
   -c "insert into raw_intranet.prm_e_project_country select * from raw_intranet.prm_e_project_country where prm_e_project_country_id = 1"
-docker compose exec -T postgres-local psql -U postgres -d analytics_db \
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh \
   -c "update raw_intranet.prm_e_project_country set prm_e_project_country_id = 99 where prm_e_project_country_id = 1 and ctid = (select max(ctid) from raw_intranet.prm_e_project_country where prm_e_project_country_id = 1)"
 ```
 Cách này giữ khóa `prm_e_project_country_id` của staging **duy nhất** (1 và 99) nên test của staging vẫn qua; chỉ `office_id` bị lặp, đúng như thực tế.
@@ -53,7 +53,7 @@ Failure in test unique_dim_office_office_id (models/dwh/dim/_dim__models.yml)
 
 Tìm văn phòng bị nhân đôi:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "
   select office_id, count(*) from (
     select o.idf as office_id
     from staging.stg_intranet__hr_menu_offices o

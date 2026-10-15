@@ -62,7 +62,7 @@ Hai nút `Test runs` (lịch sử chạy của test này) và `Lineage` (xem m�
 
 Copy câu trong **Result Query** và chạy vào database local là thấy dữ liệu hỏng:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c '<dán Result Query vào đây>'
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c '<dán Result Query vào đây>'
 ```
 Bốn ví dụ từ lần chạy chụp ảnh. Câu truy vấn lấy nguyên từ báo cáo, kết quả là chạy thật:
 
@@ -70,7 +70,7 @@ Bốn ví dụ từ lần chạy chụp ảnh. Câu truy vấn lấy nguyên t�
 
 ![not_null](images/elementary/03-detail-not-null.png)
 ```sql
-select idp from "analytics_db"."staging"."stg_intranet__hr_menu_country" where idp is null
+select idp from "archetype_dwh"."staging"."stg_intranet__hr_menu_country" where idp is null
 ```
 ```
  idp
@@ -82,7 +82,7 @@ select idp from "analytics_db"."staging"."stg_intranet__hr_menu_country" where i
 
 ![not_empty](images/elementary/04-detail-not-empty.png)
 ```sql
-select 1 as empty_table where not exists (select 1 from "analytics_db"."raw_intranet"."strategic_leader")
+select 1 as empty_table where not exists (select 1 from "archetype_dwh"."raw_intranet"."strategic_leader")
 ```
 ```
  empty_table
@@ -95,7 +95,7 @@ Khung này ghi `No description is configured for this test`: chỉ là chưa có
 
 ![unique](images/elementary/05-detail-unique.png)
 ```sql
-select idc as unique_field, count(*) as n_records from "analytics_db"."staging"."stg_intranet__crm_main" where idc is not null group by idc having count(*) > 1
+select idc as unique_field, count(*) as n_records from "archetype_dwh"."staging"."stg_intranet__crm_main" where idc is not null group by idc having count(*) > 1
 ```
 ```
  unique_field | n_records
@@ -150,7 +150,7 @@ Trong ảnh: bảng raw `hr_menu_country` → `stg_intranet__hr_menu_country` (2
 
 Xuất danh sách test không đạt của lần chạy gần nhất ra CSV:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "\copy (
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "\copy (
   select to_char(detected_at,'YYYY-MM-DD HH24:MI:SS') as detected_at, status, test_short_name,
          table_name, column_name, test_results_description
   from elementary.elementary_test_results

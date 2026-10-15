@@ -2,9 +2,9 @@
 -- FILE 1/2 - TẠO USER (ROLE) VÀ SCHEMA trên Postgres production (Azure)
 -- ============================================================================
 -- Ai chạy: admin của platform team, khi dựng môi trường (bắt buộc một lần). Chạy lại không gây hại gì.
--- Chạy trên database của dự án. Tên `analytics_db` dưới đây chỉ là tên mặc định của dự án, không phải Azure bắt buộc:
+-- Chạy trên database của dự án. Tên `archetype_dwh` dưới đây chỉ là tên mặc định của dự án, không phải Azure bắt buộc:
 -- tạo database tên khác cũng được (SQL dùng current_database() nên không cần sửa), nhưng job dbt phải đặt PGDATABASE=<tên đó>.
---   psql "host=<server> dbname=analytics_db user=<admin> sslmode=require" -f 01_schemas_roles.sql -f 02_grants.sql
+--   psql "host=<server> dbname=archetype_dwh user=<admin> sslmode=require" -f 01_schemas_roles.sql -f 02_grants.sql
 --
 -- File này làm 2 việc:
 --   (1) Tạo 3 user (login): dbt_rw, powerbi_ro, pii_admin. Chưa có mật khẩu: đặt sau, lấy từ Key Vault

@@ -17,8 +17,8 @@ trap cleanup EXIT
 fail=0
 ok()  { printf '  OK      %s\n' "$1"; }
 bad() { printf '  FAILED  %s\n' "$1"; fail=1; }
-psql_admin() { docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U postgres -d analytics_db "$@"; }
-as() { docker exec -e PGPASSWORD="$2" "$PG" psql -h localhost -U "$1" -d analytics_db -Atq -c "$3" 2>&1; }  # as <login> <password> <sql>
+psql_admin() { docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U postgres -d archetype_dwh "$@"; }
+as() { docker exec -e PGPASSWORD="$2" "$PG" psql -h localhost -U "$1" -d archetype_dwh -Atq -c "$3" 2>&1; }  # as <login> <password> <sql>
 can()    { if out=$(as "$1" "$2" "$3") ; then ok "$1 can: $4"; else bad "$1 should be able to: $4 ($out)"; fi; }
 cannot() { if out=$(as "$1" "$2" "$3"); then bad "$1 must not be able to: $4"; else ok "$1 cannot: $4"; fi; }
 
@@ -30,20 +30,20 @@ EDR_IMAGE=$(docker compose config --images | grep -E -- '-elementary$')
 
 echo "Database built like production"
 docker network create "$ID" >/dev/null
-docker run -d --name "$PG" --network "$ID" -e POSTGRES_PASSWORD=x -e POSTGRES_DB=analytics_db postgres:16 >/dev/null
-until docker exec "$PG" pg_isready -U postgres -d analytics_db >/dev/null 2>&1; do sleep 1; done; sleep 3
+docker run -d --name "$PG" --network "$ID" -e POSTGRES_PASSWORD=x -e POSTGRES_DB=archetype_dwh postgres:16 >/dev/null
+until docker exec "$PG" pg_isready -U postgres -d archetype_dwh >/dev/null 2>&1; do sleep 1; done; sleep 3
 # 0. the Azure admin is NOT a superuser: it can create roles and owns the database, nothing more
 psql_admin -c "create role stranger login" >/dev/null || exit 1
-psql_admin -c "create role azadmin login createrole createdb" -c "alter database analytics_db owner to azadmin" || exit 1
+psql_admin -c "create role azadmin login createrole createdb" -c "alter database archetype_dwh owner to azadmin" || exit 1
 # 1. the platform team creates the login of the ingestion project; the ingestion project creates raw_intranet with it
-docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -c "create role adf_loader login" || exit 1
+docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d archetype_dwh -c "create role adf_loader login" || exit 1
 psql_admin -c "create schema raw_intranet authorization adf_loader" || exit 1
 # ... and a second source, with its own login, to check that every raw_<source> schema is picked up
-docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -c "create role adf_nav login" || exit 1
+docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d archetype_dwh -c "create role adf_nav login" || exit 1
 psql_admin -c "create schema raw_nav authorization adf_nav" || exit 1
 # 2. the platform team runs the prod SQL twice (it must be safe to repeat), then sets the passwords
 for i in 1 2; do
-  cat warehouse/prod/01_schemas_roles.sql warehouse/prod/02_grants.sql | docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d analytics_db -o /dev/null 2>/dev/null \
+  cat warehouse/prod/01_schemas_roles.sql warehouse/prod/02_grants.sql | docker exec -i "$PG" psql -q -v ON_ERROR_STOP=1 -U azadmin -d archetype_dwh -o /dev/null 2>/dev/null \
     && ok "warehouse/prod applied by a non-superuser admin (run $i)" || bad "warehouse/prod failed (run $i)"
 done
 [ "$(psql_admin -Atc "select pg_has_role('azadmin','dbt_rw','usage') or pg_has_role('azadmin','dbt_rw','set') or pg_has_role('azadmin','adf_loader','usage') or pg_has_role('azadmin','adf_loader','set')")" = f ] \
@@ -51,7 +51,7 @@ done
 psql_admin -c "alter role dbt_rw password 'dbtpw'" -c "alter role powerbi_ro password 'pbipw'" -c "alter role pii_admin password 'piipw'" >/dev/null
 # 3. the ingestion project loads the raw tables AFTER the grants (the seed files stand in for the real data)
 for f in warehouse/local/seed/raw_intranet/*.sql; do
-  (echo "set role adf_loader;"; cat "$f") | docker exec -i -e PGOPTIONS="-c client_min_messages=warning" "$PG" psql -q -v ON_ERROR_STOP=1 -U postgres -d analytics_db >/dev/null 2>&1 || { bad "raw load failed: $f"; break; }
+  (echo "set role adf_loader;"; cat "$f") | docker exec -i -e PGOPTIONS="-c client_min_messages=warning" "$PG" psql -q -v ON_ERROR_STOP=1 -U postgres -d archetype_dwh >/dev/null 2>&1 || { bad "raw load failed: $f"; break; }
 done
 n=$(psql_admin -Atc "select count(*) from pg_tables where schemaname = 'raw_intranet'"); [ "$n" = "$(ls warehouse/local/seed/raw_intranet/*.sql | wc -l)" ] && ok "$n raw tables loaded by the ingestion login" || bad "raw tables: $n"
 

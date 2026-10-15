@@ -73,7 +73,7 @@ Personal data (ID card, bank, tax, insurance, phones, salaries) stays in raw but
 | Variable | | |
 |---|---|---|
 | `PGHOST`, `PGUSER`, `PGPASSWORD` | required | warehouse, the `dbt_rw` login, its password (secret store) |
-| `PGDATABASE` / `PGPORT` / `PGSSLMODE` | `analytics_db` / `5432` / `require` | |
+| `PGDATABASE` / `PGPORT` / `PGSSLMODE` | `archetype_dwh` / `5432` / `require` | |
 | `DBT_TARGET` | `prod` | profile target in `dbt/profiles.yml`; only `docker-compose.yml` sets `local` (no SSL), so a forgotten variable never uses local settings; both images refuse `local` unless `PGHOST` is `postgres-local`/`localhost` |
 | `DBT_ARGS` (dbt image) | `--selector default` | arguments of `dbt build` |
 

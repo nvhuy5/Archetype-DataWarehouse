@@ -77,7 +77,7 @@ if [ $RC -eq 0 ]; then echo "$OK  $(took)"; else echo "$FAIL"; tail -15 "$LOGS/1
 # 2. raw data: only checked here, seed_local.sh creates it
 stage "[2/4] Raw data (seeded)"
 seed_hash() { find warehouse/local/seed -name '*.sql' | LC_ALL=C sort | xargs cat | sha256sum | cut -d' ' -f1; }
-psql_local() { docker compose exec -T postgres-local psql -At -U postgres -d analytics_db -c "$1"; }
+psql_local() { docker compose exec -T postgres-local psql -At -U postgres -d archetype_dwh -c "$1"; }
 docker compose up -d --wait postgres-local >"$LOGS/2-raw.log" 2>&1
 expected=$(ls warehouse/local/seed/raw_intranet/*.sql | wc -l)
 have=$(psql_local "select count(*) from information_schema.tables where table_schema = 'raw_intranet'" 2>>"$LOGS/2-raw.log" || echo 0)

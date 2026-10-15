@@ -38,7 +38,7 @@ git diff dbt/models/dwh/dim/dim_employee.sql      # xem bạn vừa đổi gì
 ```
 Nếu `HINT` không có, kiểm tra tên cột ở model hoặc nguồn:
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db -c "\d staging.stg_intranet__hr_table_main"
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh -c "\d staging.stg_intranet__hr_table_main"
 ```
 
 ## Kiểm tra lại

@@ -73,7 +73,7 @@ Dữ liệu cá nhân (CCCD, ngân hàng, thuế, bảo hiểm, điện thoại,
 | Biến | Mặc định | Ý nghĩa |
 |---|---|---|
 | `PGHOST`, `PGUSER`, `PGPASSWORD` | bắt buộc | warehouse, tài khoản `dbt_rw`, mật khẩu (lấy từ secret store) |
-| `PGDATABASE` / `PGPORT` / `PGSSLMODE` | `analytics_db` / `5432` / `require` | |
+| `PGDATABASE` / `PGPORT` / `PGSSLMODE` | `archetype_dwh` / `5432` / `require` | |
 | `DBT_TARGET` | `prod` | target trong `dbt/profiles.yml`; chỉ `docker-compose.yml` đặt `local` (không SSL), nên quên biến này cũng không dùng cấu hình local; cả hai image từ chối chạy `local` nếu `PGHOST` không phải `postgres-local`/`localhost` |
 | `DBT_ARGS` (image dbt) | `--selector default` | tham số của `dbt build` |
 

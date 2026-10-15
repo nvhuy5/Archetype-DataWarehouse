@@ -22,7 +22,7 @@ Postgres trên Azure (ví dụ Azure Database for PostgreSQL) là server khác v
 1. Ingestion tạo schema `raw_<nguồn>` (hiện là `raw_intranet`; sau này `raw_nav`...) bằng login riêng của từng nguồn, rồi các bảng raw (dbt cần đọc được chúng). Login nào tạo schema là chủ schema; `02_grants.sql` coi chủ schema là login ingestion.
 2. Một tài khoản admin chạy hai file, mỗi lần đều an toàn nếu chạy lại:
    ```bash
-   psql "host=<server> dbname=analytics_db user=<admin> sslmode=require" \
+   psql "host=<server> dbname=archetype_dwh user=<admin> sslmode=require" \
      -f warehouse/prod/01_schemas_roles.sql -f warehouse/prod/02_grants.sql
    ```
    Kết quả: ba login `dbt_rw`, `powerbi_ro`, `pii_admin` (chưa có mật khẩu); các schema `staging`, `elementary`, `mart`, `mart_restricted` thuộc `dbt_rw`; quyền đọc mọi schema `raw_<nguồn>` cho `dbt_rw`, kể cả với bảng ingestion tạo lại sau này (theo chủ schema); thêm nguồn mới thì chạy lại `02_grants.sql`; quyền tạo schema (`dwh`) cho `dbt_rw`; thu hồi quyền mặc định của `PUBLIC` trên database, chỉ `dbt_rw`, `powerbi_ro`, `pii_admin`, login ingestion (chủ các schema raw) và admin đang chạy được `CONNECT`, riêng `dbt_rw` có thêm `TEMPORARY` (model incremental của Elementary tạo bảng tạm).
@@ -79,7 +79,7 @@ Cả hai job nhận cấu hình qua biến môi trường (bảng đầy đủ �
 |---|---|---|
 | `PGHOST` | `<server>.postgres.database.azure.com` | |
 | `PGUSER`, `PGPASSWORD` | `dbt_rw` và mật khẩu | mật khẩu lấy từ Key Vault hoặc secret của dịch vụ chạy job, không viết thẳng vào cấu hình |
-| `PGDATABASE`, `PGPORT` | `analytics_db`, `5432` | mặc định, thường không cần đặt |
+| `PGDATABASE`, `PGPORT` | `archetype_dwh`, `5432` | mặc định, thường không cần đặt. Platform team đặt tên database khác thì job phải đặt `PGDATABASE=<tên đó>` (SQL trong `warehouse/prod` dùng `current_database()` nên không phải sửa) |
 | `PGSSLMODE` | không đặt | target `prod` mặc định là `require` |
 | `DBT_TARGET` | **không đặt** | mặc định `prod`. Không bao giờ đặt `local` trên Azure: image sẽ từ chối chạy nếu `PGHOST` không phải Postgres local |
 | `DBT_ARGS` (image dbt) | tùy chọn | mặc định `--selector default` |

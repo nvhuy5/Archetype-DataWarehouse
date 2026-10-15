@@ -33,7 +33,7 @@ Failure in test elementary_schema_changes_stg_intranet__hr_menu_country_ (models
 ```
 Xem **cột nào** thay đổi (Elementary ghi vào database):
 ```bash
-docker compose exec -T postgres-local psql -U postgres -d analytics_db \
+docker compose exec -T postgres-local psql -U postgres -d archetype_dwh \
   -c "select sub_type, alert_description from elementary.alerts_schema_changes order by detected_at desc limit 2"
 ```
 ```
