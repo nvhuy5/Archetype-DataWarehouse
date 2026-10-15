@@ -62,6 +62,27 @@ Cả hai job nhận cấu hình qua biến môi trường (bảng đầy đủ �
 
 Job phải truy cập được Postgres qua mạng (firewall hoặc VNet).
 
+### Dùng Azure Container Apps Job và Key Vault
+dbt **không tự đọc Key Vault**: `profiles.yml` chỉ đọc biến môi trường. Container Apps Job lấy secret từ Key Vault rồi đưa vào container dưới dạng biến môi trường. Chưa chạy thử trên Azure thật, kiểm tra từng bước khi làm lần đầu.
+
+1. Tạo một user-assigned managed identity, gán cho job (và cho job Elementary nếu tách riêng).
+2. Gán cho identity đó role **Key Vault Secrets User** trên vault (vault dùng RBAC), hoặc quyền `get` trên secret (vault dùng access policy). Cho phép identity kéo image từ registry (role `AcrPull`).
+3. Tạo job, khai báo secret trỏ tới Key Vault và gán vào `PGPASSWORD`:
+   ```bash
+   az containerapp job create \
+     -n <tên job dbt> -g <resource group> --environment <container apps environment> \
+     --trigger-type Manual \
+     --image <registry>.azurecr.io/archetype-dbt:<tag> \
+     --registry-server <registry>.azurecr.io --registry-identity <resource id của identity> \
+     --mi-user-assigned <resource id của identity> \
+     --secrets "pgpassword=keyvaultref:https://<vault>.vault.azure.net/secrets/<tên secret>,identityref:<resource id của identity>" \
+     --env-vars PGPASSWORD=secretref:pgpassword \
+                PGUSER=dbt_rw PGHOST=<server>.postgres.database.azure.com
+   ```
+   - Không đặt `DBT_TARGET` và `PGSSLMODE` (xem bảng trên). Job Elementary làm tương tự với image `archetype-elementary`.
+   - `--trigger-type` đổi thành `Schedule` kèm `--cron-expression` nếu để job tự chạy theo lịch (xem mục 7).
+4. Đổi mật khẩu trong Key Vault: các lần chạy mới của job dùng giá trị mới, không cần build lại image. Nhớ đặt lại mật khẩu role trong Postgres cho khớp (`ALTER ROLE ...`, mục 2 bước 3).
+
 ## 5. Thứ tự chạy
 1. Ingestion nạp xong `raw_intranet`.
 2. **Job dbt** chạy `dbt run --select elementary` rồi `dbt build`. Thoát mã khác 0 nếu model hoặc test lỗi.
